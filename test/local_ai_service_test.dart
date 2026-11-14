@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -31,12 +30,11 @@ void main() {
       }
 
       if (request.uri.path.endsWith('/chat/completions')) {
-        request.response
-          ..headers.contentType = ContentType(
-            'text',
-            'event-stream',
-            charset: 'utf-8',
-          );
+        request.response.headers.contentType = ContentType(
+          'text',
+          'event-stream',
+          charset: 'utf-8',
+        );
         for (final token in ['Aspergillus ', 'niger ', 'confirmed.']) {
           request.response.write(
             'data: ${jsonEncode({
