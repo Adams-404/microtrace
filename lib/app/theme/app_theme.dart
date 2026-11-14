@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'app_colors.dart';
 import 'app_typography.dart';
 
@@ -25,7 +23,7 @@ class AppTheme {
         error: AppColors.dangerRose,
         outline: AppColors.lightBorder,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.lightSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -92,7 +90,7 @@ class AppTheme {
         error: AppColors.dangerRose,
         outline: AppColors.darkBorder,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.darkSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -159,7 +157,7 @@ class AppTheme {
         error: AppColors.dangerRose,
         outline: AppColors.amoledBorder,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.amoledSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(

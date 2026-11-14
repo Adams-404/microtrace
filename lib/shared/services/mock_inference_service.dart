@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:uuid/uuid.dart';
+
 import '../models/analysis_run.dart';
 import '../models/annotation.dart';
 import '../models/microscopy_image.dart';
@@ -25,14 +27,23 @@ class MockLiteRTInferenceService implements MicroscopyInferenceService {
     final startTime = DateTime.now();
 
     // Stage 1: Optical Preprocessing & Vignette Localization
-    onProgress(0.15, 'Detecting circular microscope field aperture (320×320)...');
+    onProgress(
+      0.15,
+      'Detecting circular microscope field aperture (320×320)...',
+    );
     await Future.delayed(const Duration(milliseconds: 320));
 
-    onProgress(0.35, 'Cropping active field of view & normalizing RGB [0..1]...');
+    onProgress(
+      0.35,
+      'Cropping active field of view & normalizing RGB [0..1]...',
+    );
     await Future.delayed(const Duration(milliseconds: 300));
 
     // Stage 2: Quality Gate Assessment
-    onProgress(0.60, 'Evaluating Laplacian sharpness & luminance thresholds...');
+    onProgress(
+      0.60,
+      'Evaluating Laplacian sharpness & luminance thresholds...',
+    );
     await Future.delayed(const Duration(milliseconds: 340));
 
     // Stage 3: LiteRT On-Device Neural Inference
@@ -86,14 +97,24 @@ class MockLiteRTInferenceService implements MicroscopyInferenceService {
           id: 'ann_sim_01',
           classId: 'vesicle',
           label: 'Conidial Vesicle',
-          boxNormalized: RectNormalized(x: 0.44, y: 0.38, width: 0.22, height: 0.22),
+          boxNormalized: RectNormalized(
+            x: 0.44,
+            y: 0.38,
+            width: 0.22,
+            height: 0.22,
+          ),
           confidence: 0.94,
         ),
         Annotation(
           id: 'ann_sim_02',
           classId: 'phialides',
           label: 'Radiating Phialides',
-          boxNormalized: RectNormalized(x: 0.38, y: 0.30, width: 0.34, height: 0.36),
+          boxNormalized: RectNormalized(
+            x: 0.38,
+            y: 0.30,
+            width: 0.34,
+            height: 0.36,
+          ),
           confidence: 0.91,
         ),
       ];
@@ -126,7 +147,12 @@ class MockLiteRTInferenceService implements MicroscopyInferenceService {
           id: 'ann_sim_03',
           classId: 'blastoconidia',
           label: 'Blastoconidia Cluster',
-          boxNormalized: RectNormalized(x: 0.40, y: 0.36, width: 0.28, height: 0.28),
+          boxNormalized: RectNormalized(
+            x: 0.40,
+            y: 0.36,
+            width: 0.28,
+            height: 0.28,
+          ),
           confidence: 0.96,
         ),
       ];
@@ -159,7 +185,12 @@ class MockLiteRTInferenceService implements MicroscopyInferenceService {
           id: 'ann_sim_04',
           classId: 'penicillus_brush',
           label: 'Penicillus Branch',
-          boxNormalized: RectNormalized(x: 0.38, y: 0.32, width: 0.24, height: 0.32),
+          boxNormalized: RectNormalized(
+            x: 0.38,
+            y: 0.32,
+            width: 0.24,
+            height: 0.32,
+          ),
           confidence: 0.89,
         ),
       ];
@@ -193,7 +224,12 @@ class MockLiteRTInferenceService implements MicroscopyInferenceService {
           id: 'ann_sim_05',
           classId: 'macroconidium',
           label: 'Macroconidium (Cigar-shaped)',
-          boxNormalized: RectNormalized(x: 0.35, y: 0.28, width: 0.30, height: 0.24),
+          boxNormalized: RectNormalized(
+            x: 0.35,
+            y: 0.28,
+            width: 0.30,
+            height: 0.24,
+          ),
           confidence: 0.84,
         ),
       ];

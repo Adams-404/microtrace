@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../app/theme/app_colors.dart';
 
 /// Clean scientific card with crisp borders, subtle surfaces, and no excessive shadows.
@@ -27,8 +28,11 @@ class ScientificCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final defaultBg = backgroundColor ?? (isDark ? AppColors.darkSurface : AppColors.lightSurface);
-    final defaultBorder = borderColor ?? (isDark ? AppColors.darkBorder : AppColors.lightBorder);
+    final defaultBg =
+        backgroundColor ??
+        (isDark ? AppColors.darkSurface : AppColors.lightSurface);
+    final defaultBorder =
+        borderColor ?? (isDark ? AppColors.darkBorder : AppColors.lightBorder);
 
     Widget content = Container(
       padding: padding,

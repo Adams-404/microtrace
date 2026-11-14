@@ -13,7 +13,8 @@ class StorageMetrics {
     required this.reportsBytes,
   });
 
-  int get totalBytes => databaseBytes + rawImagesBytes + modelsBytes + reportsBytes;
+  int get totalBytes =>
+      databaseBytes + rawImagesBytes + modelsBytes + reportsBytes;
 
   StorageMetrics copyWith({
     int? databaseBytes,
@@ -30,9 +31,10 @@ class StorageMetrics {
   }
 }
 
-final storageServiceProvider = NotifierProvider<StorageServiceNotifier, StorageMetrics>(
-  StorageServiceNotifier.new,
-);
+final storageServiceProvider =
+    NotifierProvider<StorageServiceNotifier, StorageMetrics>(
+      StorageServiceNotifier.new,
+    );
 
 class StorageServiceNotifier extends Notifier<StorageMetrics> {
   @override
@@ -50,9 +52,6 @@ class StorageServiceNotifier extends Notifier<StorageMetrics> {
   }
 
   void purgeAllCache() {
-    state = state.copyWith(
-      rawImagesBytes: 1240000,
-      reportsBytes: 0,
-    );
+    state = state.copyWith(rawImagesBytes: 1240000, reportsBytes: 0);
   }
 }

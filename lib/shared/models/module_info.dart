@@ -55,7 +55,8 @@ class ModuleInfo {
       isInstalled: isInstalled ?? this.isInstalled,
       isAvailable: isAvailable ?? this.isAvailable,
       version: version ?? this.version,
-      recommendedMagnification: recommendedMagnification ?? this.recommendedMagnification,
+      recommendedMagnification:
+          recommendedMagnification ?? this.recommendedMagnification,
       datasetReference: datasetReference ?? this.datasetReference,
       license: license ?? this.license,
     );

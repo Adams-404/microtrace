@@ -52,7 +52,8 @@ class PredictionResult {
       className: className ?? this.className,
       scientificName: scientificName ?? this.scientificName,
       confidence: confidence ?? this.confidence,
-      morphologicalFeatures: morphologicalFeatures ?? this.morphologicalFeatures,
+      morphologicalFeatures:
+          morphologicalFeatures ?? this.morphologicalFeatures,
     );
   }
 }

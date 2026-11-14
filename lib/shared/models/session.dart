@@ -1,10 +1,6 @@
 import 'microscopy_image.dart';
 
-enum SessionStatus {
-  inProgress,
-  completed,
-  reviewed,
-}
+enum SessionStatus { inProgress, completed, reviewed }
 
 extension SessionStatusExtension on SessionStatus {
   String get displayName {

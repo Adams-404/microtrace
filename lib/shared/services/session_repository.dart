@@ -1,14 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/analysis_run.dart';
 import '../models/annotation.dart';
 import '../models/microscopy_image.dart';
 import '../models/quality_metrics.dart';
 import '../models/session.dart';
 
-final sessionRepositoryProvider = NotifierProvider<SessionRepositoryNotifier, List<MicroscopySession>>(
-  SessionRepositoryNotifier.new,
-);
+final sessionRepositoryProvider =
+    NotifierProvider<SessionRepositoryNotifier, List<MicroscopySession>>(
+      SessionRepositoryNotifier.new,
+    );
 
 class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
   final _uuid = const Uuid();
@@ -60,10 +62,7 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
   void addImageToSession(String sessionId, MicroscopyImage image) {
     state = [
       for (final s in state)
-        if (s.id == sessionId)
-          s.copyWith(images: [...s.images, image])
-        else
-          s,
+        if (s.id == sessionId) s.copyWith(images: [...s.images, image]) else s,
     ];
   }
 
@@ -186,7 +185,8 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             className: 'Aspergillus niger',
             scientificName: 'Aspergillus niger',
             confidence: 0.934,
-            morphologicalFeatures: 'High match to DeFungi H1 reference patches.',
+            morphologicalFeatures:
+                'High match to DeFungi H1 reference patches.',
           ),
           PredictionResult(
             classId: 'H4_aspergillus_fumigatus',
@@ -200,7 +200,8 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             className: 'Penicillium chrysogenum',
             scientificName: 'Penicillium chrysogenum',
             confidence: 0.018,
-            morphologicalFeatures: 'Penicillus branching absent in primary ROI.',
+            morphologicalFeatures:
+                'Penicillus branching absent in primary ROI.',
           ),
         ],
         annotations: const [
@@ -208,14 +209,24 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             id: 'ann_01',
             classId: 'conidial_head',
             label: 'Conidial Vesicle',
-            boxNormalized: RectNormalized(x: 0.44, y: 0.38, width: 0.22, height: 0.22),
+            boxNormalized: RectNormalized(
+              x: 0.44,
+              y: 0.38,
+              width: 0.22,
+              height: 0.22,
+            ),
             confidence: 0.94,
           ),
           Annotation(
             id: 'ann_02',
             classId: 'phialide_cluster',
             label: 'Phialides & Conidia',
-            boxNormalized: RectNormalized(x: 0.38, y: 0.30, width: 0.34, height: 0.36),
+            boxNormalized: RectNormalized(
+              x: 0.38,
+              y: 0.30,
+              width: 0.34,
+              height: 0.36,
+            ),
             confidence: 0.91,
           ),
         ],
@@ -256,7 +267,8 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
           className: 'Penicillium chrysogenum',
           scientificName: 'Penicillium chrysogenum Thom (1910)',
           confidence: 0.887,
-          morphologicalFeatures: 'Brush-like conidiophore with metulae and phialides in whorls.',
+          morphologicalFeatures:
+              'Brush-like conidiophore with metulae and phialides in whorls.',
         ),
         allPredictions: const [
           PredictionResult(
@@ -264,7 +276,8 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             className: 'Penicillium chrysogenum',
             scientificName: 'Penicillium chrysogenum',
             confidence: 0.887,
-            morphologicalFeatures: 'Branched conidiophore structure consistent.',
+            morphologicalFeatures:
+                'Branched conidiophore structure consistent.',
           ),
           PredictionResult(
             classId: 'H1_aspergillus_niger',
@@ -279,7 +292,12 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             id: 'ann_03',
             classId: 'penicillus',
             label: 'Penicillus Branch',
-            boxNormalized: RectNormalized(x: 0.38, y: 0.32, width: 0.24, height: 0.32),
+            boxNormalized: RectNormalized(
+              x: 0.38,
+              y: 0.32,
+              width: 0.24,
+              height: 0.32,
+            ),
             confidence: 0.89,
           ),
         ],
@@ -328,14 +346,17 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
         modelVersion: '0.1.0-alpha',
         taskType: 'image_classification',
         startedAt: now.subtract(const Duration(days: 1, hours: 1, minutes: 58)),
-        completedAt: now.subtract(const Duration(days: 1, hours: 1, minutes: 57)),
+        completedAt: now.subtract(
+          const Duration(days: 1, hours: 1, minutes: 57),
+        ),
         processingMs: 340,
         topPrediction: const PredictionResult(
           classId: 'H2_candida_albicans',
           className: 'Candida albicans',
           scientificName: 'Candida albicans (C.P. Robin) Berkhout',
           confidence: 0.948,
-          morphologicalFeatures: 'Oval budding blastoconidia with pseudohyphae chains.',
+          morphologicalFeatures:
+              'Oval budding blastoconidia with pseudohyphae chains.',
         ),
         allPredictions: const [
           PredictionResult(
@@ -358,7 +379,12 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             id: 'ann_04',
             classId: 'blastoconidia_cluster',
             label: 'Blastoconidia Cluster',
-            boxNormalized: RectNormalized(x: 0.40, y: 0.36, width: 0.28, height: 0.28),
+            boxNormalized: RectNormalized(
+              x: 0.40,
+              y: 0.36,
+              width: 0.28,
+              height: 0.28,
+            ),
             confidence: 0.95,
           ),
         ],
@@ -437,7 +463,12 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
             id: 'ann_05',
             classId: 'macroconidia',
             label: 'Cylindrical Macroconidium',
-            boxNormalized: RectNormalized(x: 0.35, y: 0.28, width: 0.30, height: 0.24),
+            boxNormalized: RectNormalized(
+              x: 0.35,
+              y: 0.28,
+              width: 0.30,
+              height: 0.24,
+            ),
             confidence: 0.81,
           ),
         ],

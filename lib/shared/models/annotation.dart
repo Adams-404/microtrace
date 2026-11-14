@@ -12,18 +12,18 @@ class RectNormalized {
   });
 
   Map<String, dynamic> toJson() => {
-        'x': x,
-        'y': y,
-        'width': width,
-        'height': height,
-      };
+    'x': x,
+    'y': y,
+    'width': width,
+    'height': height,
+  };
 
   factory RectNormalized.fromJson(Map<String, dynamic> json) => RectNormalized(
-        x: (json['x'] as num).toDouble(),
-        y: (json['y'] as num).toDouble(),
-        width: (json['width'] as num).toDouble(),
-        height: (json['height'] as num).toDouble(),
-      );
+    x: (json['x'] as num).toDouble(),
+    y: (json['y'] as num).toDouble(),
+    width: (json['width'] as num).toDouble(),
+    height: (json['height'] as num).toDouble(),
+  );
 }
 
 class Annotation {

@@ -1,5 +1,7 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 
@@ -40,7 +42,10 @@ class MicroscopeReticleOverlay extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.65),
                     borderRadius: BorderRadius.circular(4),
@@ -78,7 +83,10 @@ class MicroscopeReticleOverlay extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.65),
                     borderRadius: BorderRadius.circular(4),
@@ -94,13 +102,17 @@ class MicroscopeReticleOverlay extends StatelessWidget {
                       Icon(
                         Icons.center_focus_strong,
                         size: 11,
-                        color: sharpnessScore > 70 ? AppColors.passGreen : AppColors.warningAmber,
+                        color: sharpnessScore > 70
+                            ? AppColors.passGreen
+                            : AppColors.warningAmber,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'FOCUS: ${sharpnessScore.toStringAsFixed(1)} (PASS)',
                         style: AppTypography.technicalMono(
-                          sharpnessScore > 70 ? AppColors.passGreen : AppColors.warningAmber,
+                          sharpnessScore > 70
+                              ? AppColors.passGreen
+                              : AppColors.warningAmber,
                           fontSize: 10,
                           weight: FontWeight.w700,
                         ),
@@ -135,7 +147,10 @@ class MicroscopeReticleOverlay extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '25 µm (CALIBRATED)',
-                    style: AppTypography.technicalMono(Colors.white70, fontSize: 9),
+                    style: AppTypography.technicalMono(
+                      Colors.white70,
+                      fontSize: 9,
+                    ),
                   ),
                 ],
               ),
@@ -222,11 +237,27 @@ class _ReticlePainter extends CustomPainter {
       for (double d = 30; d < radius; d += 20) {
         final tickLen = (d % 60 == 0) ? 6.0 : 3.0;
         // Horizontal ticks
-        canvas.drawLine(Offset(center.dx + d, center.dy - tickLen), Offset(center.dx + d, center.dy + tickLen), tickPaint);
-        canvas.drawLine(Offset(center.dx - d, center.dy - tickLen), Offset(center.dx - d, center.dy + tickLen), tickPaint);
+        canvas.drawLine(
+          Offset(center.dx + d, center.dy - tickLen),
+          Offset(center.dx + d, center.dy + tickLen),
+          tickPaint,
+        );
+        canvas.drawLine(
+          Offset(center.dx - d, center.dy - tickLen),
+          Offset(center.dx - d, center.dy + tickLen),
+          tickPaint,
+        );
         // Vertical ticks
-        canvas.drawLine(Offset(center.dx - tickLen, center.dy + d), Offset(center.dx + tickLen, center.dy + d), tickPaint);
-        canvas.drawLine(Offset(center.dx - tickLen, center.dy - d), Offset(center.dx + tickLen, center.dy - d), tickPaint);
+        canvas.drawLine(
+          Offset(center.dx - tickLen, center.dy + d),
+          Offset(center.dx + tickLen, center.dy + d),
+          tickPaint,
+        );
+        canvas.drawLine(
+          Offset(center.dx - tickLen, center.dy - d),
+          Offset(center.dx + tickLen, center.dy - d),
+          tickPaint,
+        );
       }
 
       // Radial angle tick marks
@@ -234,8 +265,14 @@ class _ReticlePainter extends CustomPainter {
         final rad = deg * math.pi / 180;
         final r1 = radius - 6;
         final r2 = radius;
-        final p1 = Offset(center.dx + r1 * math.cos(rad), center.dy + r1 * math.sin(rad));
-        final p2 = Offset(center.dx + r2 * math.cos(rad), center.dy + r2 * math.sin(rad));
+        final p1 = Offset(
+          center.dx + r1 * math.cos(rad),
+          center.dy + r1 * math.sin(rad),
+        );
+        final p2 = Offset(
+          center.dx + r2 * math.cos(rad),
+          center.dy + r2 * math.sin(rad),
+        );
         canvas.drawLine(p1, p2, tickPaint);
       }
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 
@@ -59,9 +60,13 @@ class StatusBadge extends StatelessWidget {
         break;
       case BadgeType.neutral:
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        bg = isDark ? AppColors.darkSurfaceSubtle : AppColors.lightSurfaceSubtle;
+        bg = isDark
+            ? AppColors.darkSurfaceSubtle
+            : AppColors.lightSurfaceSubtle;
         border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-        fg = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+        fg = isDark
+            ? AppColors.darkTextSecondary
+            : AppColors.lightTextSecondary;
         break;
     }
 

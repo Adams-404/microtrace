@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import 'status_badge.dart';
@@ -26,8 +27,12 @@ class ScientificAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return AppBar(
       leading: leading,
@@ -38,10 +43,7 @@ class ScientificAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Row(
             children: [
-              Text(
-                title,
-                style: AppTypography.title(textPrimary),
-              ),
+              Text(title, style: AppTypography.title(textPrimary)),
               if (showOfflineBadge) ...[
                 const SizedBox(width: 8),
                 const StatusBadge(
@@ -55,10 +57,7 @@ class ScientificAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 2),
-            Text(
-              subtitle!,
-              style: AppTypography.caption(textSecondary),
-            ),
+            Text(subtitle!, style: AppTypography.caption(textSecondary)),
           ],
         ],
       ),

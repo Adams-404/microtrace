@@ -13,7 +13,8 @@ class AppConstants {
       'by qualified laboratory personnel.';
 
   // Storage and offline limits
-  static const String defaultStoragePath = '/data/user/0/com.microtrace/app_data';
+  static const String defaultStoragePath =
+      '/data/user/0/com.microtrace/app_data';
   static const int maxFieldsPerSession = 50;
 
   // Initial Supported Module IDs

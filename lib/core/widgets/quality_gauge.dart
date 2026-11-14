@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 
@@ -22,7 +23,9 @@ class QualityGauge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     final progressColor = isPass ? AppColors.passGreen : AppColors.warningAmber;
 
@@ -33,10 +36,7 @@ class QualityGauge extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              label,
-              style: AppTypography.caption(textSecondary),
-            ),
+            Text(label, style: AppTypography.caption(textSecondary)),
             Row(
               children: [
                 Container(
