@@ -48,7 +48,12 @@ class DashboardScreen extends ConsumerWidget {
         child: Stack(
           children: [
             ListView(
-              padding: const EdgeInsets.fromLTRB(20, 58, 20, 132),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                58,
+                20,
+                110 + MediaQuery.viewPaddingOf(context).bottom,
+              ),
               children: [
                 _HeroPanel(
                   onStart: () {

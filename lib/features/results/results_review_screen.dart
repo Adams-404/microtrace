@@ -178,7 +178,12 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           // Microscopic Field Viewport with Bounding Box Overlays
           ClipRRect(
@@ -469,12 +474,17 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
               children: [
                 const Icon(Icons.save_outlined, size: 20),
                 const SizedBox(width: 8),
-                Text(
-                  'RECORD VERIFICATION DECISION',
-                  style: AppTypography.technicalMono(
-                    Colors.white,
-                    fontSize: 13,
-                    weight: FontWeight.w700,
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'RECORD VERIFICATION DECISION',
+                      style: AppTypography.technicalMono(
+                        Colors.white,
+                        fontSize: 13,
+                        weight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -512,12 +522,17 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
           children: [
             Icon(icon, size: 16, color: color),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: AppTypography.technicalMono(
-                color,
-                fontSize: 11,
-                weight: isSelected ? FontWeight.w700 : FontWeight.w500,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  style: AppTypography.technicalMono(
+                    color,
+                    fontSize: 11,
+                    weight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
               ),
             ),
           ],

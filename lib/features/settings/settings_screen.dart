@@ -120,9 +120,9 @@ class SettingsSheet extends StatelessWidget {
 }
 
 class _SettingsBody extends ConsumerWidget {
-  final EdgeInsets padding;
+  final EdgeInsets? padding;
 
-  const _SettingsBody({this.padding = const EdgeInsets.all(16)});
+  const _SettingsBody({this.padding});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,8 +138,16 @@ class _SettingsBody extends ConsumerWidget {
         ? AppColors.darkTextSecondary
         : AppColors.lightTextSecondary;
 
+    final effectivePadding = padding ??
+        EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32 + MediaQuery.paddingOf(context).bottom,
+        );
+
     return ListView(
-      padding: padding,
+      padding: effectivePadding,
       children: [
         // Appearance & Theme Section
         Text('APPEARANCE', style: AppTypography.label(textSecondary)),

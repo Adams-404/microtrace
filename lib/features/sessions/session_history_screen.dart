@@ -158,7 +158,12 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
             child: filteredSessions.isEmpty
                 ? Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: EdgeInsets.fromLTRB(
+                        24,
+                        24,
+                        24,
+                        110 + MediaQuery.viewPaddingOf(context).bottom,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -182,7 +187,12 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 132),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      10,
+                      16,
+                      110 + MediaQuery.viewPaddingOf(context).bottom,
+                    ),
                     itemCount: filteredSessions.length,
                     itemBuilder: (context, index) {
                       final session = filteredSessions[index];

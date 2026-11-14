@@ -95,19 +95,13 @@ class LocalAiService {
 
       if (response.statusCode == 200) {
         final models = _parseModels(body);
-        if (models.isEmpty) {
-          return const AiStatus(
-            health: AiHealth.offline,
-            message: 'Server reachable, but no model is loaded.',
-            hint: 'Start the model with `clearport start` in Termux.',
-          );
-        }
+        final defaultModel = settings.model.trim().isNotEmpty
+            ? settings.model.trim()
+            : (models.isNotEmpty ? models.first : 'local-model');
         return AiStatus(
           health: AiHealth.online,
-          models: models,
-          model: settings.model.trim().isNotEmpty
-              ? settings.model.trim()
-              : models.first,
+          models: models.isNotEmpty ? models : [defaultModel],
+          model: defaultModel,
         );
       }
       if (response.statusCode == 401 || response.statusCode == 403) {
@@ -129,18 +123,25 @@ class LocalAiService {
         message: 'No response within ${timeout.inSeconds}s.',
         hint: 'Run `clearport start` in Termux, then check the port.',
       );
-    } on http.ClientException {
+    } on http.ClientException catch (e) {
       return AiStatus(
         health: AiHealth.offline,
         message: 'Could not reach the local model.',
         hint:
-            'Start Clearport in Termux, then verify ${modelsUri.host}:${modelsUri.port}.',
+            'Start Clearport in Termux, then verify ${modelsUri.host}:${modelsUri.port}. (${e.message})',
       );
     } on FormatException {
       return const AiStatus(
         health: AiHealth.offline,
         message: 'The server returned an unexpected response.',
         hint: 'Check that the URL points at an OpenAI-compatible API.',
+      );
+    } catch (e) {
+      return AiStatus(
+        health: AiHealth.offline,
+        message: 'Could not connect to the local server.',
+        hint:
+            'Start Clearport in Termux, then verify ${modelsUri.host}:${modelsUri.port} ($e).',
       );
     } finally {
       client.close();
@@ -229,6 +230,8 @@ class LocalAiService {
         {'data': final List data} => data,
         {'models': final List models} => models,
         final List list => list,
+        {'id': final String id} => [{'id': id}],
+        {'model': final String model} => [{'id': model}],
         _ => const [],
       };
       final names = <String>[];

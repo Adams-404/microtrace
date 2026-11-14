@@ -37,7 +37,12 @@ class ModelLibraryScreen extends ConsumerWidget {
         subtitle: 'LITERT NEURAL RUNTIME MANAGEMENT',
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 132),
+        padding: EdgeInsets.fromLTRB(
+          20,
+          10,
+          20,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           // Storage Overview Row
           Row(

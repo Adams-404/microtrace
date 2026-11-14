@@ -34,6 +34,23 @@ class AssistantSettings {
     while (value.endsWith('/')) {
       value = value.substring(0, value.length - 1);
     }
+
+    final uri = Uri.tryParse(value);
+    if (uri != null) {
+      // Normalize 'localhost' to IPv4 '127.0.0.1' so on-device Android networking
+      // connects to the IPv4 loopback where Termux llama-server binds.
+      var host = uri.host;
+      if (host.toLowerCase() == 'localhost') {
+        host = '127.0.0.1';
+      }
+      var path = uri.path;
+      if (path.isEmpty || path == '/') {
+        path = '/v1';
+      }
+      final portPart = uri.hasPort ? ':${uri.port}' : '';
+      return '${uri.scheme}://$host$portPart$path';
+    }
+
     return value;
   }
 

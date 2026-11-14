@@ -77,300 +77,294 @@ class ReportPreviewScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          18,
+          16,
+          18,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
-          // Printable Document Container
-          Container(
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF131B26) : Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Report Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Report Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppConstants.appName,
-                          style: AppTypography.headline(textPrimary)
-                              .copyWith(letterSpacing: 2.0),
-                        ),
-                        Text(
-                          'MICROBIOLOGY OBSERVATION REPORT',
-                          style: AppTypography.technicalMono(
-                            AppColors.signal,
-                            fontSize: 10,
-                            weight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      AppConstants.appName,
+                      style: AppTypography.headline(textPrimary)
+                          .copyWith(letterSpacing: 2.0),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'REPORT ID: REP-${session.specimenCode}',
-                          style: AppTypography.technicalMono(
-                            textSecondary,
-                            fontSize: 10,
-                          ),
-                        ),
-                        Text(
-                          Formatters.formatDateTime(DateTime.now()),
-                          style: AppTypography.caption(textSecondary),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                const Divider(),
-                const SizedBox(height: 14),
-
-                // Specimen Metadata Table
-                Text(
-                  'SPECIMEN & OPTICAL TELEMETRY',
-                  style: AppTypography.label(textSecondary),
-                ),
-                const SizedBox(height: 8),
-                Table(
-                  columnWidths: const {
-                    0: FlexColumnWidth(1.2),
-                    1: FlexColumnWidth(2.0),
-                  },
-                  children: [
-                    _buildTableRow(
-                      'Specimen Code:',
-                      session.specimenCode,
-                      textPrimary,
-                      textSecondary,
-                    ),
-                    _buildTableRow(
-                      'Session Title:',
-                      session.title,
-                      textPrimary,
-                      textSecondary,
-                    ),
-                    _buildTableRow(
-                      'Specimen Preparation:',
-                      session.specimenType,
-                      textPrimary,
-                      textSecondary,
-                    ),
-                    _buildTableRow(
-                      'Microscope Profile:',
-                      session.captureProfile,
-                      textPrimary,
-                      textSecondary,
-                    ),
-                    _buildTableRow(
-                      'Operator Label:',
-                      session.operatorLabel,
-                      textPrimary,
-                      textSecondary,
-                    ),
-                    _buildTableRow(
-                      'Total Fields Evaluated:',
-                      '${session.images.length}',
-                      textPrimary,
-                      textSecondary,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-                const Divider(),
-                const SizedBox(height: 16),
-
-                // Field Findings Summary
-                Text(
-                  'ACQUIRED MICROSCOPIC FIELDS & FINDINGS',
-                  style: AppTypography.label(textSecondary),
-                ),
-                const SizedBox(height: 12),
-
-                for (final img in session.images) ...[
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.darkSurfaceSubtle
-                          : AppColors.lightSurfaceSubtle,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isDark
-                            ? AppColors.darkBorder
-                            : AppColors.lightBorder,
+                    Text(
+                      'MICROBIOLOGY OBSERVATION REPORT',
+                      style: AppTypography.technicalMono(
+                        AppColors.signal,
+                        fontSize: 10,
+                        weight: FontWeight.w700,
                       ),
                     ),
-                    child: Row(
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'REPORT ID: REP-${session.specimenCode}',
+                    style: AppTypography.technicalMono(
+                      textSecondary,
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    Formatters.formatDateTime(DateTime.now()),
+                    style: AppTypography.caption(textSecondary),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Divider(),
+          const SizedBox(height: 14),
+
+          // Specimen Metadata Table
+          Text(
+            'SPECIMEN & OPTICAL TELEMETRY',
+            style: AppTypography.label(textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Table(
+            columnWidths: const {
+              0: FlexColumnWidth(1.2),
+              1: FlexColumnWidth(2.0),
+            },
+            children: [
+              _buildTableRow(
+                'Specimen Code:',
+                session.specimenCode,
+                textPrimary,
+                textSecondary,
+              ),
+              _buildTableRow(
+                'Session Title:',
+                session.title,
+                textPrimary,
+                textSecondary,
+              ),
+              _buildTableRow(
+                'Specimen Preparation:',
+                session.specimenType,
+                textPrimary,
+                textSecondary,
+              ),
+              _buildTableRow(
+                'Microscope Profile:',
+                session.captureProfile,
+                textPrimary,
+                textSecondary,
+              ),
+              _buildTableRow(
+                'Operator Label:',
+                session.operatorLabel,
+                textPrimary,
+                textSecondary,
+              ),
+              _buildTableRow(
+                'Total Fields Evaluated:',
+                '${session.images.length}',
+                textPrimary,
+                textSecondary,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          const Divider(),
+          const SizedBox(height: 16),
+
+          // Field Findings Summary
+          Text(
+            'ACQUIRED MICROSCOPIC FIELDS & FINDINGS',
+            style: AppTypography.label(textSecondary),
+          ),
+          const SizedBox(height: 12),
+
+          for (final img in session.images) ...[
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.darkSurfaceSubtle
+                    : AppColors.lightSurfaceSubtle,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.asset(
+                      img.assetPath,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: Image.asset(
-                            img.assetPath,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Field #${img.fieldIndex}',
-                                    style: AppTypography.technicalMono(
-                                      AppColors.signal,
-                                      fontSize: 12,
-                                      weight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  if (img.analysisRun != null)
-                                    StatusBadge(
-                                      label: img
-                                          .analysisRun!
-                                          .reviewStatus
-                                          .displayName,
-                                      type:
-                                          img.analysisRun!.reviewStatus ==
-                                              ReviewStatus.confirmed
-                                          ? BadgeType.pass
-                                          : (img.analysisRun!.reviewStatus ==
-                                                    ReviewStatus.corrected
-                                                ? BadgeType.humanObservation
-                                                : BadgeType.warning),
-                                      isCompact: true,
-                                    ),
-                                ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Field #${img.fieldIndex}',
+                              style: AppTypography.technicalMono(
+                                AppColors.signal,
+                                fontSize: 12,
+                                weight: FontWeight.w700,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                img.analysisRun != null
-                                    ? (img.analysisRun!.correctedClass ??
-                                          img
-                                              .analysisRun!
-                                              .topPrediction
-                                              .className)
-                                    : 'Awaiting Automated Inference',
-                                style: AppTypography.title(textPrimary)
-                                    .copyWith(fontSize: 14),
-                              ),
-                              if (img.analysisRun != null) ...[
-                                Text(
-                                  'Model Confidence: ${Formatters.formatPercentage(img.analysisRun!.topPrediction.confidence)}',
-                                  style: AppTypography.caption(textSecondary),
+                            ),
+                            const SizedBox(width: 8),
+                            if (img.analysisRun != null)
+                              Flexible(
+                                child: StatusBadge(
+                                  label: img
+                                      .analysisRun!
+                                      .reviewStatus
+                                      .displayName,
+                                  type: img.analysisRun!.reviewStatus ==
+                                          ReviewStatus.confirmed
+                                      ? BadgeType.pass
+                                      : (img.analysisRun!.reviewStatus ==
+                                              ReviewStatus.corrected
+                                          ? BadgeType.humanObservation
+                                          : BadgeType.warning),
+                                  isCompact: true,
                                 ),
-                                if (img.analysisRun!.reviewerNotes.isNotEmpty)
-                                  Text(
-                                    'Reviewer Sign-off: "${img.analysisRun!.reviewerNotes}"',
-                                    style: AppTypography.caption(
-                                      AppColors.signal,
-                                    ).copyWith(fontStyle: FontStyle.italic),
-                                  ),
-                              ],
-                            ],
-                          ),
+                              ),
+                          ],
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          img.analysisRun != null
+                              ? (img.analysisRun!.correctedClass ??
+                                  img.analysisRun!.topPrediction.className)
+                              : 'Awaiting Automated Inference',
+                          style: AppTypography.title(textPrimary)
+                              .copyWith(fontSize: 14),
+                        ),
+                        if (img.analysisRun != null) ...[
+                          Text(
+                            'Model Confidence: ${Formatters.formatPercentage(img.analysisRun!.topPrediction.confidence)}',
+                            style: AppTypography.caption(textSecondary),
+                          ),
+                          if (img.analysisRun!.reviewerNotes.isNotEmpty)
+                            Text(
+                              'Reviewer Sign-off: "${img.analysisRun!.reviewerNotes}"',
+                              style: AppTypography.caption(
+                                AppColors.signal,
+                              ).copyWith(fontStyle: FontStyle.italic),
+                            ),
+                        ],
                       ],
                     ),
                   ),
                 ],
-
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 14),
-
-                // AI Model Provenance Block
-                Text(
-                  'MODEL PROVENANCE & REPRODUCIBILITY',
-                  style: AppTypography.label(textSecondary),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Runtime: Google LiteRT Float16 on Android • Model ID: mycology_patch_classifier v0.1.0-alpha\n'
-                  'Dataset Reference: DeFungi (UCI ML #773) • Preprocessing: 224×224 normalized RGB\n'
-                  'Checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-                  style: AppTypography.caption(textSecondary)
-                      .copyWith(fontSize: 10, height: 1.5),
-                ),
-
-                const SizedBox(height: 20),
-                const Divider(),
-                const SizedBox(height: 14),
-
-                // Sign-off verification block
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'VERIFYING MICROSCOPIST:',
-                          style: AppTypography.label(textSecondary),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          session.operatorLabel,
-                          style: AppTypography.body(textPrimary)
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'VERIFICATION STATUS:',
-                          style: AppTypography.label(textSecondary),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          session.status == SessionStatus.reviewed
-                              ? 'VERIFIED & APPROVED'
-                              : 'DRAFT REPORT',
-                          style: AppTypography.technicalMono(
-                            session.status == SessionStatus.reviewed
-                                ? AppColors.passGreen
-                                : AppColors.warningAmber,
-                            fontSize: 11,
-                            weight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
+          ],
+
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 14),
+
+          // AI Model Provenance Block
+          Text(
+            'MODEL PROVENANCE & REPRODUCIBILITY',
+            style: AppTypography.label(textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Runtime: Google LiteRT Float16 on Android • Model ID: mycology_patch_classifier v0.1.0-alpha\n'
+            'Dataset Reference: DeFungi (UCI ML #773) • Preprocessing: 224×224 normalized RGB\n'
+            'Checksum: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+            style: AppTypography.caption(textSecondary)
+                .copyWith(fontSize: 10, height: 1.5),
           ),
 
           const SizedBox(height: 20),
+          const Divider(),
+          const SizedBox(height: 14),
+
+          // Sign-off verification block
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'VERIFYING MICROSCOPIST:',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.label(textSecondary),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      session.operatorLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.body(textPrimary)
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'VERIFICATION STATUS:',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.label(textSecondary),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      session.status == SessionStatus.reviewed
+                          ? 'VERIFIED & APPROVED'
+                          : 'DRAFT REPORT',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.technicalMono(
+                        session.status == SessionStatus.reviewed
+                            ? AppColors.passGreen
+                            : AppColors.warningAmber,
+                        fontSize: 11,
+                        weight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24),
 
           // Export Buttons
           Row(
@@ -379,7 +373,10 @@ class ReportPreviewScreen extends ConsumerWidget {
                 child: FilledButton.icon(
                   onPressed: () => _simulatePdfExport(context),
                   icon: const Icon(Icons.picture_as_pdf, size: 18),
-                  label: const Text('EXPORT PDF REPORT'),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('EXPORT PDF REPORT'),
+                  ),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.signalDeep,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -395,12 +392,9 @@ class ReportPreviewScreen extends ConsumerWidget {
                     size: 18,
                     color: AppColors.signal,
                   ),
-                  label: Text(
-                    'JSON EXPORT',
-                    style: AppTypography.technicalMono(
-                      AppColors.signal,
-                      fontSize: 11,
-                    ),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('JSON EXPORT'),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),

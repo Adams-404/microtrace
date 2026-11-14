@@ -88,4 +88,23 @@ void main() {
     expect(status.isOnline, isFalse);
     expect(status.message, isNotNull);
   });
+
+  test('normalizes localhost to 127.0.0.1 and appends /v1 when missing', () {
+    expect(
+      AssistantSettings.normalizeBaseUrl('localhost:8080'),
+      'http://127.0.0.1:8080/v1',
+    );
+    expect(
+      AssistantSettings.normalizeBaseUrl('http://127.0.0.1:8080'),
+      'http://127.0.0.1:8080/v1',
+    );
+    expect(
+      AssistantSettings.normalizeBaseUrl('http://localhost:8080/v1'),
+      'http://127.0.0.1:8080/v1',
+    );
+    expect(
+      AssistantSettings.normalizeBaseUrl('http://127.0.0.1:8080/v1/chat/completions'),
+      'http://127.0.0.1:8080/v1',
+    );
+  });
 }

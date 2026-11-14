@@ -118,7 +118,12 @@ class _AnalysisWorkspaceScreenState
         subtitle: '${session.specimenCode} • Field #${image.fieldIndex}',
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           // Target Field Thumbnail & Specimen Summary
           ScientificCard(
@@ -427,12 +432,17 @@ class _AnalysisWorkspaceScreenState
                       children: [
                         const Icon(Icons.verified_outlined, size: 18),
                         const SizedBox(width: 8),
-                        Text(
-                          'OPEN SCIENTIFIC REVIEW & SIGN-OFF',
-                          style: AppTypography.technicalMono(
-                            Colors.white,
-                            fontSize: 12,
-                            weight: FontWeight.w700,
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'OPEN SCIENTIFIC REVIEW & SIGN-OFF',
+                              style: AppTypography.technicalMono(
+                                Colors.white,
+                                fontSize: 12,
+                                weight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -458,12 +468,17 @@ class _AnalysisWorkspaceScreenState
                 children: [
                   const Icon(Icons.play_arrow, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'EXECUTE ON-DEVICE MODEL INFERENCE',
-                    style: AppTypography.technicalMono(
-                      Colors.white,
-                      fontSize: 13,
-                      weight: FontWeight.w700,
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'EXECUTE ON-DEVICE MODEL INFERENCE',
+                        style: AppTypography.technicalMono(
+                          Colors.white,
+                          fontSize: 13,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],

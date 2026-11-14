@@ -129,7 +129,12 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            32 + MediaQuery.paddingOf(context).bottom,
+          ),
           children: [
             // Informative Banner
             ScientificCard(
@@ -190,6 +195,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
             // Specimen Type Dropdown
             DropdownButtonFormField<String>(
               value: _selectedSpecimenType,
+              isExpanded: true,
               decoration: const InputDecoration(
                 labelText: 'Preparation & Specimen Type',
                 prefixIcon: Icon(Icons.science_outlined, size: 20),
@@ -200,7 +206,12 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
               items: _specimenTypes.map((type) {
                 return DropdownMenuItem(
                   value: type,
-                  child: Text(type, style: AppTypography.body(textPrimary)),
+                  child: Text(
+                    type,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.body(textPrimary),
+                  ),
                 );
               }).toList(),
               onChanged: (val) {
@@ -218,8 +229,12 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
             const SizedBox(height: 10),
             for (final module in modelState.modules) ...[
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: ScientificCard(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   borderColor: _selectedModuleId == module.id
                       ? AppColors.signal
                       : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
@@ -232,29 +247,41 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                         }
                       : null,
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Radio<String>(
-                        value: module.id,
-                        groupValue: _selectedModuleId,
-                        activeColor: AppColors.signal,
-                        onChanged: module.isAvailable
-                            ? (val) {
-                                if (val != null)
-                                  setState(() => _selectedModuleId = val);
-                              }
-                            : null,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Radio<String>(
+                          value: module.id,
+                          groupValue: _selectedModuleId,
+                          activeColor: AppColors.signal,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                          onChanged: module.isAvailable
+                              ? (val) {
+                                  if (val != null) {
+                                    setState(() => _selectedModuleId = val);
+                                  }
+                                }
+                              : null,
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Text(
-                                  module.name,
-                                  style: AppTypography.title(textPrimary)
-                                      .copyWith(fontSize: 14),
+                                Expanded(
+                                  child: Text(
+                                    module.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTypography.title(textPrimary)
+                                        .copyWith(fontSize: 13.5),
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 StatusBadge(
@@ -268,10 +295,11 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: 4),
                             Text(
                               module.shortDescription,
-                              style: AppTypography.caption(textSecondary),
+                              style: AppTypography.caption(textSecondary)
+                                  .copyWith(fontSize: 11.5, height: 1.35),
                             ),
                           ],
                         ),
@@ -292,6 +320,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
               value: _selectedOpticalProfile,
+              isExpanded: true,
               decoration: const InputDecoration(
                 labelText: 'Microscope Objective & Illumination',
                 prefixIcon: Icon(Icons.lens_blur, size: 20),
@@ -304,6 +333,8 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                   value: prof,
                   child: Text(
                     prof,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.body(textPrimary)
                         .copyWith(fontSize: 13),
                   ),
@@ -350,12 +381,17 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                 children: [
                   const Icon(Icons.camera_alt_outlined, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'PROCEED TO CAPTURE WORKSPACE',
-                    style: AppTypography.technicalMono(
-                      Colors.white,
-                      fontSize: 13,
-                      weight: FontWeight.w700,
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'PROCEED TO CAPTURE WORKSPACE',
+                        style: AppTypography.technicalMono(
+                          Colors.white,
+                          fontSize: 13,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],

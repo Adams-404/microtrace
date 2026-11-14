@@ -36,8 +36,17 @@ class QualityGauge extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: AppTypography.caption(textSecondary)),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.caption(textSecondary),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: 6,

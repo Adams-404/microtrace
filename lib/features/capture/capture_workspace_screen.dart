@@ -319,26 +319,43 @@ class _CaptureWorkspaceScreenState
 
           // Bottom Shutter Controls & Captured Fields Filmstrip
           Positioned(
-            bottom: 96,
+            bottom: (widget.sessionId == null ? 88.0 : 0.0) +
+                MediaQuery.viewPaddingOf(context).bottom,
             left: 0,
             right: 0,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Filmstrip of captured fields (positioned above shutter)
+                FilmstripView(
+                  images: activeSession.images,
+                  onImageSelected: (image) {
+                    context.push(
+                      '/session/${activeSession.id}/image/${image.id}',
+                    );
+                  },
+                  onAddField: () => _triggerCapture(activeSession),
+                ),
+
                 // Shutter Action Bar
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    12,
+                    16,
+                    widget.sessionId == null ? 12 : 16,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.88),
+                    color: Colors.black.withValues(alpha: 0.92),
+                    border: const Border(
+                      top: BorderSide(color: Color(0xFF1E293B), width: 1),
+                    ),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Active slide label
-                      Flexible(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
@@ -361,28 +378,31 @@ class _CaptureWorkspaceScreenState
                       ),
 
                       // Large Scientific Shutter Button
-                      GestureDetector(
-                        onTap: () => _triggerCapture(activeSession),
-                        child: Container(
-                          width: 68,
-                          height: 68,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3),
-                            color: Colors.transparent,
-                          ),
-                          child: Center(
-                            child: Container(
-                              width: 54,
-                              height: 54,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.signal,
-                              ),
-                              child: const Icon(
-                                Icons.camera,
-                                color: Colors.black,
-                                size: 28,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: GestureDetector(
+                          onTap: () => _triggerCapture(activeSession),
+                          child: Container(
+                            width: 68,
+                            height: 68,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              color: Colors.transparent,
+                            ),
+                            child: Center(
+                              child: Container(
+                                width: 54,
+                                height: 54,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.signal,
+                                ),
+                                child: const Icon(
+                                  Icons.camera,
+                                  color: Colors.black,
+                                  size: 28,
+                                ),
                               ),
                             ),
                           ),
@@ -390,49 +410,46 @@ class _CaptureWorkspaceScreenState
                       ),
 
                       // Review Fields Button
-                      FilledButton.tonal(
-                        onPressed: () =>
-                            context.push('/session/${activeSession.id}'),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E293B),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.checklist,
-                              size: 16,
-                              color: AppColors.signal,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'REVIEW (${activeSession.images.length})',
-                              style: AppTypography.technicalMono(
-                                Colors.white,
-                                fontSize: 10,
-                                weight: FontWeight.w700,
+                      Flexible(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: FilledButton.tonal(
+                              onPressed: () =>
+                                  context.push('/session/${activeSession.id}'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFF1E293B),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 10,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.checklist,
+                                    size: 16,
+                                    color: AppColors.signal,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'REVIEW (${activeSession.images.length})',
+                                    style: AppTypography.technicalMono(
+                                      Colors.white,
+                                      fontSize: 10,
+                                      weight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-
-                // Filmstrip of captured fields
-                FilmstripView(
-                  images: activeSession.images,
-                  onImageSelected: (image) {
-                    context.push(
-                      '/session/${activeSession.id}/image/${image.id}',
-                    );
-                  },
-                  onAddField: () => _triggerCapture(activeSession),
                 ),
               ],
             ),

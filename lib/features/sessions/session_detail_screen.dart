@@ -62,7 +62,12 @@ class SessionDetailScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           // Specimen Metadata Card
           ScientificCard(
@@ -139,7 +144,10 @@ class SessionDetailScreen extends ConsumerWidget {
                 child: FilledButton.icon(
                   onPressed: () => context.push('/capture/${session.id}'),
                   icon: const Icon(Icons.add_a_photo_outlined, size: 18),
-                  label: const Text('ACQUIRE FIELDS'),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('ACQUIRE FIELDS'),
+                  ),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.signalDeep,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -156,12 +164,15 @@ class SessionDetailScreen extends ConsumerWidget {
                     size: 18,
                     color: AppColors.signal,
                   ),
-                  label: Text(
-                    'VIEW REPORT',
-                    style: AppTypography.technicalMono(
-                      AppColors.signal,
-                      fontSize: 11,
-                      weight: FontWeight.w700,
+                  label: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'VIEW REPORT',
+                      style: AppTypography.technicalMono(
+                        AppColors.signal,
+                        fontSize: 11,
+                        weight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   style: OutlinedButton.styleFrom(

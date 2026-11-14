@@ -141,7 +141,12 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           // High-Res Image Inspection Area with Interactive Viewer
           ClipRRect(
@@ -214,10 +219,15 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'OPTICAL QUALITY METRICS',
-                      style: AppTypography.label(textSecondary),
+                    Expanded(
+                      child: Text(
+                        'OPTICAL QUALITY METRICS',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.label(textSecondary),
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Text(
                       'HEURISTIC ENGINE V1.2',
                       style: AppTypography.technicalMono(
@@ -276,56 +286,128 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: FilterChip(
-                        selected: _isUsable,
-                        label: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check,
-                              size: 14,
-                              color: _isUsable ? Colors.white : textSecondary,
-                            ),
-                            const SizedBox(width: 4),
-                            const Text('USABLE FOR ANALYSIS'),
-                          ],
-                        ),
-                        selectedColor: AppColors.passGreen.withOpacity(0.2),
-                        checkmarkColor: AppColors.passGreen,
-                        onSelected: (val) {
+                      child: InkWell(
+                        onTap: () {
                           setState(() {
-                            _isUsable = val;
-                            if (val) _recaptureNeeded = false;
+                            _isUsable = true;
+                            _recaptureNeeded = false;
                           });
                         },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _isUsable
+                                ? AppColors.passGreen.withOpacity(0.18)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _isUsable
+                                  ? AppColors.passGreen
+                                  : (isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder),
+                              width: _isUsable ? 1.5 : 1.0,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _isUsable
+                                    ? Icons.check_circle
+                                    : Icons.check_circle_outline,
+                                size: 16,
+                                color: _isUsable
+                                    ? AppColors.passGreen
+                                    : textSecondary,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'USABLE FIELD',
+                                    style: AppTypography.technicalMono(
+                                      _isUsable
+                                          ? AppColors.passGreen
+                                          : textSecondary,
+                                      fontSize: 11,
+                                      weight: _isUsable
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: FilterChip(
-                        selected: _recaptureNeeded,
-                        label: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.replay,
-                              size: 14,
-                              color: _recaptureNeeded
-                                  ? Colors.white
-                                  : textSecondary,
-                            ),
-                            const SizedBox(width: 4),
-                            const Text('FLAG RECAPTURE'),
-                          ],
-                        ),
-                        selectedColor: AppColors.warningAmber.withOpacity(0.2),
-                        checkmarkColor: AppColors.warningAmber,
-                        onSelected: (val) {
+                      child: InkWell(
+                        onTap: () {
                           setState(() {
-                            _recaptureNeeded = val;
-                            if (val) _isUsable = false;
+                            _recaptureNeeded = true;
+                            _isUsable = false;
                           });
                         },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _recaptureNeeded
+                                ? AppColors.warningAmber.withOpacity(0.18)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _recaptureNeeded
+                                  ? AppColors.warningAmber
+                                  : (isDark
+                                      ? AppColors.darkBorder
+                                      : AppColors.lightBorder),
+                              width: _recaptureNeeded ? 1.5 : 1.0,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.replay,
+                                size: 16,
+                                color: _recaptureNeeded
+                                    ? AppColors.warningAmber
+                                    : textSecondary,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    'FLAG RECAPTURE',
+                                    style: AppTypography.technicalMono(
+                                      _recaptureNeeded
+                                          ? AppColors.warningAmber
+                                          : textSecondary,
+                                      fontSize: 11,
+                                      weight: _recaptureNeeded
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -339,25 +421,28 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                     hintText: 'e.g. Clean field, distinct conidial phialides visible.',
                   ),
                 ),
-                const SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: OutlinedButton(
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
                     onPressed: _saveChanges,
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      side: BorderSide(
-                        color: AppColors.signal.withOpacity(0.5),
-                      ),
+                    icon: const Icon(
+                      Icons.check,
+                      size: 16,
+                      color: AppColors.signal,
                     ),
-                    child: Text(
-                      'SAVE METADATA',
+                    label: Text(
+                      'SAVE FIELD OBSERVATIONS',
                       style: AppTypography.technicalMono(
                         AppColors.signal,
                         fontSize: 11,
+                        weight: FontWeight.w700,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 11),
+                      side: BorderSide(
+                        color: AppColors.signal.withOpacity(0.5),
                       ),
                     ),
                   ),
@@ -388,12 +473,17 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                 children: [
                   const Icon(Icons.analytics_outlined, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'VIEW ANALYSIS & VERIFY (${image.analysisRun!.reviewStatus.displayName.toUpperCase()})',
-                    style: AppTypography.technicalMono(
-                      Colors.white,
-                      fontSize: 12,
-                      weight: FontWeight.w700,
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'VIEW ANALYSIS & VERIFY (${image.analysisRun!.reviewStatus.displayName.toUpperCase()})',
+                        style: AppTypography.technicalMono(
+                          Colors.white,
+                          fontSize: 12,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -418,12 +508,17 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                 children: [
                   const Icon(Icons.psychology_outlined, size: 20),
                   const SizedBox(width: 8),
-                  Text(
-                    'PROCEED TO ON-DEVICE ANALYSIS',
-                    style: AppTypography.technicalMono(
-                      Colors.white,
-                      fontSize: 12,
-                      weight: FontWeight.w700,
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'PROCEED TO ON-DEVICE ANALYSIS',
+                        style: AppTypography.technicalMono(
+                          Colors.white,
+                          fontSize: 12,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],
