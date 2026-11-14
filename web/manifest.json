@@ -1,11 +1,11 @@
 {
-    "name": "microtrace",
-    "short_name": "microtrace",
+    "name": "MICROTRACE",
+    "short_name": "MICROTRACE",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "description": "Smartphone-assisted microscopy workstation with on-device computer vision and a local AI copilot.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

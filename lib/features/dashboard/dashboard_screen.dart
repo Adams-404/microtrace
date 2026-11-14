@@ -6,6 +6,7 @@ import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/utils/haptics.dart';
+import '../../core/widgets/ai_mark.dart';
 import '../../core/widgets/app_icon_button.dart';
 import '../../core/widgets/metric_tile.dart';
 import '../../core/widgets/scientific_card.dart';
@@ -15,6 +16,7 @@ import '../../shared/models/analysis_run.dart';
 import '../../shared/models/session.dart';
 import '../../shared/services/session_repository.dart';
 import '../../shared/services/storage_service.dart';
+import '../settings/settings_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -98,7 +100,7 @@ class DashboardScreen extends ConsumerWidget {
                         value: Formatters.formatBytes(storage.totalBytes),
                         subtitle: 'Images & models',
                         icon: Icons.sd_storage_outlined,
-                        onTap: () => context.push('/settings'),
+                        onTap: () => showSettingsSheet(context),
                       ),
                     ),
                   ],
@@ -167,10 +169,21 @@ class DashboardScreen extends ConsumerWidget {
             Positioned(
               top: 8,
               right: 20,
-              child: AppIconButton(
-                icon: Icons.tune_rounded,
-                tooltip: 'Workstation settings',
-                onPressed: () => context.push('/settings'),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppIconButton(
+                    tooltip: 'Local AI copilot',
+                    onPressed: () => context.push('/assistant'),
+                    child: const AiMark(size: 21, glow: true),
+                  ),
+                  const SizedBox(width: 8),
+                  AppIconButton(
+                    icon: Icons.tune_rounded,
+                    tooltip: 'Workstation settings',
+                    onPressed: () => showSettingsSheet(context),
+                  ),
+                ],
               ),
             ),
           ],
@@ -330,7 +343,7 @@ class _CopilotCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: t.accent.withValues(alpha: 0.24)),
             ),
-            child: Icon(Icons.auto_awesome_outlined, size: 22, color: t.accent),
+            child: const Center(child: AiMark(size: 23, glow: true)),
           ),
           const SizedBox(width: 13),
           Expanded(

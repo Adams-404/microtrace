@@ -5,7 +5,8 @@ import '../utils/haptics.dart';
 
 /// Compact circular icon action used in app bars and card corners.
 class AppIconButton extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? child;
   final VoidCallback? onPressed;
   final String? tooltip;
   final bool showDot;
@@ -14,7 +15,8 @@ class AppIconButton extends StatelessWidget {
 
   const AppIconButton({
     super.key,
-    required this.icon,
+    this.icon,
+    this.child,
     this.onPressed,
     this.tooltip,
     this.showDot = false,
@@ -45,7 +47,9 @@ class AppIconButton extends StatelessWidget {
                       Haptics.tap();
                       onPressed!();
                     },
-              child: Icon(icon, size: 20, color: color ?? t.textSecondary),
+              child:
+                  child ??
+                  Icon(icon, size: 20, color: color ?? t.textSecondary),
             ),
           ),
           if (showDot)

@@ -9,6 +9,7 @@ import '../../app/theme/theme_provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/utils/haptics.dart';
+import '../../core/widgets/app_icon_button.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
 import '../../shared/services/storage_service.dart';
@@ -18,6 +19,110 @@ import '../../shared/services/local_ai_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return const Scaffold(
+      appBar: ScientificAppBar(
+        title: 'Workstation Settings',
+        subtitle: 'PREFERENCES & LOCAL STORAGE',
+      ),
+      body: _SettingsBody(),
+    );
+  }
+}
+
+/// Opens workstation settings as a rounded sheet that slides up from the
+/// bottom of the screen.
+Future<void> showSettingsSheet(BuildContext context) {
+  Haptics.tap();
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.58),
+    sheetAnimationStyle: const AnimationStyle(
+      duration: Duration(milliseconds: 420),
+      reverseDuration: Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    ),
+    builder: (context) =>
+        const FractionallySizedBox(heightFactor: 0.94, child: SettingsSheet()),
+  );
+}
+
+class SettingsSheet extends StatelessWidget {
+  const SettingsSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: t.bg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          Container(
+            width: 42,
+            height: 4,
+            decoration: BoxDecoration(
+              color: t.borderStrong,
+              borderRadius: BorderRadius.circular(99),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 12, 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Settings',
+                        style: AppTypography.title(t.textPrimary)
+                            .copyWith(fontSize: 20, letterSpacing: -0.4),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'PREFERENCES & LOCAL AI',
+                        style: AppTypography.technicalMono(
+                          t.textMuted,
+                          fontSize: 8.5,
+                          weight: FontWeight.w600,
+                        ).copyWith(letterSpacing: 1.1),
+                      ),
+                    ],
+                  ),
+                ),
+                AppIconButton(
+                  icon: Icons.close_rounded,
+                  tooltip: 'Close settings',
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 18, thickness: 1),
+          const Expanded(
+            child: _SettingsBody(padding: EdgeInsets.fromLTRB(16, 12, 16, 28)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsBody extends ConsumerWidget {
+  final EdgeInsets padding;
+
+  const _SettingsBody({this.padding = const EdgeInsets.all(16)});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,245 +138,243 @@ class SettingsScreen extends ConsumerWidget {
         ? AppColors.darkTextSecondary
         : AppColors.lightTextSecondary;
 
-    return Scaffold(
-      appBar: const ScientificAppBar(
-        title: 'Workstation Settings',
-        subtitle: 'PREFERENCES & LOCAL STORAGE',
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Appearance & Theme Section
-          Text('APPEARANCE', style: AppTypography.label(textSecondary)),
-          const SizedBox(height: 10),
+    return ListView(
+      padding: padding,
+      children: [
+        // Appearance & Theme Section
+        Text('APPEARANCE', style: AppTypography.label(textSecondary)),
+        const SizedBox(height: 10),
 
-          ScientificCard(
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _ThemeChoice(
-                    label: 'Darkroom',
-                    hint: 'Default',
-                    mode: AppThemeMode.dark,
-                    current: currentTheme,
-                    swatchBg: AppColors.darkBg,
-                    swatchSurface: AppColors.darkSurface,
-                    onSelect: () => ref
-                        .read(themeModeProvider.notifier)
-                        .setTheme(AppThemeMode.dark),
-                  ),
+        ScientificCard(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              Expanded(
+                child: _ThemeChoice(
+                  label: 'Darkroom',
+                  hint: 'Default',
+                  mode: AppThemeMode.dark,
+                  current: currentTheme,
+                  swatchBg: AppColors.darkBg,
+                  swatchSurface: AppColors.darkSurface,
+                  onSelect: () => ref
+                      .read(themeModeProvider.notifier)
+                      .setTheme(AppThemeMode.dark),
                 ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: _ThemeChoice(
-                    label: 'AMOLED',
-                    hint: 'True black',
-                    mode: AppThemeMode.amoled,
-                    current: currentTheme,
-                    swatchBg: AppColors.amoledBg,
-                    swatchSurface: AppColors.amoledSurfaceHigh,
-                    onSelect: () => ref
-                        .read(themeModeProvider.notifier)
-                        .setTheme(AppThemeMode.amoled),
-                  ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: _ThemeChoice(
+                  label: 'AMOLED',
+                  hint: 'True black',
+                  mode: AppThemeMode.amoled,
+                  current: currentTheme,
+                  swatchBg: AppColors.amoledBg,
+                  swatchSurface: AppColors.amoledSurfaceHigh,
+                  onSelect: () => ref
+                      .read(themeModeProvider.notifier)
+                      .setTheme(AppThemeMode.amoled),
                 ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: _ThemeChoice(
-                    label: 'Daylight',
-                    hint: 'Bright bench',
-                    mode: AppThemeMode.light,
-                    current: currentTheme,
-                    swatchBg: AppColors.lightBg,
-                    swatchSurface: AppColors.lightSurface,
-                    onSelect: () => ref
-                        .read(themeModeProvider.notifier)
-                        .setTheme(AppThemeMode.light),
-                  ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: _ThemeChoice(
+                  label: 'Daylight',
+                  hint: 'Bright bench',
+                  mode: AppThemeMode.light,
+                  current: currentTheme,
+                  swatchBg: AppColors.lightBg,
+                  swatchSurface: AppColors.lightSurface,
+                  onSelect: () => ref
+                      .read(themeModeProvider.notifier)
+                      .setTheme(AppThemeMode.light),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+        ),
 
-          const SizedBox(height: 24),
+        const SizedBox(height: 24),
 
-          // Local AI Copilot
-          Text('LOCAL AI COPILOT', style: AppTypography.label(textSecondary)),
-          const SizedBox(height: 10),
-          const LocalAiSettingsCard(),
+        // Local AI Copilot
+        Text('LOCAL AI COPILOT', style: AppTypography.label(textSecondary)),
+        const SizedBox(height: 10),
+        const LocalAiSettingsCard(),
 
-          const SizedBox(height: 24),
+        const SizedBox(height: 24),
 
-          // Local Storage Management
-          Text(
-            'LOCAL APP-PRIVATE STORAGE',
-            style: AppTypography.label(textSecondary),
-          ),
-          const SizedBox(height: 10),
+        // Local Storage Management
+        Text(
+          'LOCAL APP-PRIVATE STORAGE',
+          style: AppTypography.label(textSecondary),
+        ),
+        const SizedBox(height: 10),
 
-          ScientificCard(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total Disk Footprint',
-                      style: AppTypography.body(textPrimary),
+        ScientificCard(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total Disk Footprint',
+                    style: AppTypography.body(textPrimary),
+                  ),
+                  Text(
+                    Formatters.formatBytes(storage.totalBytes),
+                    style: AppTypography.technicalMono(
+                      AppColors.signal,
+                      fontSize: 13,
+                      weight: FontWeight.w700,
                     ),
-                    Text(
-                      Formatters.formatBytes(storage.totalBytes),
-                      style: AppTypography.technicalMono(
-                        AppColors.signal,
-                        fontSize: 13,
-                        weight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                _storageRow(
-                  'SQLite Database & Sessions',
-                  Formatters.formatBytes(storage.databaseBytes),
-                  textSecondary,
-                ),
-                _storageRow(
-                  'Microscopy Slide Images',
-                  Formatters.formatBytes(storage.rawImagesBytes),
-                  textSecondary,
-                ),
-                _storageRow(
-                  'On-Device Neural Models',
-                  Formatters.formatBytes(storage.modelsBytes),
-                  textSecondary,
-                ),
-                _storageRow(
-                  'Exported PDF Reports Cache',
-                  Formatters.formatBytes(storage.reportsBytes),
-                  textSecondary,
-                ),
-                const SizedBox(height: 14),
-                OutlinedButton(
-                  onPressed: () {
-                    ref
-                        .read(storageServiceProvider.notifier)
-                        .clearReportsCache();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Reports cache purged successfully.'),
-                        backgroundColor: AppColors.passGreen,
-                      ),
-                    );
-                  },
-                  child: const Text('PURGE REPORT CACHE'),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Privacy & Offline Disclosure
-          Text(
-            'PRIVACY & OFFLINE ARCHITECTURE',
-            style: AppTypography.label(textSecondary),
-          ),
-          const SizedBox(height: 10),
-
-          ScientificCard(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.shield_outlined,
-                      color: AppColors.passGreen,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      '100% Offline-First Guarantee',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'MICROTRACE does not transmit images, patient codes, or session records over the internet. '
-                  'Inference is executed completely on-device through LiteRT compiled models.',
-                  style: AppTypography.body(textSecondary)
-                      .copyWith(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Scientific Disclaimer
-          Text(
-            'LEGAL & SCIENTIFIC NOTICE',
-            style: AppTypography.label(textSecondary),
-          ),
-          const SizedBox(height: 10),
-
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.amber.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.amber.withOpacity(0.3)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.gavel,
-                  color: AppColors.warningAmber,
-                  size: 22,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    AppConstants.scientificDisclaimer,
-                    style: AppTypography.caption(textSecondary)
-                        .copyWith(fontSize: 11, height: 1.5),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _storageRow(
+                'SQLite Database & Sessions',
+                Formatters.formatBytes(storage.databaseBytes),
+                textSecondary,
+              ),
+              _storageRow(
+                'Microscopy Slide Images',
+                Formatters.formatBytes(storage.rawImagesBytes),
+                textSecondary,
+              ),
+              _storageRow(
+                'On-Device Neural Models',
+                Formatters.formatBytes(storage.modelsBytes),
+                textSecondary,
+              ),
+              _storageRow(
+                'Exported PDF Reports Cache',
+                Formatters.formatBytes(storage.reportsBytes),
+                textSecondary,
+              ),
+              const SizedBox(height: 14),
+              OutlinedButton(
+                onPressed: () {
+                  ref.read(storageServiceProvider.notifier).clearReportsCache();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Reports cache purged successfully.'),
+                      backgroundColor: AppColors.passGreen,
+                    ),
+                  );
+                },
+                child: const Text('PURGE REPORT CACHE'),
+              ),
+            ],
           ),
+        ),
 
-          const SizedBox(height: 24),
+        const SizedBox(height: 24),
 
-          // About MICROTRACE
-          Center(
-            child: Column(
-              children: [
-                Text(
-                  '${AppConstants.appName} v${AppConstants.appVersion}',
-                  style: AppTypography.technicalMono(
-                    textSecondary,
-                    fontSize: 11,
+        // Privacy & Offline Disclosure
+        Text(
+          'PRIVACY & OFFLINE ARCHITECTURE',
+          style: AppTypography.label(textSecondary),
+        ),
+        const SizedBox(height: 10),
+
+        ScientificCard(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  Icon(
+                    Icons.shield_outlined,
+                    color: AppColors.passGreen,
+                    size: 20,
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Smartphone-Assisted Microscopy Workstation',
+                  SizedBox(width: 8),
+                  Text(
+                    '100% Offline-First Guarantee',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'MICROTRACE does not transmit images, patient codes, or session records over the internet. '
+                'Inference is executed completely on-device through LiteRT compiled models.',
+                style: AppTypography.body(textSecondary).copyWith(fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // Scientific Disclaimer
+        Text(
+          'LEGAL & SCIENTIFIC NOTICE',
+          style: AppTypography.label(textSecondary),
+        ),
+        const SizedBox(height: 10),
+
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.amber.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.amber.withOpacity(0.3)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.gavel, color: AppColors.warningAmber, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  AppConstants.scientificDisclaimer,
                   style: AppTypography.caption(textSecondary)
-                      .copyWith(fontSize: 10),
+                      .copyWith(fontSize: 11, height: 1.5),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-        ],
-      ),
+        ),
+
+        const SizedBox(height: 24),
+
+        // About MICROTRACE
+        Center(
+          child: Column(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Image.asset(
+                  'assets/branding/microtrace_logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${AppConstants.appName} v${AppConstants.appVersion}',
+                style: AppTypography.technicalMono(textSecondary, fontSize: 11),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Smartphone-Assisted Microscopy Workstation',
+                style: AppTypography.caption(textSecondary)
+                    .copyWith(fontSize: 10),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 

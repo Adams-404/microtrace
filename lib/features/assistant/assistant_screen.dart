@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
 import '../../core/utils/haptics.dart';
+import '../../core/widgets/ai_mark.dart';
 import '../../shared/models/assistant_message.dart';
 import '../../shared/models/session.dart';
 import '../../shared/services/local_ai_service.dart';
 import '../../shared/services/session_repository.dart';
+import '../settings/settings_screen.dart';
 import 'assistant_controller.dart';
 import 'session_context.dart';
 
@@ -115,13 +117,17 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
         bottom: false,
         child: Column(
           children: [
-            _Header(
-              status: state.status,
-              modelLabel: modelLabel.isEmpty ? 'Local model' : modelLabel,
-              onClear: hasMessages ? _clearChat : null,
-              onSettings: () {
+            _AssistantHeader(
+              canClear: hasMessages,
+              onClear: _clearChat,
+              onSettings: () => showSettingsSheet(context),
+              onBack: () {
                 Haptics.tap();
-                context.push('/settings');
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/');
+                }
               },
             ),
             if (_session != null)
@@ -137,7 +143,9 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
                   ? _MessageList(
                       state: state,
                       scroll: _scroll,
-                      modelLabel: modelLabel,
+                      modelLabel: modelLabel.isEmpty
+                          ? 'Local model'
+                          : modelLabel,
                     )
                   : _EmptyState(
                       status: state.status,
@@ -166,90 +174,57 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _Header extends StatelessWidget {
-  final AiStatus status;
-  final String modelLabel;
-  final VoidCallback? onClear;
+class _AssistantHeader extends StatelessWidget {
+  final bool canClear;
+  final VoidCallback onClear;
   final VoidCallback onSettings;
+  final VoidCallback onBack;
 
-  const _Header({
-    required this.status,
-    required this.modelLabel,
+  const _AssistantHeader({
+    required this.canClear,
     required this.onClear,
     required this.onSettings,
+    required this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final (color, label) = switch (status.health) {
-      AiHealth.online => (t.success, 'Online'),
-      AiHealth.checking => (t.warning, 'Checking'),
-      AiHealth.offline => (t.danger, 'Offline'),
-      AiHealth.unknown => (t.textMuted, 'Standby'),
-    };
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
       child: Row(
         children: [
-          _IconAction(
+          _CircleAction(
             icon: Icons.arrow_back_rounded,
-            onPressed: () {
-              Haptics.tap();
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.go('/');
-              }
-            },
+            onPressed: onBack,
+            tooltip: 'Back',
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const Spacer(),
+          Container(
+            height: 46,
+            decoration: BoxDecoration(
+              color: t.surface,
+              borderRadius: BorderRadius.circular(23),
+              border: Border.all(color: t.border),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'LOCAL AI · ${label.toUpperCase()}',
-                      style: AppTypography.technicalMono(
-                        color,
-                        fontSize: 9,
-                        weight: FontWeight.w700,
-                      ).copyWith(letterSpacing: 1.1),
-                    ),
-                  ],
+                _PillAction(
+                  icon: Icons.restart_alt_rounded,
+                  tooltip: 'New conversation',
+                  onPressed: canClear ? onClear : null,
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  'Assistant',
-                  style: AppTypography.title(t.textPrimary)
-                      .copyWith(fontSize: 19, letterSpacing: -0.4),
-                ),
-                Text(
-                  modelLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.caption(t.textMuted)
-                      .copyWith(fontSize: 10.5),
+                Container(width: 1, height: 18, color: t.border),
+                _PillAction(
+                  icon: Icons.tune_rounded,
+                  tooltip: 'Local AI settings',
+                  onPressed: onSettings,
                 ),
               ],
             ),
           ),
-          if (onClear != null)
-            _IconAction(icon: Icons.restart_alt_rounded, onPressed: onClear!),
-          const SizedBox(width: 6),
-          _IconAction(icon: Icons.tune_rounded, onPressed: onSettings),
         ],
       ),
     );
@@ -267,39 +242,306 @@ class _ContextChip extends StatelessWidget {
     final t = context.tokens;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(99),
           onTap: onOpen,
           child: Ink(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: t.accentSoft,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: t.accent.withValues(alpha: 0.26)),
+              borderRadius: BorderRadius.circular(99),
+              border: Border.all(color: t.accent.withValues(alpha: 0.24)),
             ),
             child: Row(
               children: [
-                Icon(Icons.link_rounded, size: 15, color: t.accent),
-                const SizedBox(width: 8),
+                Icon(Icons.link_rounded, size: 14, color: t.accent),
+                const SizedBox(width: 7),
                 Expanded(
                   child: Text(
                     'Grounded on ${session.specimenCode} · ${session.images.length} fields',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.caption(t.textPrimary)
-                        .copyWith(fontSize: 11.5, fontWeight: FontWeight.w600),
+                        .copyWith(fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                 ),
-                const SizedBox(width: 6),
-                Icon(Icons.open_in_new_rounded, size: 13, color: t.accent),
+                const SizedBox(width: 5),
+                Icon(Icons.open_in_new_rounded, size: 12, color: t.accent),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _EmptyState extends StatelessWidget {
+  final AiStatus status;
+  final MicroscopySession? session;
+  final void Function(String) onSuggest;
+  final VoidCallback onRetry;
+
+  const _EmptyState({
+    required this.status,
+    required this.session,
+    required this.onSuggest,
+    required this.onRetry,
+  });
+
+  List<(IconData, String)> get _suggestions {
+    if (session != null) {
+      return [
+        (
+          Icons.fact_check_outlined,
+          'Summarise this session and flag what needs review',
+        ),
+        (
+          Icons.filter_center_focus_rounded,
+          'Which fields failed quality control?',
+        ),
+        (
+          Icons.biotech_outlined,
+          'Explain the top prediction and its confidence',
+        ),
+      ];
+    }
+    return [
+      (Icons.science_outlined, 'What can this workstation help me with?'),
+      (Icons.center_focus_strong_outlined, 'How do I improve field sharpness?'),
+      (Icons.insights_outlined, 'Explain how confidence scores are computed'),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(22, 8, 22, 12),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: (constraints.maxHeight - 20).clamp(0.0, 99999.0),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 92,
+                    height: 92,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color.alphaBlend(
+                        t.accent.withValues(alpha: 0.10),
+                        t.surface,
+                      ),
+                      border: Border.all(
+                        color: t.accent.withValues(alpha: 0.22),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: t.accent.withValues(alpha: 0.16),
+                          blurRadius: 52,
+                          spreadRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: const Center(child: AiMark(size: 44, glow: true)),
+                  ),
+                ),
+                const SizedBox(height: 26),
+                Text(
+                  'Hi there,',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.display(t.textSecondary).copyWith(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                    height: 1.2,
+                    letterSpacing: -0.9,
+                  ),
+                ),
+                Text(
+                  session == null
+                      ? 'What should we look at?'
+                      : 'What should we review?',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.display(t.textPrimary).copyWith(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                    height: 1.18,
+                    letterSpacing: -0.9,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                for (final (icon, label) in _suggestions)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _SuggestionTile(
+                      icon: icon,
+                      label: label,
+                      onTap: () => onSuggest(label),
+                    ),
+                  ),
+                const SizedBox(height: 14),
+                _StatusLine(status: status, onRetry: onRetry),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SuggestionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SuggestionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(26),
+        onTap: () {
+          Haptics.tap();
+          onTap();
+        },
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          decoration: BoxDecoration(
+            color: t.surface,
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: t.border),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 21, color: t.textSecondary),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTypography.body(t.textPrimary)
+                      .copyWith(fontSize: 14, height: 1.4),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusLine extends StatelessWidget {
+  final AiStatus status;
+  final VoidCallback onRetry;
+
+  const _StatusLine({required this.status, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    final (color, label) = switch (status.health) {
+      AiHealth.online => (t.success, status.model ?? 'Local model ready'),
+      AiHealth.checking => (t.warning, 'Connecting to local model…'),
+      AiHealth.offline => (t.danger, status.message ?? 'Local model offline'),
+      AiHealth.unknown => (t.textMuted, 'Local model standby'),
+    };
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (status.health == AiHealth.checking)
+              SizedBox(
+                width: 10,
+                height: 10,
+                child: CircularProgressIndicator(
+                  strokeWidth: 1.6,
+                  valueColor: AlwaysStoppedAnimation(color),
+                ),
+              )
+            else
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+            const SizedBox(width: 7),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.technicalMono(
+                  color,
+                  fontSize: 9.5,
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (!status.isOnline && status.health != AiHealth.checking) ...[
+              const SizedBox(width: 4),
+              TextButton(
+                onPressed: () {
+                  Haptics.tap();
+                  onRetry();
+                },
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(0, 26),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Retry'),
+              ),
+            ],
+          ],
+        ),
+        if (!status.isOnline && status.hint != null) ...[
+          const SizedBox(height: 5),
+          Text(
+            status.hint!,
+            textAlign: TextAlign.center,
+            style: AppTypography.technicalMono(
+              t.textMuted,
+              fontSize: 9.5,
+            ).copyWith(height: 1.45),
+          ),
+        ],
+        const SizedBox(height: 2),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.lock_outline_rounded, size: 10, color: t.textMuted),
+            const SizedBox(width: 4),
+            Text(
+              'On-device · nothing leaves this phone',
+              style: AppTypography.caption(t.textMuted).copyWith(fontSize: 9.5),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -363,17 +605,17 @@ class _MessageBubble extends StatelessWidget {
       return Align(
         alignment: Alignment.centerRight,
         child: Container(
-          margin: const EdgeInsets.only(bottom: 14, left: 42),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+          margin: const EdgeInsets.only(bottom: 14, left: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
           decoration: BoxDecoration(
             color: t.accentSoft,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(5),
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(6),
             ),
-            border: Border.all(color: t.accent.withValues(alpha: 0.28)),
+            border: Border.all(color: t.accent.withValues(alpha: 0.26)),
           ),
           child: Text(
             message.content,
@@ -389,15 +631,15 @@ class _MessageBubble extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 14, right: 24),
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 13),
+        margin: const EdgeInsets.only(bottom: 14, right: 26),
+        padding: const EdgeInsets.fromLTRB(15, 12, 15, 14),
         decoration: BoxDecoration(
           color: t.surface,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(5),
-            bottomRight: Radius.circular(16),
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+            bottomLeft: Radius.circular(6),
+            bottomRight: Radius.circular(20),
           ),
           border: Border.all(
             color: error ? t.danger.withValues(alpha: 0.45) : t.border,
@@ -408,12 +650,8 @@ class _MessageBubble extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  error ? Icons.error_outline_rounded : Icons.blur_on_rounded,
-                  size: 13,
-                  color: error ? t.danger : t.accent,
-                ),
-                const SizedBox(width: 5),
+                AiMark(size: 12, color: error ? t.danger : t.accent),
+                const SizedBox(width: 6),
                 Text(
                   error ? 'LOCAL MODEL · ERROR' : 'LOCAL MODEL',
                   style: AppTypography.technicalMono(
@@ -437,7 +675,7 @@ class _MessageBubble extends StatelessWidget {
                   const Spacer(),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 9),
             _ReplyBody(text: message.content, streaming: isStreaming),
           ],
         ),
@@ -614,277 +852,20 @@ class _ThinkingBubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: t.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: t.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 12,
-              height: 12,
-              child: CircularProgressIndicator(
-                strokeWidth: 1.8,
-                valueColor: AlwaysStoppedAnimation(t.accent),
-              ),
-            ),
+            AiMark(size: 16, color: t.accent),
             const SizedBox(width: 9),
             Text(
-              'Model is thinking…',
+              'The colony is thinking…',
               style: AppTypography.caption(t.textMuted)
                   .copyWith(fontSize: 11.5),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _EmptyState extends StatelessWidget {
-  final AiStatus status;
-  final MicroscopySession? session;
-  final void Function(String) onSuggest;
-  final VoidCallback onRetry;
-
-  const _EmptyState({
-    required this.status,
-    required this.session,
-    required this.onSuggest,
-    required this.onRetry,
-  });
-
-  List<String> get _suggestions {
-    if (session != null) {
-      return [
-        'Summarise this session and flag what needs review.',
-        'Which fields failed quality control or need recapture?',
-        'Explain the top prediction and its confidence.',
-        'Draft reviewer notes for the pending field.',
-      ];
-    }
-    return [
-      'What can you help me with?',
-      'How do I improve field sharpness?',
-      'Explain how confidence scores are computed.',
-      'Give me a checklist for a clean capture run.',
-    ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-    final online = status.isOnline;
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-      children: [
-        const SizedBox(height: 12),
-        Center(
-          child: Container(
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              color: t.accentSoft,
-              shape: BoxShape.circle,
-              border: Border.all(color: t.accent.withValues(alpha: 0.3)),
-            ),
-            child: Icon(Icons.auto_awesome_outlined, size: 30, color: t.accent),
-          ),
-        ),
-        const SizedBox(height: 18),
-        Text(
-          session == null ? 'Ask your local model' : 'Ask about this session',
-          textAlign: TextAlign.center,
-          style: AppTypography.headline(t.textPrimary)
-              .copyWith(fontSize: 21, letterSpacing: -0.5),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          session == null
-              ? 'Runs entirely on your phone through llama.cpp. No cloud, no uploads — '
-                    'your session data never leaves the device.'
-              : 'This conversation is grounded on ${session!.specimenCode}. '
-                    'The model only sees the facts shown in the app.',
-          textAlign: TextAlign.center,
-          style: AppTypography.caption(t.textMuted)
-              .copyWith(fontSize: 12, height: 1.55),
-        ),
-        const SizedBox(height: 20),
-        _ConnectionCard(status: status, onRetry: onRetry),
-        const SizedBox(height: 20),
-        if (online) ...[
-          Text(
-            'TRY ASKING',
-            style: AppTypography.label(t.textMuted).copyWith(fontSize: 9.5),
-          ),
-          const SizedBox(height: 10),
-          for (final suggestion in _suggestions)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _SuggestionTile(
-                label: suggestion,
-                onTap: () => onSuggest(suggestion),
-              ),
-            ),
-        ],
-      ],
-    );
-  }
-}
-
-class _ConnectionCard extends StatelessWidget {
-  final AiStatus status;
-  final VoidCallback onRetry;
-
-  const _ConnectionCard({required this.status, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-    final (color, title, icon) = switch (status.health) {
-      AiHealth.online => (
-        t.success,
-        'Local model ready',
-        Icons.check_circle_outline_rounded,
-      ),
-      AiHealth.checking => (
-        t.warning,
-        'Contacting local model…',
-        Icons.sync_rounded,
-      ),
-      AiHealth.offline => (
-        t.danger,
-        'Local model offline',
-        Icons.cloud_off_rounded,
-      ),
-      AiHealth.unknown => (
-        t.textMuted,
-        'Local model standby',
-        Icons.bolt_outlined,
-      ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 17, color: color),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  title,
-                  style: AppTypography.bodyMedium(t.textPrimary)
-                      .copyWith(fontSize: 13),
-                ),
-              ),
-              if (status.health != AiHealth.checking)
-                TextButton(
-                  onPressed: () {
-                    Haptics.tap();
-                    onRetry();
-                  },
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(0, 28),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text('Retry'),
-                ),
-            ],
-          ),
-          if (status.message != null) ...[
-            const SizedBox(height: 5),
-            Text(
-              status.message!,
-              style: AppTypography.caption(t.textSecondary)
-                  .copyWith(fontSize: 11.5, height: 1.45),
-            ),
-          ],
-          if (status.hint != null) ...[
-            const SizedBox(height: 5),
-            Text(
-              status.hint!,
-              style: AppTypography.technicalMono(
-                t.textMuted,
-                fontSize: 10,
-              ).copyWith(height: 1.45),
-            ),
-          ],
-          if (status.isOnline && status.model != null) ...[
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(Icons.memory_rounded, size: 12, color: t.textMuted),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: Text(
-                    status.model!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.technicalMono(
-                      t.textMuted,
-                      fontSize: 10,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SuggestionTile extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _SuggestionTile({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(13),
-        onTap: () {
-          Haptics.tap();
-          onTap();
-        },
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-          decoration: BoxDecoration(
-            color: t.surface,
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: t.border),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: AppTypography.caption(t.textSecondary)
-                      .copyWith(fontSize: 12.5),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(Icons.north_east_rounded, size: 14, color: t.accent),
-            ],
-          ),
         ),
       ),
     );
@@ -916,72 +897,109 @@ class _Composer extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.tokens;
     final canSend = hasText && !isStreaming;
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        12,
-        4,
-        12,
-        MediaQuery.viewInsetsOf(context).bottom > 0
-            ? 10
-            : 8 + MediaQuery.paddingOf(context).bottom,
-      ),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 6, 6, 6),
-        decoration: BoxDecoration(
-          color: t.surfaceHigh,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: t.borderStrong),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.send,
-                  onChanged: (_) => onChanged(),
-                  onSubmitted: (_) {
-                    if (canSend) onSend();
-                  },
-                  style: AppTypography.body(t.textPrimary)
-                      .copyWith(fontSize: 13.5, height: 1.45),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    hintText: isStreaming
-                        ? 'Generating…'
-                        : 'Ask about your sessions…',
-                    hintStyle: AppTypography.body(t.textMuted)
-                        .copyWith(fontSize: 13.5),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                  ),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Positioned(
+          left: -40,
+          right: -40,
+          bottom: 0,
+          height: 250,
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0, 1.05),
+                  radius: 1.0,
+                  colors: [
+                    t.accent.withValues(alpha: t.isDark ? 0.17 : 0.22),
+                    t.accent.withValues(alpha: 0.0),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(width: 6),
-            if (isStreaming)
-              _SendButton(
-                icon: Icons.stop_rounded,
-                enabled: true,
-                onTap: onStop,
-                color: t.danger,
-              )
-            else
-              _SendButton(
-                icon: Icons.arrow_upward_rounded,
-                enabled: canSend,
-                onTap: onSend,
-                color: t.accent,
-              ),
-          ],
+          ),
         ),
-      ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+            14,
+            4,
+            14,
+            keyboard > 0 ? 10 : 12 + MediaQuery.paddingOf(context).bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 7, 7, 7),
+            decoration: BoxDecoration(
+              color: t.surfaceHigh,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: t.accent.withValues(alpha: 0.22)),
+              boxShadow: [
+                BoxShadow(
+                  color: t.accent.withValues(alpha: t.isDark ? 0.22 : 0.26),
+                  blurRadius: 56,
+                  spreadRadius: 6,
+                  offset: const Offset(0, 12),
+                ),
+                BoxShadow(
+                  color: t.accent.withValues(alpha: t.isDark ? 0.10 : 0.14),
+                  blurRadius: 110,
+                  spreadRadius: 34,
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: AiMark(size: 19, color: t.textMuted),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    minLines: 1,
+                    maxLines: 5,
+                    textInputAction: TextInputAction.send,
+                    onChanged: (_) => onChanged(),
+                    onSubmitted: (_) {
+                      if (canSend) onSend();
+                    },
+                    style: AppTypography.body(t.textPrimary)
+                        .copyWith(fontSize: 14, height: 1.45),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      border: InputBorder.none,
+                      hintText: isStreaming ? 'Generating…' : 'Ask anything',
+                      hintStyle: AppTypography.body(t.textMuted)
+                          .copyWith(fontSize: 14),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (isStreaming)
+                  _SendButton(
+                    icon: Icons.stop_rounded,
+                    enabled: true,
+                    onTap: onStop,
+                    enabledColor: t.danger,
+                  )
+                else
+                  _SendButton(
+                    icon: Icons.arrow_upward_rounded,
+                    enabled: canSend,
+                    onTap: onSend,
+                    enabledColor: t.accent,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -990,13 +1008,13 @@ class _SendButton extends StatelessWidget {
   final IconData icon;
   final bool enabled;
   final VoidCallback onTap;
-  final Color color;
+  final Color enabledColor;
 
   const _SendButton({
     required this.icon,
     required this.enabled,
     required this.onTap,
-    required this.color,
+    required this.enabledColor,
   });
 
   @override
@@ -1004,10 +1022,10 @@ class _SendButton extends StatelessWidget {
     final t = context.tokens;
 
     return SizedBox(
-      width: 40,
-      height: 40,
+      width: 44,
+      height: 44,
       child: Material(
-        color: enabled ? color : t.surface,
+        color: enabled ? enabledColor : t.surface,
         shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -1019,7 +1037,7 @@ class _SendButton extends StatelessWidget {
               : null,
           child: Icon(
             icon,
-            size: 19,
+            size: 20,
             color: enabled ? t.onAccent : t.textMuted,
           ),
         ),
@@ -1028,32 +1046,78 @@ class _SendButton extends StatelessWidget {
   }
 }
 
-class _IconAction extends StatelessWidget {
+class _CircleAction extends StatelessWidget {
   final IconData icon;
   final VoidCallback onPressed;
+  final String tooltip;
 
-  const _IconAction({required this.icon, required this.onPressed});
+  const _CircleAction({
+    required this.icon,
+    required this.onPressed,
+    required this.tooltip,
+  });
 
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
 
-    return SizedBox(
-      width: 38,
-      height: 38,
-      child: Material(
-        color: t.surfaceHigh.withValues(alpha: t.isDark ? 0.6 : 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(13),
-          side: BorderSide(color: t.border),
+    return Tooltip(
+      message: tooltip,
+      child: SizedBox(
+        width: 46,
+        height: 46,
+        child: Material(
+          color: t.surface,
+          shape: CircleBorder(side: BorderSide(color: t.border)),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              Haptics.tap();
+              onPressed();
+            },
+            child: Icon(icon, size: 20, color: t.textPrimary),
+          ),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            Haptics.tap();
-            onPressed();
-          },
-          child: Icon(icon, size: 18, color: t.textSecondary),
+      ),
+    );
+  }
+}
+
+class _PillAction extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+
+  const _PillAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(23),
+        onTap: onPressed == null
+            ? null
+            : () {
+                Haptics.tap();
+                onPressed!();
+              },
+        child: SizedBox(
+          width: 52,
+          height: 46,
+          child: Icon(
+            icon,
+            size: 20,
+            color: onPressed == null
+                ? t.textMuted.withValues(alpha: 0.4)
+                : t.textSecondary,
+          ),
         ),
       ),
     );

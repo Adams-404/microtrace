@@ -97,19 +97,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Row(
                     children: [
                       Container(
-                        width: 34,
-                        height: 34,
+                        width: 36,
+                        height: 36,
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(11),
-                          color: t.accentSoft,
-                          border: Border.all(
-                            color: t.accent.withValues(alpha: 0.3),
-                          ),
+                          color: Colors.black,
                         ),
-                        child: Icon(
-                          Icons.center_focus_strong_rounded,
-                          color: t.accent,
-                          size: 18,
+                        child: Image.asset(
+                          'assets/branding/microtrace_logo.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                       const SizedBox(width: 10),
