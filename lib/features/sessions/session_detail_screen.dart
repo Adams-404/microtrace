@@ -40,6 +40,17 @@ class SessionDetailScreen extends ConsumerWidget {
         subtitle: session.title,
         actions: [
           IconButton(
+            tooltip: 'Ask Local AI',
+            icon: const Icon(
+              Icons.auto_awesome_outlined,
+              color: AppColors.signal,
+              size: 20,
+            ),
+            onPressed: () => context.push(
+              '/assistant?session=${Uri.encodeComponent(session.id)}',
+            ),
+          ),
+          IconButton(
             tooltip: 'Export Session Report',
             icon: const Icon(
               Icons.picture_as_pdf_outlined,

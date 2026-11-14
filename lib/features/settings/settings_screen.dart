@@ -12,6 +12,9 @@ import '../../core/utils/haptics.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
 import '../../shared/services/storage_service.dart';
+import '../assistant/assistant_controller.dart';
+import '../../shared/models/assistant_settings.dart';
+import '../../shared/services/local_ai_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -90,6 +93,13 @@ class SettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+
+          const SizedBox(height: 24),
+
+          // Local AI Copilot
+          Text('LOCAL AI COPILOT', style: AppTypography.label(textSecondary)),
+          const SizedBox(height: 10),
+          const LocalAiSettingsCard(),
 
           const SizedBox(height: 24),
 
@@ -399,6 +409,355 @@ class _ThemeChoice extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Connects the app to the phone-local OpenAI-compatible server
+/// (Clearport / llama.cpp in Termux, default `http://127.0.0.1:8080/v1`).
+class LocalAiSettingsCard extends ConsumerStatefulWidget {
+  const LocalAiSettingsCard({super.key});
+
+  @override
+  ConsumerState<LocalAiSettingsCard> createState() =>
+      _LocalAiSettingsCardState();
+}
+
+class _LocalAiSettingsCardState extends ConsumerState<LocalAiSettingsCard> {
+  late final TextEditingController _baseUrl;
+  late final TextEditingController _model;
+  late final TextEditingController _apiKey;
+
+  bool _testing = false;
+  bool _obscure = true;
+  AiStatus? _result;
+
+  @override
+  void initState() {
+    super.initState();
+    final settings = ref.read(assistantSettingsProvider);
+    _baseUrl = TextEditingController(text: settings.baseUrl);
+    _model = TextEditingController(text: settings.model);
+    _apiKey = TextEditingController(text: settings.apiKey);
+  }
+
+  @override
+  void dispose() {
+    _baseUrl.dispose();
+    _model.dispose();
+    _apiKey.dispose();
+    super.dispose();
+  }
+
+  AssistantSettings get _current => AssistantSettings(
+    baseUrl: AssistantSettings.normalizeBaseUrl(_baseUrl.text),
+    model: _model.text.trim(),
+    apiKey: _apiKey.text.trim(),
+    temperature: ref.read(assistantSettingsProvider).temperature,
+  );
+
+  Future<void> _persist({bool haptic = true}) async {
+    await ref.read(assistantSettingsProvider.notifier).update(_current);
+    if (haptic) Haptics.select();
+  }
+
+  Future<void> _test() async {
+    if (_testing) return;
+    Haptics.tap();
+    setState(() {
+      _testing = true;
+      _result = null;
+    });
+    await _persist(haptic: false);
+    final result = await LocalAiService(_current).checkStatus();
+    if (!mounted) return;
+    if (result.isOnline) {
+      Haptics.success();
+      if (_model.text.trim().isEmpty && result.model != null) {
+        _model.text = result.model!;
+        await _persist(haptic: false);
+      }
+    } else {
+      Haptics.warning();
+    }
+    setState(() {
+      _testing = false;
+      _result = result;
+    });
+  }
+
+  void _resetDefaults() {
+    Haptics.select();
+    _baseUrl.text = AssistantSettings.defaultBaseUrl;
+    _model.clear();
+    _apiKey.clear();
+    setState(() => _result = null);
+    _persist();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return ScientificCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: t.accentSoft,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: t.accent.withValues(alpha: 0.22)),
+                ),
+                child: Icon(
+                  Icons.auto_awesome_outlined,
+                  size: 17,
+                  color: t.accent,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'On-device model server',
+                      style: AppTypography.bodyMedium(t.textPrimary)
+                          .copyWith(fontSize: 13),
+                    ),
+                    Text(
+                      'Clearport / llama.cpp · OpenAI-compatible',
+                      style: AppTypography.caption(t.textMuted)
+                          .copyWith(fontSize: 10.5),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _field(
+            label: 'Base URL',
+            controller: _baseUrl,
+            hint: AssistantSettings.defaultBaseUrl,
+            keyboardType: TextInputType.url,
+            onSubmitted: (_) => _persist(),
+          ),
+          const SizedBox(height: 10),
+          _field(
+            label: 'Model ID',
+            controller: _model,
+            hint: 'Leave empty to use the loaded model',
+            onSubmitted: (_) => _persist(),
+          ),
+          const SizedBox(height: 10),
+          _field(
+            label: 'API key (optional)',
+            controller: _apiKey,
+            hint: 'Only if your server requires one',
+            obscure: _obscure,
+            onSubmitted: (_) => _persist(),
+            suffix: IconButton(
+              tooltip: _obscure ? 'Show key' : 'Hide key',
+              icon: Icon(
+                _obscure
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                size: 17,
+                color: t.textMuted,
+              ),
+              onPressed: () => setState(() => _obscure = !_obscure),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _testing ? null : _test,
+                  icon: _testing
+                      ? SizedBox(
+                          width: 13,
+                          height: 13,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.8,
+                            valueColor: AlwaysStoppedAnimation(t.accent),
+                          ),
+                        )
+                      : Icon(
+                          Icons.bolt_outlined,
+                          size: 16,
+                          color: t.textPrimary,
+                        ),
+                  label: Text(_testing ? 'TESTING…' : 'TEST CONNECTION'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                onPressed: _resetDefaults,
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  minimumSize: const Size(0, 38),
+                ),
+                child: const Text('RESET'),
+              ),
+            ],
+          ),
+          if (_result != null) ...[
+            const SizedBox(height: 12),
+            _resultBlock(t, _result!),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _resultBlock(AppTokens t, AiStatus status) {
+    final online = status.isOnline;
+    final color = online ? t.success : t.danger;
+
+    return Container(
+      padding: const EdgeInsets.all(11),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: color.withValues(alpha: 0.28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                online
+                    ? Icons.check_circle_outline_rounded
+                    : Icons.error_outline_rounded,
+                size: 15,
+                color: color,
+              ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  online
+                      ? 'Connected${status.model == null ? '' : ' · ${status.model}'}'
+                      : (status.message ?? 'Could not connect'),
+                  style: AppTypography.caption(t.textPrimary)
+                      .copyWith(fontSize: 11.5),
+                ),
+              ),
+            ],
+          ),
+          if (!online && status.hint != null) ...[
+            const SizedBox(height: 5),
+            Text(
+              status.hint!,
+              style: AppTypography.technicalMono(
+                t.textMuted,
+                fontSize: 9.5,
+              ).copyWith(height: 1.4),
+            ),
+          ],
+          if (online && status.models.length > 1) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final model in status.models.take(4))
+                  GestureDetector(
+                    onTap: () {
+                      Haptics.select();
+                      _model.text = model;
+                      setState(() {});
+                      _persist(haptic: false);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: t.surfaceHigh,
+                        borderRadius: BorderRadius.circular(7),
+                        border: Border.all(color: t.border),
+                      ),
+                      child: Text(
+                        model,
+                        style: AppTypography.technicalMono(
+                          t.textSecondary,
+                          fontSize: 9.5,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _field({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    bool obscure = false,
+    TextInputType? keyboardType,
+    ValueChanged<String>? onSubmitted,
+    Widget? suffix,
+  }) {
+    final t = context.tokens;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: AppTypography.technicalMono(
+            t.textMuted,
+            fontSize: 8.5,
+            weight: FontWeight.w700,
+          ).copyWith(letterSpacing: 1.0),
+        ),
+        const SizedBox(height: 5),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscure,
+          onSubmitted: onSubmitted,
+          style: AppTypography.technicalMono(t.textPrimary, fontSize: 11.5),
+          decoration: InputDecoration(
+            isDense: true,
+            hintText: hint,
+            hintStyle: AppTypography.technicalMono(t.textMuted, fontSize: 11),
+            filled: true,
+            fillColor: t.surfaceHigh,
+            suffixIcon: suffix,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 11,
+              vertical: 11,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: t.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: t.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: t.accent),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

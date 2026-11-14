@@ -129,12 +129,12 @@ class LocalAiService {
         message: 'No response within ${timeout.inSeconds}s.',
         hint: 'Run `clearport start` in Termux, then check the port.',
       );
-    } on http.ClientException catch (e) {
+    } on http.ClientException {
       return AiStatus(
         health: AiHealth.offline,
         message: 'Could not reach the local model.',
         hint:
-            'Start Clearport in Termux, then verify ${modelsUri.host}:${modelsUri.port}. ${e.message}',
+            'Start Clearport in Termux, then verify ${modelsUri.host}:${modelsUri.port}.',
       );
     } on FormatException {
       return const AiStatus(

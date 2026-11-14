@@ -104,6 +104,8 @@ class DashboardScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 26),
+                const _CopilotCard(),
+                const SizedBox(height: 26),
                 SectionHeader(
                   title: 'Recent sessions',
                   actionLabel: 'View all',
@@ -302,6 +304,66 @@ class _HeroPanel extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CopilotCard extends StatelessWidget {
+  const _CopilotCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return ScientificCard(
+      glow: true,
+      borderColor: t.accent.withValues(alpha: 0.24),
+      onTap: () => context.push('/assistant'),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: t.accentSoft,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: t.accent.withValues(alpha: 0.24)),
+            ),
+            child: Icon(Icons.auto_awesome_outlined, size: 22, color: t.accent),
+          ),
+          const SizedBox(width: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Local AI copilot',
+                      style: AppTypography.title(t.textPrimary)
+                          .copyWith(fontSize: 15),
+                    ),
+                    const SizedBox(width: 7),
+                    const StatusBadge(
+                      label: 'On-device',
+                      type: BadgeType.humanObservation,
+                      isCompact: true,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Ask your phone’s model about any session, field or result. Nothing leaves the device.',
+                  style: AppTypography.caption(t.textMuted)
+                      .copyWith(fontSize: 11.5, height: 1.4),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(Icons.arrow_forward_rounded, size: 18, color: t.accent),
+        ],
       ),
     );
   }

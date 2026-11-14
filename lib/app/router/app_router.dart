@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/floating_nav_bar.dart';
 import '../../features/analysis/analysis_workspace_screen.dart';
+import '../../features/assistant/assistant_screen.dart';
 import '../../features/capture/capture_workspace_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/image_review/image_review_screen.dart';
@@ -98,6 +99,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final sessionId = state.pathParameters['sessionId']!;
           return ReportPreviewScreen(sessionId: sessionId);
+        },
+      ),
+      GoRoute(
+        path: '/assistant',
+        builder: (context, state) {
+          final sessionId = state.uri.queryParameters['session'];
+          return AssistantScreen(sessionId: sessionId);
         },
       ),
       GoRoute(
