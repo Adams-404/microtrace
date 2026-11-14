@@ -317,7 +317,7 @@ class _CaptureWorkspaceScreenState
 
           // Bottom Shutter Controls & Captured Fields Filmstrip
           Positioned(
-            bottom: 0,
+            bottom: 96,
             left: 0,
             right: 0,
             child: Column(

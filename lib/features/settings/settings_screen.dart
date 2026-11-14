@@ -38,51 +38,55 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           // Appearance & Theme Section
           Text(
-            'OPTICAL WORKSTATION THEME',
+            'APPEARANCE',
             style: AppTypography.label(textSecondary),
           ),
           const SizedBox(height: 10),
 
           ScientificCard(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.all(8),
+            child: Row(
               children: [
-                _buildThemeOption(
-                  context: context,
-                  ref: ref,
-                  title: 'Dark Scientific Workstation',
-                  subtitle:
-                      'High contrast dark slate optimized for microscopy labs',
-                  icon: Icons.dark_mode_outlined,
-                  mode: AppThemeMode.dark,
-                  current: currentTheme,
-                  textPrimary: textPrimary,
-                  textSecondary: textSecondary,
+                Expanded(
+                  child: _ThemeChoice(
+                    label: 'Darkroom',
+                    hint: 'Default',
+                    mode: AppThemeMode.dark,
+                    current: currentTheme,
+                    swatchBg: AppColors.darkBg,
+                    swatchSurface: AppColors.darkSurface,
+                    onSelect: () => ref
+                        .read(themeModeProvider.notifier)
+                        .setTheme(AppThemeMode.dark),
+                  ),
                 ),
-                const Divider(),
-                _buildThemeOption(
-                  context: context,
-                  ref: ref,
-                  title: 'AMOLED Pure Black (True 0x000000)',
-                  subtitle: 'Zero backlight emission for darkroom fluorescence & oil immersion',
-                  icon: Icons.brightness_2_outlined,
-                  mode: AppThemeMode.amoled,
-                  current: currentTheme,
-                  textPrimary: textPrimary,
-                  textSecondary: textSecondary,
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _ThemeChoice(
+                    label: 'AMOLED',
+                    hint: 'True black',
+                    mode: AppThemeMode.amoled,
+                    current: currentTheme,
+                    swatchBg: AppColors.amoledBg,
+                    swatchSurface: AppColors.amoledSurfaceHigh,
+                    onSelect: () => ref
+                        .read(themeModeProvider.notifier)
+                        .setTheme(AppThemeMode.amoled),
+                  ),
                 ),
-                const Divider(),
-                _buildThemeOption(
-                  context: context,
-                  ref: ref,
-                  title: 'Light Laboratory Daylight',
-                  subtitle: 'Clean neutral daylight surface for bright laboratory benches',
-                  icon: Icons.light_mode_outlined,
-                  mode: AppThemeMode.light,
-                  current: currentTheme,
-                  textPrimary: textPrimary,
-                  textSecondary: textSecondary,
+                const SizedBox(width: 6),
+                Expanded(
+                  child: _ThemeChoice(
+                    label: 'Daylight',
+                    hint: 'Bright bench',
+                    mode: AppThemeMode.light,
+                    current: currentTheme,
+                    swatchBg: AppColors.lightBg,
+                    swatchSurface: AppColors.lightSurface,
+                    onSelect: () => ref
+                        .read(themeModeProvider.notifier)
+                        .setTheme(AppThemeMode.light),
+                  ),
                 ),
               ],
             ),
@@ -262,61 +266,6 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildThemeOption({
-    required BuildContext context,
-    required WidgetRef ref,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required AppThemeMode mode,
-    required AppThemeMode current,
-    required Color textPrimary,
-    required Color textSecondary,
-  }) {
-    final isSelected = current == mode;
-    return InkWell(
-      onTap: () {
-        ref.read(themeModeProvider.notifier).setTheme(mode);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.cyan : textSecondary,
-              size: 22,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTypography.bodyMedium(
-                      isSelected ? AppColors.cyan : textPrimary,
-                    ),
-                  ),
-                  Text(subtitle, style: AppTypography.caption(textSecondary)),
-                ],
-              ),
-            ),
-            Radio<AppThemeMode>(
-              value: mode,
-              groupValue: current,
-              activeColor: AppColors.cyan,
-              onChanged: (val) {
-                if (val != null)
-                  ref.read(themeModeProvider.notifier).setTheme(val);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _storageRow(String label, String value, Color textColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
@@ -329,6 +278,122 @@ class SettingsScreen extends ConsumerWidget {
             style: AppTypography.technicalMono(textColor, fontSize: 11),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ThemeChoice extends StatelessWidget {
+  final String label;
+  final String hint;
+  final AppThemeMode mode;
+  final AppThemeMode current;
+  final Color swatchBg;
+  final Color swatchSurface;
+  final VoidCallback onSelect;
+
+  const _ThemeChoice({
+    required this.label,
+    required this.hint,
+    required this.mode,
+    required this.current,
+    required this.swatchBg,
+    required this.swatchSurface,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = current == mode;
+    const accent = AppColors.cyan;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onSelect,
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: selected ? accent.withValues(alpha: 0.08) : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: selected
+                  ? accent.withValues(alpha: 0.45)
+                  : Colors.transparent,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 46,
+                decoration: BoxDecoration(
+                  color: swatchBg,
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                ),
+                padding: const EdgeInsets.all(6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 18,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: swatchSurface,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.caption(
+                        selected ? accent : AppColors.darkTextPrimary,
+                      ).copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11.5,
+                      ),
+                    ),
+                  ),
+                  if (selected)
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      size: 13,
+                      color: AppColors.cyan,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 1),
+              Text(
+                hint,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.caption(AppColors.darkTextMuted)
+                    .copyWith(fontSize: 9.5),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

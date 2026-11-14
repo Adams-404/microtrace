@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
 import 'status_badge.dart';
 
+/// Transparent instrument header. Separation comes from spacing and the
+/// floating nav, not a hard divider line.
 class ScientificAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String? subtitle;
@@ -21,47 +23,68 @@ class ScientificAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 4);
+  Size get preferredSize => const Size.fromHeight(66);
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final textSecondary = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.lightTextSecondary;
+    final t = context.tokens;
 
     return AppBar(
       leading: leading,
+      leadingWidth: leading == null ? null : 68,
       centerTitle: false,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      toolbarHeight: 66,
+      titleSpacing: leading == null ? 20 : 4,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
-              Text(title, style: AppTypography.title(textPrimary)),
+              Flexible(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.title(t.textPrimary).copyWith(
+                    fontSize: 17,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ),
               if (showOfflineBadge) ...[
                 const SizedBox(width: 8),
                 const StatusBadge(
-                  label: 'OFFLINE',
+                  label: 'Offline',
                   type: BadgeType.pass,
-                  icon: Icons.cloud_off,
                   isCompact: true,
                 ),
               ],
             ],
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: 2),
-            Text(subtitle!, style: AppTypography.caption(textSecondary)),
+            const SizedBox(height: 3),
+            Text(
+              subtitle!.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.technicalMono(
+                t.textMuted,
+                fontSize: 8.5,
+                weight: FontWeight.w500,
+              ).copyWith(letterSpacing: 1.1),
+            ),
           ],
         ],
       ),
-      actions: actions,
+      actions: actions == null
+          ? null
+          : [...actions!, const SizedBox(width: 12)],
     );
   }
 }

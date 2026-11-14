@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/floating_nav_bar.dart';
 import '../../features/analysis/analysis_workspace_screen.dart';
 import '../../features/capture/capture_workspace_screen.dart';
 import '../../features/dashboard/dashboard_screen.dart';
@@ -146,29 +147,30 @@ class _ScaffoldWithNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final selectedIndex = _calculateSelectedIndex(context);
     return Scaffold(
+      extendBody: true,
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
+      bottomNavigationBar: FloatingNavBar(
+        selectedIndex: selectedIndex,
         onTap: (idx) => _onItemTapped(idx, context),
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+          FloatingNavItem(
+            icon: Icons.dashboard_outlined,
+            activeIcon: Icons.dashboard_rounded,
+            label: 'Overview',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt_outlined),
-            activeIcon: Icon(Icons.camera_alt),
+          FloatingNavItem(
+            icon: Icons.camera_alt_outlined,
+            activeIcon: Icons.camera_alt_rounded,
             label: 'Capture',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder_outlined),
-            activeIcon: Icon(Icons.folder),
+          FloatingNavItem(
+            icon: Icons.folder_outlined,
+            activeIcon: Icons.folder_rounded,
             label: 'Sessions',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.extension_outlined),
-            activeIcon: Icon(Icons.extension),
+          FloatingNavItem(
+            icon: Icons.extension_outlined,
+            activeIcon: Icons.extension_rounded,
             label: 'Modules',
           ),
         ],

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_tokens.dart';
 
-/// Clean scientific card with crisp borders, subtle surfaces, and no excessive shadows.
+/// Elevated instrument surface: hairline border, soft top-light gradient and
+/// a single 20px radius. No drop shadows on resting cards so the dark UI stays
+/// flat and calm; the border carries the separation.
 class ScientificCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
@@ -11,35 +13,51 @@ class ScientificCard extends StatelessWidget {
   final Color? backgroundColor;
   final double borderWidth;
   final double borderRadius;
+  final bool glow;
 
   const ScientificCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(18),
     this.onTap,
     this.borderColor,
     this.backgroundColor,
     this.borderWidth = 1.0,
-    this.borderRadius = 10.0,
+    this.borderRadius = 20.0,
+    this.glow = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final t = context.tokens;
+    final base = backgroundColor ?? t.surface;
+    final border = borderColor ?? t.border;
 
-    final defaultBg =
-        backgroundColor ??
-        (isDark ? AppColors.darkSurface : AppColors.lightSurface);
-    final defaultBorder =
-        borderColor ?? (isDark ? AppColors.darkBorder : AppColors.lightBorder);
-
-    Widget content = Container(
+    final content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: defaultBg,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.alphaBlend(
+              Colors.white.withValues(alpha: t.isDark ? 0.035 : 0.0),
+              base,
+            ),
+            base,
+          ],
+        ),
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: defaultBorder, width: borderWidth),
+        border: Border.all(color: border, width: borderWidth),
+        boxShadow: glow
+            ? [
+                BoxShadow(
+                  color: t.accent.withValues(alpha: 0.10),
+                  blurRadius: 28,
+                  spreadRadius: -10,
+                ),
+              ]
+            : null,
       ),
       child: child,
     );

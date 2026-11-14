@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
 
 enum BadgeType {
@@ -12,6 +12,8 @@ enum BadgeType {
   neutral,
 }
 
+/// Status pill. A leading dot carries the state so color is never the only
+/// signal, and the label stays in the mono face for instrument consistency.
 class StatusBadge extends StatelessWidget {
   final String label;
   final BadgeType type;
@@ -28,72 +30,61 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color bg;
-    Color border;
-    Color fg;
+    final t = context.tokens;
 
+    late final Color fg;
     switch (type) {
       case BadgeType.pass:
-        bg = AppColors.passGreen.withOpacity(0.12);
-        border = AppColors.passGreen.withOpacity(0.4);
-        fg = AppColors.passGreen;
+        fg = t.success;
         break;
       case BadgeType.warning:
-        bg = AppColors.warningAmber.withOpacity(0.12);
-        border = AppColors.warningAmber.withOpacity(0.4);
-        fg = AppColors.warningAmber;
+        fg = t.warning;
         break;
       case BadgeType.danger:
-        bg = AppColors.dangerRose.withOpacity(0.12);
-        border = AppColors.dangerRose.withOpacity(0.4);
-        fg = AppColors.dangerRose;
+        fg = t.danger;
         break;
       case BadgeType.modelPrediction:
-        bg = AppColors.modelPredictionPurple.withOpacity(0.12);
-        border = AppColors.modelPredictionPurple.withOpacity(0.45);
-        fg = const Color(0xFFA78BFA);
+        fg = t.violet;
         break;
       case BadgeType.humanObservation:
-        bg = AppColors.cyan.withOpacity(0.12);
-        border = AppColors.cyan.withOpacity(0.45);
-        fg = AppColors.cyan;
+        fg = t.accent;
         break;
       case BadgeType.neutral:
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        bg = isDark
-            ? AppColors.darkSurfaceSubtle
-            : AppColors.lightSurfaceSubtle;
-        border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-        fg = isDark
-            ? AppColors.darkTextSecondary
-            : AppColors.lightTextSecondary;
+        fg = t.textSecondary;
         break;
     }
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isCompact ? 6 : 9,
-        vertical: isCompact ? 2 : 4,
+        horizontal: isCompact ? 8 : 10,
+        vertical: isCompact ? 3 : 5,
       ),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: border, width: 1),
+        color: fg.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: fg.withValues(alpha: 0.24)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: isCompact ? 11 : 13, color: fg),
-            const SizedBox(width: 4),
+            Icon(icon, size: isCompact ? 11 : 12, color: fg),
+            const SizedBox(width: 5),
+          ] else ...[
+            Container(
+              width: isCompact ? 4.5 : 5.5,
+              height: isCompact ? 4.5 : 5.5,
+              decoration: BoxDecoration(color: fg, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 5),
           ],
           Text(
             label.toUpperCase(),
             style: AppTypography.technicalMono(
               fg,
-              fontSize: isCompact ? 10 : 11,
-              weight: FontWeight.w600,
-            ),
+              fontSize: isCompact ? 9 : 10,
+              weight: FontWeight.w700,
+            ).copyWith(letterSpacing: 0.5),
           ),
         ],
       ),

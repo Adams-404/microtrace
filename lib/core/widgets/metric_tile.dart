@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
 import 'scientific_card.dart';
 
@@ -24,45 +24,57 @@ class MetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final textSecondary = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.lightTextSecondary;
+    final t = context.tokens;
+    final accent = accentColor ?? t.accent;
 
     return ScientificCard(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.all(15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label.toUpperCase(),
-                style: AppTypography.label(textSecondary),
+              Expanded(
+                child: Text(
+                  label.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.label(t.textMuted).copyWith(
+                    fontSize: 9.5,
+                    letterSpacing: 1.0,
+                  ),
+                ),
               ),
               if (icon != null)
-                Icon(icon, size: 16, color: accentColor ?? textSecondary),
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(9),
+                    border: Border.all(color: accent.withValues(alpha: 0.16)),
+                  ),
+                  child: Icon(icon, size: 15, color: accent),
+                ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 12),
           Text(
             value,
-            style: AppTypography.technicalMono(
-              textPrimary,
-              fontSize: 20,
-              weight: FontWeight.w700,
-            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.number(t.textPrimary, fontSize: 22),
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: 2),
-            Text(subtitle!, style: AppTypography.caption(textSecondary)),
+            const SizedBox(height: 3),
+            Text(
+              subtitle!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.caption(t.textMuted).copyWith(fontSize: 11),
+            ),
           ],
         ],
       ),

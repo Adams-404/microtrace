@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../app/theme/app_colors.dart';
-import '../../app/theme/app_theme.dart';
+import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
-import '../../app/theme/theme_provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/widgets/app_icon_button.dart';
 import '../../core/widgets/metric_tile.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
+import '../../core/widgets/section_header.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../shared/models/analysis_run.dart';
 import '../../shared/models/session.dart';
@@ -24,22 +24,9 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final sessions = ref.watch(sessionRepositoryProvider);
     final storage = ref.watch(storageServiceProvider);
-    final currentTheme = ref.watch(themeModeProvider);
+    final t = context.tokens;
 
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final textSecondary = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.lightTextSecondary;
-
-    // Derived statistics
-    final totalFields = sessions.fold<int>(
-      0,
-      (sum, s) => sum + s.images.length,
-    );
+    final totalFields = sessions.fold<int>(0, (sum, s) => sum + s.images.length);
     final pendingReviews = sessions.fold<int>(
       0,
       (sum, s) =>
@@ -53,130 +40,26 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: ScientificAppBar(
+        leading: const _BrandMark(),
         title: AppConstants.appName,
-        subtitle: 'PORTABLE OPTICAL MICROSCOPY WORKSTATION',
+        subtitle: 'Field microscopy workstation',
         actions: [
-          IconButton(
-            tooltip: 'Toggle Theme (Light / Dark / AMOLED)',
-            icon: Icon(
-              currentTheme == AppThemeMode.light
-                  ? Icons.light_mode
-                  : (currentTheme == AppThemeMode.dark
-                        ? Icons.dark_mode
-                        : Icons.brightness_2),
-              size: 20,
-            ),
-            onPressed: () {
-              final nextIndex =
-                  (currentTheme.index + 1) % AppThemeMode.values.length;
-              ref
-                  .read(themeModeProvider.notifier)
-                  .setTheme(AppThemeMode.values[nextIndex]);
-            },
-          ),
-          IconButton(
-            tooltip: 'Workstation Settings',
-            icon: const Icon(Icons.tune, size: 20),
+          AppIconButton(
+            icon: Icons.tune_rounded,
+            tooltip: 'Workstation settings',
             onPressed: () => context.push('/settings'),
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.fromLTRB(20, 6, 20, 132),
         children: [
-          // Primary Action: Start Session
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDark
-                    ? [const Color(0xFF0C4A6E), const Color(0xFF0369A1)]
-                    : [const Color(0xFFE0F2FE), const Color(0xFFBAE6FD)],
-              ),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.cyan.withOpacity(0.4)),
-            ),
-            padding: const EdgeInsets.all(18),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const StatusBadge(
-                            label: 'OPTICAL ADAPTER READY',
-                            type: BadgeType.pass,
-                            icon: Icons.check_circle_outline,
-                            isCompact: true,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'FIELD LAB MODE',
-                            style: AppTypography.technicalMono(
-                              isDark
-                                  ? Colors.white70
-                                  : AppColors.lightTextSecondary,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Start Microscopy Session',
-                        style: AppTypography.headline(
-                          isDark ? Colors.white : AppColors.lightTextPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Mount phone adapter to eyepiece, configure slide metadata, and acquire calibrated fields.',
-                        style: AppTypography.body(
-                          isDark
-                              ? Colors.white70
-                              : AppColors.lightTextSecondary,
-                        ).copyWith(fontSize: 13),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 14),
-                ElevatedButton(
-                  onPressed: () => context.push('/new-session'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.cyan,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add_a_photo_outlined, size: 18),
-                      SizedBox(width: 6),
-                      Text(
-                        'NEW SESSION',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          _HeroPanel(
+            onStart: () => context.push('/new-session'),
           ),
-
-          const SizedBox(height: 20),
-
-          // Workspace Telemetry Grid
+          const SizedBox(height: 24),
+          const SectionHeader(title: 'Workstation telemetry'),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -184,7 +67,7 @@ class DashboardScreen extends ConsumerWidget {
                   label: 'Sessions',
                   value: '${sessions.length}',
                   subtitle: 'Logged offline',
-                  icon: Icons.folder_open,
+                  icon: Icons.folder_open_rounded,
                 ),
               ),
               const SizedBox(width: 12),
@@ -192,9 +75,9 @@ class DashboardScreen extends ConsumerWidget {
                 child: MetricTile(
                   label: 'Fields',
                   value: '$totalFields',
-                  subtitle: 'Microscopic images',
-                  icon: Icons.filter_center_focus,
-                  accentColor: AppColors.cyan,
+                  subtitle: 'Captured images',
+                  icon: Icons.filter_center_focus_rounded,
+                  accentColor: t.accent,
                 ),
               ),
             ],
@@ -204,19 +87,17 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: MetricTile(
-                  label: 'Pending Reviews',
+                  label: 'Pending',
                   value: '$pendingReviews',
-                  subtitle: 'Awaiting human sign-off',
+                  subtitle: 'Awaiting sign-off',
                   icon: Icons.rate_review_outlined,
-                  accentColor: pendingReviews > 0
-                      ? AppColors.warningAmber
-                      : AppColors.passGreen,
+                  accentColor: pendingReviews > 0 ? t.warning : t.success,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: MetricTile(
-                  label: 'Local Storage',
+                  label: 'Storage',
                   value: Formatters.formatBytes(storage.totalBytes),
                   subtitle: 'Images & models',
                   icon: Icons.sd_storage_outlined,
@@ -225,317 +106,466 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ],
           ),
-
-          const SizedBox(height: 24),
-
-          // Recent Sessions Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
+          const SizedBox(height: 26),
+          SectionHeader(
+            title: 'Recent sessions',
+            actionLabel: 'View all',
+            onAction: () => context.push('/sessions'),
+          ),
+          const SizedBox(height: 12),
+          if (sessions.isEmpty)
+            ScientificCard(
+              child: Column(
                 children: [
-                  Text(
-                    'RECENT SESSIONS',
-                    style: AppTypography.label(textSecondary),
-                  ),
-                  const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 1,
-                    ),
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? AppColors.darkSurfaceSubtle
-                          : AppColors.lightSurfaceSubtle,
-                      borderRadius: BorderRadius.circular(10),
+                      color: t.accentSoft,
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Text(
-                      '${sessions.length}',
-                      style: AppTypography.technicalMono(
-                        textSecondary,
-                        fontSize: 10,
+                    child: Icon(
+                      Icons.biotech_outlined,
+                      size: 24,
+                      color: t.accent,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'No sessions yet',
+                    style: AppTypography.title(t.textPrimary),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Capture your first calibrated field to populate the workstation.',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.caption(t.textMuted),
+                  ),
+                ],
+              ),
+            )
+          else
+            for (final session in sessions.take(3))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _SessionRow(
+                  session: session,
+                  onTap: () => context.push('/session/${session.id}'),
+                ),
+              ),
+          const SizedBox(height: 18),
+          SectionHeader(
+            title: 'Analysis module',
+            actionLabel: 'Catalog',
+            onAction: () => context.push('/modules'),
+          ),
+          const SizedBox(height: 12),
+          const _ModuleCard(),
+          const SizedBox(height: 20),
+          const _DisclaimerNote(),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _BrandMark extends StatelessWidget {
+  const _BrandMark();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 8),
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              t.accent.withValues(alpha: 0.22),
+              t.accent.withValues(alpha: 0.06),
+            ],
+          ),
+          border: Border.all(color: t.accent.withValues(alpha: 0.30)),
+        ),
+        child: Icon(Icons.center_focus_strong_rounded, color: t.accent, size: 20),
+      ),
+    );
+  }
+}
+
+class _HeroPanel extends StatelessWidget {
+  final VoidCallback onStart;
+
+  const _HeroPanel({required this.onStart});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    final titleColor = t.isDark ? Colors.white : t.textPrimary;
+    final bodyColor = t.isDark
+        ? Colors.white.withValues(alpha: 0.66)
+        : t.textSecondary;
+    final metaColor = t.isDark
+        ? Colors.white.withValues(alpha: 0.42)
+        : t.textMuted;
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: t.heroGradient,
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: t.accent.withValues(alpha: 0.18)),
+        boxShadow: [
+          BoxShadow(
+            color: t.accent.withValues(alpha: t.isDark ? 0.10 : 0.14),
+            blurRadius: 40,
+            spreadRadius: -18,
+            offset: const Offset(0, 16),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(26),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -70,
+              top: -80,
+              child: Container(
+                width: 230,
+                height: 230,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: t.accent.withValues(alpha: 0.14),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: -20,
+              top: -30,
+              child: Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: t.accent.withValues(alpha: 0.16),
+                    width: 1,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 24,
+              top: 24,
+              child: Icon(
+                Icons.adjust_rounded,
+                size: 74,
+                color: t.accent.withValues(alpha: 0.12),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const StatusBadge(
+                        label: 'Adapter ready',
+                        type: BadgeType.pass,
+                        isCompact: true,
+                      ),
+                      const Spacer(),
+                      Text(
+                        '40× · BF',
+                        style: AppTypography.technicalMono(
+                          metaColor,
+                          fontSize: 9.5,
+                        ).copyWith(letterSpacing: 1.0),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 26),
+                  Text(
+                    'Start a microscopy\nsession',
+                    style: AppTypography.display(titleColor).copyWith(
+                      fontSize: 27,
+                      height: 1.12,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Mount the adapter, configure slide metadata and acquire calibrated fields.',
+                    style: AppTypography.body(bodyColor).copyWith(fontSize: 13),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: onStart,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_a_photo_outlined, size: 18),
+                          SizedBox(width: 8),
+                          Text('New session'),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: () => context.push('/sessions'),
-                child: Row(
-                  children: [
-                    Text(
-                      'VIEW ALL',
-                      style: AppTypography.technicalMono(
-                        AppColors.cyan,
-                        fontSize: 11,
-                        weight: FontWeight.w700,
-                      ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: AppColors.cyan,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SessionRow extends StatelessWidget {
+  final MicroscopySession session;
+  final VoidCallback onTap;
+
+  const _SessionRow({required this.session, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+    final preview = session.images.isNotEmpty
+        ? session.images.first.assetPath
+        : null;
+
+    return ScientificCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 52,
+              height: 52,
+              child: preview != null
+                  ? Image.asset(
+                      preview,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => _thumbFallback(t),
+                    )
+                  : _thumbFallback(t),
+            ),
           ),
-
-          const SizedBox(height: 8),
-
-          // Recent Sessions List
-          if (sessions.isEmpty)
-            ScientificCard(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.biotech_outlined,
-                        size: 40,
-                        color: textSecondary,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'No microscopy sessions yet',
-                        style: AppTypography.body(textPrimary),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Tap "New Session" to start your first microscope acquisition.',
-                        style: AppTypography.caption(textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            )
-          else
-            for (final session in sessions.take(3)) ...[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: ScientificCard(
-                  onTap: () => context.push('/session/${session.id}'),
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                session.specimenCode,
-                                style: AppTypography.technicalMono(
-                                  AppColors.cyan,
-                                  fontSize: 13,
-                                  weight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              StatusBadge(
-                                label: session.status.displayName,
-                                type: session.status == SessionStatus.reviewed
-                                    ? BadgeType.pass
-                                    : (session.status == SessionStatus.completed
-                                          ? BadgeType.humanObservation
-                                          : BadgeType.warning),
-                                isCompact: true,
-                              ),
-                            ],
-                          ),
-                          Text(
-                            Formatters.formatShortDate(session.createdAt),
-                            style: AppTypography.caption(textSecondary),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        session.title,
-                        style: AppTypography.title(textPrimary)
-                            .copyWith(fontSize: 15),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.category_outlined,
-                            size: 13,
-                            color: textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            session.specimenType,
-                            style: AppTypography.caption(textSecondary),
-                          ),
-                          const SizedBox(width: 12),
-                          Icon(
-                            Icons.photo_library_outlined,
-                            size: 13,
-                            color: textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${session.images.length} fields',
-                            style: AppTypography.caption(textSecondary),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-
-          const SizedBox(height: 20),
-
-          // Analysis Modules Preview Card
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'INSTALLED MODULES & MODELS',
-                style: AppTypography.label(textSecondary),
-              ),
-              TextButton(
-                onPressed: () => context.push('/modules'),
-                child: Row(
-                  children: [
-                    Text(
-                      'CATALOG',
-                      style: AppTypography.technicalMono(
-                        AppColors.cyan,
-                        fontSize: 11,
-                        weight: FontWeight.w700,
-                      ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: AppColors.cyan,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          ScientificCard(
-            padding: const EdgeInsets.all(16),
+          const SizedBox(width: 12),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.cyan.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Icon(
-                        Icons.spa_outlined,
-                        color: AppColors.cyan,
-                        size: 22,
-                      ),
+                    Text(
+                      session.specimenCode,
+                      style: AppTypography.technicalMono(
+                        t.accent,
+                        fontSize: 10.5,
+                        weight: FontWeight.w700,
+                      ).copyWith(letterSpacing: 0.6),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Mycology Patch Classifier',
-                                style: AppTypography.title(textPrimary)
-                                    .copyWith(fontSize: 15),
-                              ),
-                              const SizedBox(width: 8),
-                              const StatusBadge(
-                                label: 'READY',
-                                type: BadgeType.pass,
-                                isCompact: true,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'DeFungi 5-Class Morphology • MobileNetV3-Small LiteRT Float16',
-                            style: AppTypography.caption(textSecondary),
-                          ),
-                        ],
-                      ),
+                    const SizedBox(width: 8),
+                    StatusBadge(
+                      label: session.status.displayName,
+                      type: session.status == SessionStatus.reviewed
+                          ? BadgeType.pass
+                          : (session.status == SessionStatus.completed
+                                ? BadgeType.humanObservation
+                                : BadgeType.warning),
+                      isCompact: true,
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
-                const Divider(),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Upcoming: Parasitology, Malaria Smear, Hemocytometry',
-                      style: AppTypography.caption(textSecondary)
-                          .copyWith(fontSize: 11),
-                    ),
-                    GestureDetector(
-                      onTap: () => context.push('/models'),
-                      child: Text(
-                        'MANAGE MODELS',
-                        style: AppTypography.technicalMono(
-                          AppColors.cyan,
-                          fontSize: 10,
-                          weight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 5),
+                Text(
+                  session.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.title(t.textPrimary)
+                      .copyWith(fontSize: 14.5),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${session.specimenType} · ${session.images.length} fields · ${Formatters.formatShortDate(session.createdAt)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption(t.textMuted)
+                      .copyWith(fontSize: 11),
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 6),
+          Icon(Icons.chevron_right_rounded, size: 20, color: t.textMuted),
+        ],
+      ),
+    );
+  }
 
-          const SizedBox(height: 24),
+  Widget _thumbFallback(AppTokens t) {
+    return Container(
+      color: t.surfaceHigh,
+      child: Icon(Icons.biotech_outlined, size: 22, color: t.textMuted),
+    );
+  }
+}
 
-          // Scientific Safety Reminder
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppColors.darkSurfaceSubtle
-                  : AppColors.lightSurfaceSubtle,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.gavel_outlined,
-                  size: 16,
-                  color: AppColors.cyan,
+class _ModuleCard extends StatelessWidget {
+  const _ModuleCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return ScientificCard(
+      glow: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: t.accentSoft,
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: t.accent.withValues(alpha: 0.18)),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'MICROTRACE is an offline-first research and laboratory decision-support tool. '
-                    'Automated model outputs are consultative and require human microscopist verification.',
-                    style: AppTypography.caption(textSecondary)
-                        .copyWith(fontSize: 11, height: 1.4),
+                child: Icon(Icons.spa_outlined, color: t.accent, size: 21),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Mycology Patch Classifier',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.title(t.textPrimary)
+                                .copyWith(fontSize: 15),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const StatusBadge(
+                          label: 'Ready',
+                          type: BadgeType.pass,
+                          isCompact: true,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'DeFungi 5-class morphology · MobileNetV3-Small · Float16',
+                      maxLines: 2,
+                      style: AppTypography.caption(t.textMuted)
+                          .copyWith(fontSize: 11),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(99),
+                  child: LinearProgressIndicator(
+                    value: 0.72,
+                    minHeight: 5,
+                    backgroundColor: t.surfaceHigh,
+                    valueColor: AlwaysStoppedAnimation(t.accent),
                   ),
                 ),
-              ],
+              ),
+              const SizedBox(width: 12),
+              Text(
+                '72%',
+                style: AppTypography.technicalMono(
+                  t.textMuted,
+                  fontSize: 10,
+                  weight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Icon(Icons.schedule_rounded, size: 13, color: t.textMuted),
+              const SizedBox(width: 5),
+              Text(
+                'Median inference 480 ms · on-device',
+                style: AppTypography.caption(t.textMuted).copyWith(fontSize: 11),
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () => context.push('/models'),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  minimumSize: const Size(0, 32),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Manage'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DisclaimerNote extends StatelessWidget {
+  const _DisclaimerNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tokens;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: t.surface.withValues(alpha: t.isDark ? 0.5 : 1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: t.border),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.verified_user_outlined, size: 16, color: t.textMuted),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Text(
+              'Decision-support only. Model outputs require human microscopist verification '
+              'and are never transmitted off-device.',
+              style: AppTypography.caption(t.textMuted).copyWith(
+                fontSize: 11,
+                height: 1.45,
+              ),
             ),
           ),
         ],

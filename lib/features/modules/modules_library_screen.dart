@@ -44,7 +44,7 @@ class ModulesLibraryScreen extends ConsumerWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 132),
         children: [
           // Platform Architecture Intro
           ScientificCard(

@@ -168,7 +168,7 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 132),
                     itemCount: filteredSessions.length,
                     itemBuilder: (context, index) {
                       final session = filteredSessions[index];

@@ -11,9 +11,10 @@ void main() {
     // Initial pump and settle
     await tester.pumpAndSettle();
 
-    // Verify MICROTRACE title and core workspace headers
+    // Verify brand, hero action and telemetry sections render
     expect(find.text('MICROTRACE'), findsWidgets);
-    expect(find.text('Start Microscopy Session'), findsOneWidget);
-    expect(find.text('RECENT SESSIONS'), findsOneWidget);
+    expect(find.textContaining('Start a microscopy'), findsOneWidget);
+    expect(find.text('Workstation telemetry'), findsOneWidget);
+    expect(find.text('New session'), findsOneWidget);
   });
 }
