@@ -49,7 +49,9 @@ class MicroscopeReticleOverlay extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.65),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppColors.cyan.withOpacity(0.4)),
+                    border: Border.all(
+                      color: AppColors.signal.withOpacity(0.4),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -177,17 +179,17 @@ class _ReticlePainter extends CustomPainter {
     final radius = math.min(size.width, size.height) * 0.44;
 
     final ringPaint = Paint()
-      ..color = AppColors.cyan.withOpacity(0.4)
+      ..color = AppColors.signal.withOpacity(0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
     final subRingPaint = Paint()
-      ..color = AppColors.cyan.withOpacity(0.2)
+      ..color = AppColors.signal.withOpacity(0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.8;
 
     final crosshairPaint = Paint()
-      ..color = AppColors.cyan.withOpacity(0.35)
+      ..color = AppColors.signal.withOpacity(0.35)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -230,7 +232,7 @@ class _ReticlePainter extends CustomPainter {
 
       // Micrometer tick marks along horizontal and vertical axes
       final tickPaint = Paint()
-        ..color = AppColors.cyan.withOpacity(0.5)
+        ..color = AppColors.signal.withOpacity(0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
 

@@ -170,7 +170,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
             tooltip: 'Toggle ROI Overlays',
             icon: Icon(
               _showOverlays ? Icons.layers : Icons.layers_clear,
-              color: _showOverlays ? AppColors.cyan : textSecondary,
+              color: _showOverlays ? AppColors.signal : textSecondary,
               size: 20,
             ),
             onPressed: () => setState(() => _showOverlays = !_showOverlays),
@@ -259,7 +259,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
             borderColor: _currentStatus == ReviewStatus.confirmed
                 ? AppColors.passGreen.withOpacity(0.6)
                 : (_currentStatus == ReviewStatus.corrected
-                      ? AppColors.cyan.withOpacity(0.6)
+                      ? AppColors.signal.withOpacity(0.6)
                       : null),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,7 +274,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
                     Text(
                       'CONFIDENCE: ${Formatters.formatPercentage(run.topPrediction.confidence)}',
                       style: AppTypography.technicalMono(
-                        AppColors.cyan,
+                        AppColors.signal,
                         fontSize: 12,
                         weight: FontWeight.w700,
                       ),
@@ -305,7 +305,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
                 ] else ...[
                   Text(
                     run.topPrediction.scientificName,
-                    style: AppTypography.caption(AppColors.cyan)
+                    style: AppTypography.caption(AppColors.signal)
                         .copyWith(fontStyle: FontStyle.italic),
                   ),
                 ],
@@ -362,7 +362,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
                             backgroundColor: isDark
                                 ? AppColors.darkBorder
                                 : AppColors.lightBorder,
-                            color: AppColors.cyan.withOpacity(0.7),
+                            color: AppColors.signal.withOpacity(0.7),
                             minHeight: 3,
                             borderRadius: BorderRadius.circular(1.5),
                           ),
@@ -399,7 +399,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
                   label: 'CORRECT',
                   status: ReviewStatus.corrected,
                   icon: Icons.edit_note,
-                  color: AppColors.cyan,
+                  color: AppColors.signal,
                   onCustomTap: _showCorrectionDialog,
                 ),
               ),
@@ -458,7 +458,7 @@ class _ResultsReviewScreenState extends ConsumerState<ResultsReviewScreen> {
           FilledButton(
             onPressed: _saveReview,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.cyanDark,
+              backgroundColor: AppColors.signalDeep,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),

@@ -4,11 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/haptics.dart';
 import '../../core/widgets/app_icon_button.dart';
 import '../../core/widgets/metric_tile.dart';
-import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
 import '../../core/widgets/section_header.dart';
 import '../../core/widgets/status_badge.dart';
@@ -26,7 +25,10 @@ class DashboardScreen extends ConsumerWidget {
     final storage = ref.watch(storageServiceProvider);
     final t = context.tokens;
 
-    final totalFields = sessions.fold<int>(0, (sum, s) => sum + s.images.length);
+    final totalFields = sessions.fold<int>(
+      0,
+      (sum, s) => sum + s.images.length,
+    );
     final pendingReviews = sessions.fold<int>(
       0,
       (sum, s) =>
@@ -39,166 +41,144 @@ class DashboardScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: ScientificAppBar(
-        leading: const _BrandMark(),
-        title: AppConstants.appName,
-        subtitle: 'Field microscopy workstation',
-        actions: [
-          AppIconButton(
-            icon: Icons.tune_rounded,
-            tooltip: 'Workstation settings',
-            onPressed: () => context.push('/settings'),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 6, 20, 132),
-        children: [
-          _HeroPanel(
-            onStart: () => context.push('/new-session'),
-          ),
-          const SizedBox(height: 24),
-          const SectionHeader(title: 'Workstation telemetry'),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: MetricTile(
-                  label: 'Sessions',
-                  value: '${sessions.length}',
-                  subtitle: 'Logged offline',
-                  icon: Icons.folder_open_rounded,
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            ListView(
+              padding: const EdgeInsets.fromLTRB(20, 58, 20, 132),
+              children: [
+                _HeroPanel(
+                  onStart: () {
+                    Haptics.tap();
+                    context.push('/new-session');
+                  },
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: MetricTile(
-                  label: 'Fields',
-                  value: '$totalFields',
-                  subtitle: 'Captured images',
-                  icon: Icons.filter_center_focus_rounded,
-                  accentColor: t.accent,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: MetricTile(
-                  label: 'Pending',
-                  value: '$pendingReviews',
-                  subtitle: 'Awaiting sign-off',
-                  icon: Icons.rate_review_outlined,
-                  accentColor: pendingReviews > 0 ? t.warning : t.success,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: MetricTile(
-                  label: 'Storage',
-                  value: Formatters.formatBytes(storage.totalBytes),
-                  subtitle: 'Images & models',
-                  icon: Icons.sd_storage_outlined,
-                  onTap: () => context.push('/settings'),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 26),
-          SectionHeader(
-            title: 'Recent sessions',
-            actionLabel: 'View all',
-            onAction: () => context.push('/sessions'),
-          ),
-          const SizedBox(height: 12),
-          if (sessions.isEmpty)
-            ScientificCard(
-              child: Column(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: t.accentSoft,
-                      borderRadius: BorderRadius.circular(14),
+                const SizedBox(height: 24),
+                const SectionHeader(title: 'Workstation telemetry'),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: MetricTile(
+                        label: 'Sessions',
+                        value: '${sessions.length}',
+                        subtitle: 'Logged offline',
+                        icon: Icons.folder_open_rounded,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.biotech_outlined,
-                      size: 24,
-                      color: t.accent,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: MetricTile(
+                        label: 'Fields',
+                        value: '$totalFields',
+                        subtitle: 'Captured images',
+                        icon: Icons.filter_center_focus_rounded,
+                        accentColor: t.accent,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'No sessions yet',
-                    style: AppTypography.title(t.textPrimary),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Capture your first calibrated field to populate the workstation.',
-                    textAlign: TextAlign.center,
-                    style: AppTypography.caption(t.textMuted),
-                  ),
-                ],
-              ),
-            )
-          else
-            for (final session in sessions.take(3))
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _SessionRow(
-                  session: session,
-                  onTap: () => context.push('/session/${session.id}'),
+                  ],
                 ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: MetricTile(
+                        label: 'Pending',
+                        value: '$pendingReviews',
+                        subtitle: 'Awaiting sign-off',
+                        icon: Icons.rate_review_outlined,
+                        accentColor: pendingReviews > 0 ? t.warning : t.success,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: MetricTile(
+                        label: 'Storage',
+                        value: Formatters.formatBytes(storage.totalBytes),
+                        subtitle: 'Images & models',
+                        icon: Icons.sd_storage_outlined,
+                        onTap: () => context.push('/settings'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 26),
+                SectionHeader(
+                  title: 'Recent sessions',
+                  actionLabel: 'View all',
+                  onAction: () => context.push('/sessions'),
+                ),
+                const SizedBox(height: 12),
+                if (sessions.isEmpty)
+                  ScientificCard(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: t.accentSoft,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(
+                            Icons.biotech_outlined,
+                            size: 24,
+                            color: t.accent,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          'No sessions yet',
+                          style: AppTypography.title(t.textPrimary),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Capture your first calibrated field to populate the workstation.',
+                          textAlign: TextAlign.center,
+                          style: AppTypography.caption(t.textMuted),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  for (final session in sessions.take(3))
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: _SessionRow(
+                        session: session,
+                        onTap: () => context.push('/session/${session.id}'),
+                      ),
+                    ),
+                const SizedBox(height: 18),
+                SectionHeader(
+                  title: 'Analysis module',
+                  actionLabel: 'Catalog',
+                  onAction: () => context.push('/modules'),
+                ),
+                const SizedBox(height: 12),
+                const _ModuleCard(),
+                const SizedBox(height: 20),
+                const _DisclaimerNote(),
+              ],
+            ),
+            Positioned(
+              top: 8,
+              right: 20,
+              child: AppIconButton(
+                icon: Icons.tune_rounded,
+                tooltip: 'Workstation settings',
+                onPressed: () => context.push('/settings'),
               ),
-          const SizedBox(height: 18),
-          SectionHeader(
-            title: 'Analysis module',
-            actionLabel: 'Catalog',
-            onAction: () => context.push('/modules'),
-          ),
-          const SizedBox(height: 12),
-          const _ModuleCard(),
-          const SizedBox(height: 20),
-          const _DisclaimerNote(),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-
-class _BrandMark extends StatelessWidget {
-  const _BrandMark();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.tokens;
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 8),
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              t.accent.withValues(alpha: 0.22),
-              t.accent.withValues(alpha: 0.06),
-            ],
-          ),
-          border: Border.all(color: t.accent.withValues(alpha: 0.30)),
-        ),
-        child: Icon(Icons.center_focus_strong_rounded, color: t.accent, size: 20),
-      ),
-    );
-  }
-}
 
 class _HeroPanel extends StatelessWidget {
   final VoidCallback onStart;
@@ -208,25 +188,21 @@ class _HeroPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.tokens;
-    final titleColor = t.isDark ? Colors.white : t.textPrimary;
-    final bodyColor = t.isDark
-        ? Colors.white.withValues(alpha: 0.66)
-        : t.textSecondary;
-    final metaColor = t.isDark
-        ? Colors.white.withValues(alpha: 0.42)
-        : t.textMuted;
+    final titleColor = t.textPrimary;
+    final bodyColor = t.textSecondary;
+    final metaColor = t.textMuted;
 
     return Container(
       decoration: BoxDecoration(
-        gradient: t.heroGradient,
+        color: t.heroSurface,
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: t.accent.withValues(alpha: 0.18)),
+        border: Border.all(color: t.accent.withValues(alpha: 0.22)),
         boxShadow: [
           BoxShadow(
-            color: t.accent.withValues(alpha: t.isDark ? 0.10 : 0.14),
-            blurRadius: 40,
-            spreadRadius: -18,
-            offset: const Offset(0, 16),
+            color: t.accent.withValues(alpha: t.isDark ? 0.07 : 0.10),
+            blurRadius: 34,
+            spreadRadius: -16,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
@@ -298,10 +274,8 @@ class _HeroPanel extends StatelessWidget {
                   const SizedBox(height: 26),
                   Text(
                     'Start a microscopy\nsession',
-                    style: AppTypography.display(titleColor).copyWith(
-                      fontSize: 27,
-                      height: 1.12,
-                    ),
+                    style: AppTypography.display(titleColor)
+                        .copyWith(fontSize: 27, height: 1.12),
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -519,11 +493,15 @@ class _ModuleCard extends StatelessWidget {
               const SizedBox(width: 5),
               Text(
                 'Median inference 480 ms · on-device',
-                style: AppTypography.caption(t.textMuted).copyWith(fontSize: 11),
+                style: AppTypography.caption(t.textMuted)
+                    .copyWith(fontSize: 11),
               ),
               const Spacer(),
               TextButton(
-                onPressed: () => context.push('/models'),
+                onPressed: () {
+                  Haptics.tap();
+                  context.push('/models');
+                },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   minimumSize: const Size(0, 32),
@@ -562,10 +540,8 @@ class _DisclaimerNote extends StatelessWidget {
             child: Text(
               'Decision-support only. Model outputs require human microscopist verification '
               'and are never transmitted off-device.',
-              style: AppTypography.caption(t.textMuted).copyWith(
-                fontSize: 11,
-                height: 1.45,
-              ),
+              style: AppTypography.caption(t.textMuted)
+                  .copyWith(fontSize: 11, height: 1.45),
             ),
           ),
         ],

@@ -23,7 +23,7 @@ class AppTokens extends ThemeExtension<AppTokens> {
   final Color warning;
   final Color danger;
   final Color violet;
-  final LinearGradient heroGradient;
+  final Color heroSurface;
   final bool isDark;
 
   const AppTokens({
@@ -42,7 +42,7 @@ class AppTokens extends ThemeExtension<AppTokens> {
     required this.warning,
     required this.danger,
     required this.violet,
-    required this.heroGradient,
+    required this.heroSurface,
     required this.isDark,
   });
 
@@ -55,14 +55,14 @@ class AppTokens extends ThemeExtension<AppTokens> {
     textPrimary: AppColors.darkTextPrimary,
     textSecondary: AppColors.darkTextSecondary,
     textMuted: AppColors.darkTextMuted,
-    accent: AppColors.cyan,
-    accentSoft: Color(0x1F4CC9F0),
-    onAccent: Color(0xFF04131C),
+    accent: AppColors.signal,
+    accentSoft: Color(0x1FC8F751),
+    onAccent: AppColors.signalInk,
     success: AppColors.passGreen,
     warning: AppColors.warningAmber,
     danger: AppColors.dangerRose,
     violet: AppColors.modelPredictionPurple,
-    heroGradient: AppColors.heroGradientDark,
+    heroSurface: Color(0xFF161D1D),
     isDark: true,
   );
 
@@ -75,19 +75,14 @@ class AppTokens extends ThemeExtension<AppTokens> {
     textPrimary: AppColors.amoledTextPrimary,
     textSecondary: AppColors.amoledTextSecondary,
     textMuted: AppColors.amoledTextMuted,
-    accent: AppColors.cyan,
-    accentSoft: Color(0x1F4CC9F0),
-    onAccent: Color(0xFF04131C),
+    accent: AppColors.signal,
+    accentSoft: Color(0x1FC8F751),
+    onAccent: AppColors.signalInk,
     success: AppColors.passGreen,
     warning: AppColors.warningAmber,
     danger: AppColors.dangerRose,
     violet: AppColors.modelPredictionPurple,
-    heroGradient: LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [Color(0xFF06222C), Color(0xFF071A20), Color(0xFF000000)],
-      stops: [0.0, 0.55, 1.0],
-    ),
+    heroSurface: Color(0xFF12150F),
     isDark: true,
   );
 
@@ -100,14 +95,14 @@ class AppTokens extends ThemeExtension<AppTokens> {
     textPrimary: AppColors.lightTextPrimary,
     textSecondary: AppColors.lightTextSecondary,
     textMuted: AppColors.lightTextMuted,
-    accent: AppColors.cyanDeep,
-    accentSoft: Color(0x1A0284C7),
+    accent: Color(0xFF65A30D),
+    accentSoft: Color(0x1F65A30D),
     onAccent: Colors.white,
     success: Color(0xFF059669),
     warning: Color(0xFFD97706),
     danger: Color(0xFFE11D48),
     violet: Color(0xFF7C3AED),
-    heroGradient: AppColors.heroGradientLight,
+    heroSurface: Color(0xFFFCFEF5),
     isDark: false,
   );
 
@@ -128,7 +123,7 @@ class AppTokens extends ThemeExtension<AppTokens> {
     Color? warning,
     Color? danger,
     Color? violet,
-    LinearGradient? heroGradient,
+    Color? heroSurface,
     bool? isDark,
   }) {
     return AppTokens(
@@ -147,7 +142,7 @@ class AppTokens extends ThemeExtension<AppTokens> {
       warning: warning ?? this.warning,
       danger: danger ?? this.danger,
       violet: violet ?? this.violet,
-      heroGradient: heroGradient ?? this.heroGradient,
+      heroSurface: heroSurface ?? this.heroSurface,
       isDark: isDark ?? this.isDark,
     );
   }
@@ -171,7 +166,7 @@ class AppTokens extends ThemeExtension<AppTokens> {
       warning: Color.lerp(warning, other.warning, t)!,
       danger: Color.lerp(danger, other.danger, t)!,
       violet: Color.lerp(violet, other.violet, t)!,
-      heroGradient: t < 0.5 ? heroGradient : other.heroGradient,
+      heroSurface: Color.lerp(heroSurface, other.heroSurface, t)!,
       isDark: t < 0.5 ? isDark : other.isDark,
     );
   }

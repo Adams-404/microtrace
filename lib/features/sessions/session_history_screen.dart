@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/haptics.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
 import '../../core/widgets/status_badge.dart';
@@ -62,7 +63,7 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
         actions: [
           IconButton(
             tooltip: 'New Session',
-            icon: const Icon(Icons.add, size: 22, color: AppColors.cyan),
+            icon: const Icon(Icons.add, size: 22, color: AppColors.signal),
             onPressed: () => context.push('/new-session'),
           ),
         ],
@@ -100,36 +101,49 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                       FilterChip(
                         selected: _selectedStatusFilter == null,
                         label: const Text('ALL SESSIONS'),
-                        onSelected: (_) =>
-                            setState(() => _selectedStatusFilter = null),
+                        onSelected: (_) {
+                          Haptics.select();
+                          setState(() => _selectedStatusFilter = null);
+                        },
                       ),
                       const SizedBox(width: 6),
                       FilterChip(
                         selected:
                             _selectedStatusFilter == SessionStatus.inProgress,
                         label: const Text('IN PROGRESS'),
-                        onSelected: (_) => setState(
-                          () =>
-                              _selectedStatusFilter = SessionStatus.inProgress,
-                        ),
+                        onSelected: (_) {
+                          Haptics.select();
+                          setState(
+                            () => _selectedStatusFilter =
+                                SessionStatus.inProgress,
+                          );
+                        },
                       ),
                       const SizedBox(width: 6),
                       FilterChip(
                         selected:
                             _selectedStatusFilter == SessionStatus.completed,
                         label: const Text('COMPLETED'),
-                        onSelected: (_) => setState(
-                          () => _selectedStatusFilter = SessionStatus.completed,
-                        ),
+                        onSelected: (_) {
+                          Haptics.select();
+                          setState(
+                            () =>
+                                _selectedStatusFilter = SessionStatus.completed,
+                          );
+                        },
                       ),
                       const SizedBox(width: 6),
                       FilterChip(
                         selected:
                             _selectedStatusFilter == SessionStatus.reviewed,
                         label: const Text('REVIEWED'),
-                        onSelected: (_) => setState(
-                          () => _selectedStatusFilter = SessionStatus.reviewed,
-                        ),
+                        onSelected: (_) {
+                          Haptics.select();
+                          setState(
+                            () =>
+                                _selectedStatusFilter = SessionStatus.reviewed,
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -189,7 +203,7 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                                       Text(
                                         session.specimenCode,
                                         style: AppTypography.technicalMono(
-                                          AppColors.cyan,
+                                          AppColors.signal,
                                           fontSize: 13,
                                           weight: FontWeight.w700,
                                         ),

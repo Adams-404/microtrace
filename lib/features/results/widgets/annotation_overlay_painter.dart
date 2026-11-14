@@ -21,11 +21,11 @@ class AnnotationOverlayPainter extends CustomPainter {
       );
 
       final boxPaint = Paint()
-        ..color = AppColors.cyan.withOpacity(0.2)
+        ..color = AppColors.signal.withOpacity(0.2)
         ..style = PaintingStyle.fill;
 
       final borderPaint = Paint()
-        ..color = AppColors.cyan
+        ..color = AppColors.signal
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
 
@@ -113,7 +113,7 @@ class AnnotationOverlayPainter extends CustomPainter {
           textPainter.width + 4,
           16,
         );
-        canvas.drawRect(bgRect, Paint()..color = AppColors.cyan);
+        canvas.drawRect(bgRect, Paint()..color = AppColors.signal);
         textPainter.paint(canvas, Offset(rect.left + 2, rect.top - 15));
       }
     }

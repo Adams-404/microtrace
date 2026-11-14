@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/haptics.dart';
 import '../../core/widgets/microscope_reticle_overlay.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../shared/models/microscopy_image.dart';
@@ -69,6 +70,7 @@ class _CaptureWorkspaceScreenState
   String? _recentFeedbackMessage;
 
   void _triggerCapture(MicroscopySession activeSession) {
+    Haptics.success();
     setState(() {
       _isShutterFlashing = true;
     });
@@ -148,7 +150,7 @@ class _CaptureWorkspaceScreenState
             tooltip: 'Alignment Guidance',
             icon: const Icon(
               Icons.help_outline,
-              color: AppColors.cyan,
+              color: AppColors.signal,
               size: 20,
             ),
             onPressed: _showGuidanceModal,
@@ -157,7 +159,7 @@ class _CaptureWorkspaceScreenState
             tooltip: 'Toggle Graticule & Reticle',
             icon: Icon(
               _showReticle ? Icons.grid_on : Icons.grid_off,
-              color: _showReticle ? AppColors.cyan : Colors.white60,
+              color: _showReticle ? AppColors.signal : Colors.white60,
               size: 20,
             ),
             onPressed: () => setState(() => _showReticle = !_showReticle),
@@ -167,7 +169,7 @@ class _CaptureWorkspaceScreenState
             child: Text(
               'FINISH',
               style: AppTypography.technicalMono(
-                AppColors.cyan,
+                AppColors.signal,
                 fontSize: 11,
                 weight: FontWeight.w700,
               ),
@@ -284,7 +286,7 @@ class _CaptureWorkspaceScreenState
                       tooltip: 'Next Specimen Field',
                       icon: const Icon(
                         Icons.swap_horiz,
-                        color: AppColors.cyan,
+                        color: AppColors.signal,
                         size: 20,
                       ),
                       onPressed: () {
@@ -330,14 +332,7 @@ class _CaptureWorkspaceScreenState
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.9),
-                      ],
-                    ),
+                    color: Colors.black.withValues(alpha: 0.88),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -382,7 +377,7 @@ class _CaptureWorkspaceScreenState
                               height: 54,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.cyan,
+                                color: AppColors.signal,
                               ),
                               child: const Icon(
                                 Icons.camera,
@@ -411,7 +406,7 @@ class _CaptureWorkspaceScreenState
                             const Icon(
                               Icons.checklist,
                               size: 16,
-                              color: AppColors.cyan,
+                              color: AppColors.signal,
                             ),
                             const SizedBox(width: 4),
                             Text(
@@ -467,12 +462,12 @@ class _CaptureWorkspaceScreenState
         height: 36,
         alignment: Alignment.center,
         color: isSelected
-            ? AppColors.cyan.withOpacity(0.25)
+            ? AppColors.signal.withOpacity(0.25)
             : Colors.transparent,
         child: Text(
           label,
           style: AppTypography.technicalMono(
-            isSelected ? AppColors.cyan : Colors.white70,
+            isSelected ? AppColors.signal : Colors.white70,
             fontSize: 11,
             weight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),

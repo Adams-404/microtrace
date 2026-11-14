@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 
 /// MICROTRACE instrument palette.
 ///
-/// A near-black, blue-shifted "darkroom" system with a single luminous azure
-/// brand channel derived from the reticle mark, plus disciplined semantic
-/// accents for observation vs. model-prediction data.
+/// A near-black "darkroom" system lit by a single bio-luminescent lime signal
+/// color, with disciplined semantic accents for observation vs. prediction
+/// data. Flat surfaces only — no decorative gradients.
 class AppColors {
   AppColors._();
 
-  // ── Brand ────────────────────────────────────────────────────────────────
-  static const Color cyan = Color(0xFF4CC9F0); // Reticle azure
-  static const Color cyanDark = Color(0xFF0EA5E9);
-  static const Color cyanDeep = Color(0xFF0284C7);
-  static const Color teal = Color(0xFF2DD4BF);
-  static const Color cobalt = Color(0xFF6366F1);
+  // ── Brand signal ─────────────────────────────────────────────────────────
+  static const Color signal = Color(0xFFC8F751); // Biofluorescent lime
+  static const Color signalBright = Color(0xFFDCFF8A);
+  static const Color signalDeep = Color(0xFF9ED62B);
+  static const Color signalInk = Color(0xFF0C1204); // Text on signal
 
   // ── Semantic channels ────────────────────────────────────────────────────
   static const Color passGreen = Color(0xFF34D399);
@@ -54,24 +53,4 @@ class AppColors {
   static const Color amoledTextPrimary = Color(0xFFFAFAFA);
   static const Color amoledTextSecondary = Color(0xFFA1A1AA);
   static const Color amoledTextMuted = Color(0xFF71717A);
-
-  // ── Ready-made gradients ─────────────────────────────────────────────────
-  static const LinearGradient brandGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFF4CC9F0), Color(0xFF2DD4BF)],
-  );
-
-  static const LinearGradient heroGradientDark = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFF0B3A4E), Color(0xFF0A2530), Color(0xFF0D121B)],
-    stops: [0.0, 0.55, 1.0],
-  );
-
-  static const LinearGradient heroGradientLight = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFFDDF6FF), Color(0xFFE9FBF7), Color(0xFFFFFFFF)],
-  );
 }

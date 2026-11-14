@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_tokens.dart';
+import '../utils/haptics.dart';
 
 /// Compact circular icon action used in app bars and card corners.
 class AppIconButton extends StatelessWidget {
@@ -38,7 +39,12 @@ class AppIconButton extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
-              onTap: onPressed,
+              onTap: onPressed == null
+                  ? null
+                  : () {
+                      Haptics.tap();
+                      onPressed!();
+                    },
               child: Icon(icon, size: 20, color: color ?? t.textSecondary),
             ),
           ),

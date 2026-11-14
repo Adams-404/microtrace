@@ -144,7 +144,7 @@ class _AnalysisWorkspaceScreenState
                           Text(
                             'FIELD #${image.fieldIndex}',
                             style: AppTypography.technicalMono(
-                              AppColors.cyan,
+                              AppColors.signal,
                               fontSize: 12,
                               weight: FontWeight.w700,
                             ),
@@ -279,9 +279,9 @@ class _AnalysisWorkspaceScreenState
           ScientificCard(
             padding: const EdgeInsets.all(18),
             backgroundColor: _isAnalyzing
-                ? AppColors.cyan.withOpacity(isDark ? 0.08 : 0.04)
+                ? AppColors.signal.withOpacity(isDark ? 0.08 : 0.04)
                 : (isDark ? AppColors.darkSurface : AppColors.lightSurface),
-            borderColor: _isAnalyzing ? AppColors.cyan : null,
+            borderColor: _isAnalyzing ? AppColors.signal : null,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -298,7 +298,7 @@ class _AnalysisWorkspaceScreenState
                           : (activeRun != null ? 'COMPLETED' : 'IDLE'),
                       style: AppTypography.technicalMono(
                         _isAnalyzing
-                            ? AppColors.cyan
+                            ? AppColors.signal
                             : (activeRun != null
                                   ? AppColors.passGreen
                                   : textSecondary),
@@ -316,7 +316,7 @@ class _AnalysisWorkspaceScreenState
                   backgroundColor: isDark
                       ? AppColors.darkBorder
                       : AppColors.lightBorder,
-                  color: _isAnalyzing ? AppColors.cyan : AppColors.passGreen,
+                  color: _isAnalyzing ? AppColors.signal : AppColors.passGreen,
                   minHeight: 6,
                   borderRadius: BorderRadius.circular(3),
                 ),
@@ -329,7 +329,7 @@ class _AnalysisWorkspaceScreenState
                         height: 14,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: AppColors.cyan,
+                          color: AppColors.signal,
                         ),
                       )
                     else if (activeRun != null)
@@ -399,7 +399,7 @@ class _AnalysisWorkspaceScreenState
                   ),
                   Text(
                     activeRun.topPrediction.scientificName,
-                    style: AppTypography.caption(AppColors.cyan)
+                    style: AppTypography.caption(AppColors.signal)
                         .copyWith(fontStyle: FontStyle.italic),
                   ),
                   const SizedBox(height: 8),
@@ -416,7 +416,7 @@ class _AnalysisWorkspaceScreenState
                       );
                     },
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.cyanDark,
+                      backgroundColor: AppColors.signalDeep,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -447,7 +447,7 @@ class _AnalysisWorkspaceScreenState
                   ? null
                   : () => _startInference(image, session),
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.cyanDark,
+                backgroundColor: AppColors.signalDeep,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

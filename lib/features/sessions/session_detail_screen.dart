@@ -43,7 +43,7 @@ class SessionDetailScreen extends ConsumerWidget {
             tooltip: 'Export Session Report',
             icon: const Icon(
               Icons.picture_as_pdf_outlined,
-              color: AppColors.cyan,
+              color: AppColors.signal,
               size: 20,
             ),
             onPressed: () => context.push('/session/${session.id}/report'),
@@ -67,7 +67,7 @@ class SessionDetailScreen extends ConsumerWidget {
                         Text(
                           session.specimenCode,
                           style: AppTypography.technicalMono(
-                            AppColors.cyan,
+                            AppColors.signal,
                             fontSize: 14,
                             weight: FontWeight.w700,
                           ),
@@ -130,7 +130,7 @@ class SessionDetailScreen extends ConsumerWidget {
                   icon: const Icon(Icons.add_a_photo_outlined, size: 18),
                   label: const Text('ACQUIRE FIELDS'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.cyanDark,
+                    backgroundColor: AppColors.signalDeep,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
@@ -143,19 +143,19 @@ class SessionDetailScreen extends ConsumerWidget {
                   icon: const Icon(
                     Icons.assessment_outlined,
                     size: 18,
-                    color: AppColors.cyan,
+                    color: AppColors.signal,
                   ),
                   label: Text(
                     'VIEW REPORT',
                     style: AppTypography.technicalMono(
-                      AppColors.cyan,
+                      AppColors.signal,
                       fontSize: 11,
                       weight: FontWeight.w700,
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    side: BorderSide(color: AppColors.cyan.withOpacity(0.5)),
+                    side: BorderSide(color: AppColors.signal.withOpacity(0.5)),
                   ),
                 ),
               ),
@@ -175,7 +175,7 @@ class SessionDetailScreen extends ConsumerWidget {
               Text(
                 'TAP FIELD TO REVIEW',
                 style: AppTypography.technicalMono(
-                  AppColors.cyan,
+                  AppColors.signal,
                   fontSize: 10,
                 ),
               ),

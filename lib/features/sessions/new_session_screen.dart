@@ -141,7 +141,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                 children: [
                   const Icon(
                     Icons.info_outline,
-                    color: AppColors.cyan,
+                    color: AppColors.signal,
                     size: 20,
                   ),
                   const SizedBox(width: 10),
@@ -221,10 +221,10 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: ScientificCard(
                   borderColor: _selectedModuleId == module.id
-                      ? AppColors.cyan
+                      ? AppColors.signal
                       : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
                   backgroundColor: _selectedModuleId == module.id
-                      ? AppColors.cyan.withOpacity(isDark ? 0.08 : 0.04)
+                      ? AppColors.signal.withOpacity(isDark ? 0.08 : 0.04)
                       : null,
                   onTap: module.isAvailable
                       ? () {
@@ -236,7 +236,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
                       Radio<String>(
                         value: module.id,
                         groupValue: _selectedModuleId,
-                        activeColor: AppColors.cyan,
+                        activeColor: AppColors.signal,
                         onChanged: module.isAvailable
                             ? (val) {
                                 if (val != null)
@@ -339,7 +339,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
             FilledButton(
               onPressed: _handleSubmit,
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.cyanDark,
+                backgroundColor: AppColors.signalDeep,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

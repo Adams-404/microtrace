@@ -35,7 +35,7 @@ class ModulesLibraryScreen extends ConsumerWidget {
             child: Text(
               'MODELS',
               style: AppTypography.technicalMono(
-                AppColors.cyan,
+                AppColors.signal,
                 fontSize: 11,
                 weight: FontWeight.w700,
               ),
@@ -56,7 +56,7 @@ class ModulesLibraryScreen extends ConsumerWidget {
               children: [
                 const Icon(
                   Icons.extension_outlined,
-                  color: AppColors.cyan,
+                  color: AppColors.signal,
                   size: 28,
                 ),
                 const SizedBox(width: 14),
@@ -93,7 +93,7 @@ class ModulesLibraryScreen extends ConsumerWidget {
               child: ScientificCard(
                 padding: const EdgeInsets.all(18),
                 borderColor: module.isAvailable
-                    ? AppColors.cyan.withOpacity(0.4)
+                    ? AppColors.signal.withOpacity(0.4)
                     : null,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,7 +109,7 @@ class ModulesLibraryScreen extends ConsumerWidget {
                               Text(
                                 module.category.toUpperCase(),
                                 style: AppTypography.technicalMono(
-                                  AppColors.cyan,
+                                  AppColors.signal,
                                   fontSize: 10,
                                   weight: FontWeight.w700,
                                 ),
@@ -178,17 +178,23 @@ class ModulesLibraryScreen extends ConsumerWidget {
 
                     const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Objective: ${module.recommendedMagnification}',
-                          style: AppTypography.caption(textSecondary),
+                        Expanded(
+                          child: Text(
+                            'Objective: ${module.recommendedMagnification}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.caption(textSecondary)
+                                .copyWith(fontSize: 11),
+                          ),
                         ),
+                        const SizedBox(width: 12),
                         Text(
-                          'Version: ${module.version}',
+                          'v${module.version}',
                           style: AppTypography.technicalMono(
                             textSecondary,
-                            fontSize: 11,
+                            fontSize: 10,
                           ),
                         ),
                       ],

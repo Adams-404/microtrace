@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_tokens.dart';
+import '../utils/haptics.dart';
 
 /// Elevated instrument surface: hairline border, soft top-light gradient and
 /// a single 20px radius. No drop shadows on resting cards so the dark UI stays
@@ -36,17 +37,7 @@ class ScientificCard extends StatelessWidget {
     final content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.alphaBlend(
-              Colors.white.withValues(alpha: t.isDark ? 0.035 : 0.0),
-              base,
-            ),
-            base,
-          ],
-        ),
+        color: base,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(color: border, width: borderWidth),
         boxShadow: glow
@@ -67,7 +58,10 @@ class ScientificCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(borderRadius),
-          onTap: onTap,
+          onTap: () {
+            Haptics.tap();
+            onTap!();
+          },
           child: content,
         ),
       );

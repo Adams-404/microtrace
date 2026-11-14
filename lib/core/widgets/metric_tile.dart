@@ -41,10 +41,8 @@ class MetricTile extends StatelessWidget {
                   label.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.label(t.textMuted).copyWith(
-                    fontSize: 9.5,
-                    letterSpacing: 1.0,
-                  ),
+                  style: AppTypography.label(t.textMuted)
+                      .copyWith(fontSize: 9.5, letterSpacing: 1.0),
                 ),
               ),
               if (icon != null)

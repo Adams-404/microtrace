@@ -18,7 +18,8 @@ class AppTheme {
 
   static ThemeData get darkTheme => _build(AppTokens.dark, AppColors.darkBg);
 
-  static ThemeData get amoledTheme => _build(AppTokens.amoled, AppColors.amoledBg);
+  static ThemeData get amoledTheme =>
+      _build(AppTokens.amoled, AppColors.amoledBg);
 
   static ThemeData get lightTheme => _build(AppTokens.light, AppColors.lightBg);
 
@@ -41,7 +42,7 @@ class AppTheme {
       onPrimary: t.onAccent,
       primaryContainer: t.accentSoft,
       onPrimaryContainer: t.accent,
-      secondary: AppColors.teal,
+      secondary: AppColors.signalDeep,
       onSecondary: t.onAccent,
       secondaryContainer: t.accentSoft,
       onSecondaryContainer: t.textPrimary,
@@ -138,7 +139,9 @@ class AppTheme {
           foregroundColor: WidgetStatePropertyAll(t.textSecondary),
           overlayColor: WidgetStatePropertyAll(t.accentSoft),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusSm)),
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radiusSm),
+            ),
           ),
         ),
       ),
@@ -152,10 +155,8 @@ class AppTheme {
           elevation: 0,
           minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          textStyle: AppTypography.bodyMedium(t.onAccent).copyWith(
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.1,
-          ),
+          textStyle: AppTypography.bodyMedium(t.onAccent)
+              .copyWith(fontWeight: FontWeight.w700, letterSpacing: -0.1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
@@ -207,7 +208,10 @@ class AppTheme {
         filled: true,
         fillColor: t.surfaceHigh,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 15,
+        ),
         hintStyle: AppTypography.body(t.textMuted),
         labelStyle: AppTypography.caption(t.textSecondary),
         helperStyle: AppTypography.caption(t.textMuted),
@@ -236,11 +240,7 @@ class AppTheme {
         ),
       ),
 
-      dividerTheme: DividerThemeData(
-        color: t.border,
-        thickness: 1,
-        space: 1,
-      ),
+      dividerTheme: DividerThemeData(color: t.border, thickness: 1, space: 1),
 
       chipTheme: ChipThemeData(
         backgroundColor: t.surfaceHigh,
@@ -327,7 +327,8 @@ class AppTheme {
 
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected) ? t.accent : Colors.transparent,
+          (s) =>
+              s.contains(WidgetState.selected) ? t.accent : Colors.transparent,
         ),
         checkColor: WidgetStatePropertyAll(t.onAccent),
         side: BorderSide(color: t.borderStrong, width: 1.5),

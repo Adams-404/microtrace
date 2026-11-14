@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_theme.dart';
+import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/theme_provider.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/utils/haptics.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
 import '../../shared/services/storage_service.dart';
@@ -37,10 +39,7 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           // Appearance & Theme Section
-          Text(
-            'APPEARANCE',
-            style: AppTypography.label(textSecondary),
-          ),
+          Text('APPEARANCE', style: AppTypography.label(textSecondary)),
           const SizedBox(height: 10),
 
           ScientificCard(
@@ -116,7 +115,7 @@ class SettingsScreen extends ConsumerWidget {
                     Text(
                       Formatters.formatBytes(storage.totalBytes),
                       style: AppTypography.technicalMono(
-                        AppColors.cyan,
+                        AppColors.signal,
                         fontSize: 13,
                         weight: FontWeight.w700,
                       ),
@@ -305,19 +304,25 @@ class _ThemeChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = current == mode;
-    const accent = AppColors.cyan;
+    final tokens = context.tokens;
+    const accent = AppColors.signal;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onSelect,
+        onTap: () {
+          Haptics.select();
+          onSelect();
+        },
         borderRadius: BorderRadius.circular(14),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: selected ? accent.withValues(alpha: 0.08) : Colors.transparent,
+            color: selected
+                ? accent.withValues(alpha: 0.08)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: selected
@@ -333,7 +338,9 @@ class _ThemeChoice extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: swatchBg,
                   borderRadius: BorderRadius.circular(9),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
                 ),
                 padding: const EdgeInsets.all(6),
                 child: Column(
@@ -368,18 +375,15 @@ class _ThemeChoice extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.caption(
-                        selected ? accent : AppColors.darkTextPrimary,
-                      ).copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11.5,
-                      ),
+                        selected ? accent : tokens.textPrimary,
+                      ).copyWith(fontWeight: FontWeight.w600, fontSize: 11.5),
                     ),
                   ),
                   if (selected)
                     const Icon(
                       Icons.check_circle_rounded,
                       size: 13,
-                      color: AppColors.cyan,
+                      color: AppColors.signal,
                     ),
                 ],
               ),
@@ -388,7 +392,7 @@ class _ThemeChoice extends StatelessWidget {
                 hint,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.caption(AppColors.darkTextMuted)
+                style: AppTypography.caption(tokens.textMuted)
                     .copyWith(fontSize: 9.5),
               ),
             ],

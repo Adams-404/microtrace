@@ -32,7 +32,7 @@ class ReportPreviewScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Simulated Export: Structured JSON record exported.'),
-        backgroundColor: AppColors.cyanDark,
+        backgroundColor: AppColors.signalDeep,
         duration: Duration(seconds: 3),
       ),
     );
@@ -69,7 +69,7 @@ class ReportPreviewScreen extends ConsumerWidget {
             tooltip: 'Export PDF Document',
             icon: const Icon(
               Icons.picture_as_pdf,
-              color: AppColors.cyan,
+              color: AppColors.signal,
               size: 20,
             ),
             onPressed: () => _simulatePdfExport(context),
@@ -115,7 +115,7 @@ class ReportPreviewScreen extends ConsumerWidget {
                         Text(
                           'MICROBIOLOGY OBSERVATION REPORT',
                           style: AppTypography.technicalMono(
-                            AppColors.cyan,
+                            AppColors.signal,
                             fontSize: 10,
                             weight: FontWeight.w700,
                           ),
@@ -245,7 +245,7 @@ class ReportPreviewScreen extends ConsumerWidget {
                                   Text(
                                     'Field #${img.fieldIndex}',
                                     style: AppTypography.technicalMono(
-                                      AppColors.cyan,
+                                      AppColors.signal,
                                       fontSize: 12,
                                       weight: FontWeight.w700,
                                     ),
@@ -288,8 +288,9 @@ class ReportPreviewScreen extends ConsumerWidget {
                                 if (img.analysisRun!.reviewerNotes.isNotEmpty)
                                   Text(
                                     'Reviewer Sign-off: "${img.analysisRun!.reviewerNotes}"',
-                                    style: AppTypography.caption(AppColors.cyan)
-                                        .copyWith(fontStyle: FontStyle.italic),
+                                    style: AppTypography.caption(
+                                      AppColors.signal,
+                                    ).copyWith(fontStyle: FontStyle.italic),
                                   ),
                               ],
                             ],
@@ -380,7 +381,7 @@ class ReportPreviewScreen extends ConsumerWidget {
                   icon: const Icon(Icons.picture_as_pdf, size: 18),
                   label: const Text('EXPORT PDF REPORT'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.cyanDark,
+                    backgroundColor: AppColors.signalDeep,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
@@ -392,18 +393,18 @@ class ReportPreviewScreen extends ConsumerWidget {
                   icon: const Icon(
                     Icons.data_object,
                     size: 18,
-                    color: AppColors.cyan,
+                    color: AppColors.signal,
                   ),
                   label: Text(
                     'JSON EXPORT',
                     style: AppTypography.technicalMono(
-                      AppColors.cyan,
+                      AppColors.signal,
                       fontSize: 11,
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: BorderSide(color: AppColors.cyan.withOpacity(0.5)),
+                    side: BorderSide(color: AppColors.signal.withOpacity(0.5)),
                   ),
                 ),
               ),

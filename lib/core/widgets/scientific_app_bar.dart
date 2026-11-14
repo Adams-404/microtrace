@@ -51,10 +51,8 @@ class ScientificAppBar extends StatelessWidget implements PreferredSizeWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.title(t.textPrimary).copyWith(
-                    fontSize: 17,
-                    letterSpacing: -0.3,
-                  ),
+                  style: AppTypography.title(t.textPrimary)
+                      .copyWith(fontSize: 17, letterSpacing: -0.3),
                 ),
               ),
               if (showOfflineBadge) ...[

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
+import '../utils/haptics.dart';
 
 /// Eyebrow + optional trailing action, used to separate dashboard sections.
 class SectionHeader extends StatelessWidget {
@@ -26,7 +27,7 @@ class SectionHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            title,
+            title.toUpperCase(),
             style: AppTypography.label(t.textMuted),
           ),
         ),
@@ -35,7 +36,12 @@ class SectionHeader extends StatelessWidget {
           Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: onAction,
+              onTap: onAction == null
+                  ? null
+                  : () {
+                      Haptics.tap();
+                      onAction!();
+                    },
               borderRadius: BorderRadius.circular(10),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
@@ -44,14 +50,15 @@ class SectionHeader extends StatelessWidget {
                   children: [
                     Text(
                       actionLabel!,
-                      style: AppTypography.caption(t.accent).copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
+                      style: AppTypography.caption(t.accent)
+                          .copyWith(fontWeight: FontWeight.w600, fontSize: 12),
                     ),
                     const SizedBox(width: 2),
-                    Icon(Icons.arrow_forward_ios_rounded,
-                        size: 11, color: t.accent),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 11,
+                      color: t.accent,
+                    ),
                   ],
                 ),
               ),

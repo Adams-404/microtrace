@@ -11,10 +11,10 @@ void main() {
     // Initial pump and settle
     await tester.pumpAndSettle();
 
-    // Verify brand, hero action and telemetry sections render
-    expect(find.text('MICROTRACE'), findsWidgets);
+    // Hero action, telemetry sections and the lone floating settings action
     expect(find.textContaining('Start a microscopy'), findsOneWidget);
-    expect(find.text('Workstation telemetry'), findsOneWidget);
+    expect(find.text('WORKSTATION TELEMETRY'), findsOneWidget);
     expect(find.text('New session'), findsOneWidget);
+    expect(find.byTooltip('Workstation settings'), findsOneWidget);
   });
 }

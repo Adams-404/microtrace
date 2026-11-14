@@ -32,7 +32,7 @@ class OpticalGuidanceSheet extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.tune, color: AppColors.cyan, size: 20),
+                  const Icon(Icons.tune, color: AppColors.signal, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     'OPTICAL ALIGNMENT PROTOCOL',
@@ -90,7 +90,7 @@ class OpticalGuidanceSheet extends StatelessWidget {
             child: FilledButton(
               onPressed: () => Navigator.pop(context),
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.cyanDark,
+                backgroundColor: AppColors.signalDeep,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -131,14 +131,14 @@ class _GuidanceItem extends StatelessWidget {
             height: 22,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: AppColors.cyan.withOpacity(0.15),
+              color: AppColors.signal.withOpacity(0.15),
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.cyan),
+              border: Border.all(color: AppColors.signal),
             ),
             child: Text(
               stepNumber,
               style: AppTypography.technicalMono(
-                AppColors.cyan,
+                AppColors.signal,
                 fontSize: 11,
                 weight: FontWeight.w700,
               ),

@@ -1,21 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../app/theme/app_tokens.dart';
 import '../../app/theme/app_typography.dart';
+import '../utils/haptics.dart';
 
 class FloatingNavItem {
   final IconData icon;
-  final IconData activeIcon;
   final String label;
 
-  const FloatingNavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-  });
+  const FloatingNavItem({required this.icon, required this.label});
 }
 
 /// Floating glass capsule navigation bar.
@@ -40,7 +35,12 @@ class FloatingNavBar extends StatelessWidget {
     final t = context.tokens;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(18, 0, 18, 14 + MediaQuery.viewPaddingOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        18,
+        0,
+        18,
+        14 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(26),
@@ -63,8 +63,8 @@ class FloatingNavBar extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 26, sigmaY: 26),
             child: Container(
-              height: 66,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+              height: 70,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: t.surface.withValues(alpha: t.isDark ? 0.78 : 0.86),
                 borderRadius: BorderRadius.circular(26),
@@ -83,7 +83,7 @@ class FloatingNavBar extends StatelessWidget {
                         selected: i == selectedIndex,
                         onTap: () {
                           if (i == selectedIndex) return;
-                          HapticFeedback.selectionClick();
+                          Haptics.select();
                           onTap(i);
                         },
                       ),
@@ -125,14 +125,15 @@ class _NavDestination extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
             decoration: BoxDecoration(
-              color: selected ? t.accentSoft : Colors.transparent,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(19),
               border: Border.all(
                 color: selected
-                    ? t.accent.withValues(alpha: 0.28)
+                    ? t.accent.withValues(alpha: 0.75)
                     : Colors.transparent,
+                width: 1.2,
               ),
             ),
             child: Column(
@@ -143,8 +144,8 @@ class _NavDestination extends StatelessWidget {
                   duration: const Duration(milliseconds: 220),
                   curve: Curves.easeOutCubic,
                   child: Icon(
-                    selected ? item.activeIcon : item.icon,
-                    size: 21,
+                    item.icon,
+                    size: selected ? 22 : 21,
                     color: selected ? t.accent : t.textMuted,
                   ),
                 ),
@@ -153,14 +154,16 @@ class _NavDestination extends StatelessWidget {
                   item.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.caption(
-                    selected ? t.accent : t.textMuted,
-                  ).copyWith(
-                    fontSize: 10,
-                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                    letterSpacing: 0.1,
-                    height: 1.1,
-                  ),
+                  style:
+                      AppTypography.caption(selected ? t.accent : t.textMuted)
+                          .copyWith(
+                            fontSize: 10,
+                            fontWeight: selected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            letterSpacing: 0.1,
+                            height: 1.0,
+                          ),
                 ),
               ],
             ),

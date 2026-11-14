@@ -34,10 +34,10 @@ class ModelLibraryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: const ScientificAppBar(
         title: 'Model Library',
-        subtitle: 'LITERt NEURAL RUNTIME MANAGEMENT',
+        subtitle: 'LITERT NEURAL RUNTIME MANAGEMENT',
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 132),
         children: [
           // Storage Overview Row
           Row(
@@ -48,7 +48,7 @@ class ModelLibraryScreen extends ConsumerWidget {
                   value: '$installedCount',
                   subtitle: 'On-device runtimes',
                   icon: Icons.memory,
-                  accentColor: AppColors.cyan,
+                  accentColor: AppColors.signal,
                 ),
               ),
               const SizedBox(width: 12),
@@ -198,7 +198,7 @@ class ModelLibraryScreen extends ConsumerWidget {
                               );
                             },
                             style: FilledButton.styleFrom(
-                              backgroundColor: AppColors.cyanDark,
+                              backgroundColor: AppColors.signalDeep,
                             ),
                             child: const Text('INSTALL OFFLINE'),
                           ),

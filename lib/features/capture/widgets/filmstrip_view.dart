@@ -46,7 +46,7 @@ class FilmstripView extends StatelessWidget {
               Text(
                 '${images.length}',
                 style: AppTypography.technicalMono(
-                  AppColors.cyan,
+                  AppColors.signal,
                   fontSize: 18,
                   weight: FontWeight.w700,
                 ),

@@ -349,12 +349,14 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                         horizontal: 14,
                         vertical: 8,
                       ),
-                      side: BorderSide(color: AppColors.cyan.withOpacity(0.5)),
+                      side: BorderSide(
+                        color: AppColors.signal.withOpacity(0.5),
+                      ),
                     ),
                     child: Text(
                       'SAVE METADATA',
                       style: AppTypography.technicalMono(
-                        AppColors.cyan,
+                        AppColors.signal,
                         fontSize: 11,
                       ),
                     ),
@@ -405,7 +407,7 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                 );
               },
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.cyanDark,
+                backgroundColor: AppColors.signalDeep,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

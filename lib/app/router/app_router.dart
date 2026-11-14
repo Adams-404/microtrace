@@ -153,26 +153,10 @@ class _ScaffoldWithNavBar extends StatelessWidget {
         selectedIndex: selectedIndex,
         onTap: (idx) => _onItemTapped(idx, context),
         items: const [
-          FloatingNavItem(
-            icon: Icons.dashboard_outlined,
-            activeIcon: Icons.dashboard_rounded,
-            label: 'Overview',
-          ),
-          FloatingNavItem(
-            icon: Icons.camera_alt_outlined,
-            activeIcon: Icons.camera_alt_rounded,
-            label: 'Capture',
-          ),
-          FloatingNavItem(
-            icon: Icons.folder_outlined,
-            activeIcon: Icons.folder_rounded,
-            label: 'Sessions',
-          ),
-          FloatingNavItem(
-            icon: Icons.extension_outlined,
-            activeIcon: Icons.extension_rounded,
-            label: 'Modules',
-          ),
+          FloatingNavItem(icon: Icons.dashboard_outlined, label: 'Overview'),
+          FloatingNavItem(icon: Icons.camera_alt_outlined, label: 'Capture'),
+          FloatingNavItem(icon: Icons.folder_outlined, label: 'Sessions'),
+          FloatingNavItem(icon: Icons.extension_outlined, label: 'Modules'),
         ],
       ),
     );
