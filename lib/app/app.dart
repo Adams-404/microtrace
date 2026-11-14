@@ -13,23 +13,12 @@ class MicrotraceApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
 
-    ThemeData selectedTheme;
-    switch (themeMode) {
-      case AppThemeMode.light:
-        selectedTheme = AppTheme.lightTheme;
-        break;
-      case AppThemeMode.dark:
-        selectedTheme = AppTheme.darkTheme;
-        break;
-      case AppThemeMode.amoled:
-        selectedTheme = AppTheme.amoledTheme;
-        break;
-    }
-
     return MaterialApp.router(
       title: 'MICROTRACE',
       debugShowCheckedModeBanner: false,
-      theme: selectedTheme,
+      theme: AppTheme.forMode(themeMode),
+      themeAnimationDuration: const Duration(milliseconds: 280),
+      themeAnimationCurve: Curves.easeOutCubic,
       routerConfig: router,
     );
   }
