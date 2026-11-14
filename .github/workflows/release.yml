@@ -4,16 +4,29 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
     paths-ignore:
       - '**.md'
       - 'docs/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    name: Build & Test Microtrace
-    # Run only if commit message contains 'release' or workflow is manually dispatched
-    if: "contains(github.event.head_commit.message, 'release') || github.event_name == 'workflow_dispatch'"
+    name: Build, test & publish APK
+    # Run on a version tag, a manual dispatch, or any push to main whose commit
+    # message contains "release".
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.ref, 'refs/tags/v') ||
+      contains(github.event.head_commit.message, 'release')
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +53,7 @@ jobs:
 
       - name: Verify Formatting & Static Analysis
         run: |
-          dart format --output=none --set-exit-if-changed .
+          dart format --output=none --set-exit-if-changed lib test
           flutter analyze
 
       - name: Run Test Suite
@@ -52,11 +65,60 @@ jobs:
       - name: Build Web Bundle
         run: flutter build web --release
 
+      - name: Stage Release Files
+        id: apk
+        shell: bash
+        run: |
+          VERSION=$(awk '/^version:/ {print $2}' pubspec.yaml | cut -d+ -f1)
+          APK="microtrace-${VERSION}-${GITHUB_RUN_NUMBER}.apk"
+          cp build/app/outputs/flutter-apk/app-release.apk "$APK"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "size=$(du -h "$APK" | cut -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve Release Tag
+        id: meta
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+            echo "name=MICROTRACE $GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+            echo "name=MICROTRACE latest build" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.name }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          prerelease: false
+          files: ${{ steps.apk.outputs.path }}
+          body: |
+            Automated MICROTRACE release built from `${{ github.sha }}`.
+
+            | | |
+            | --- | --- |
+            | Version | `${{ steps.apk.outputs.version }}` |
+            | APK | `${{ steps.apk.outputs.path }}` (${{ steps.apk.outputs.size }}) |
+            | Commit | `${{ github.sha }}` |
+            | Trigger | `${{ github.event_name }}` |
+
+            **Install on Android:** download the `.apk` below on the phone and open it.
+            You may need to allow installs from your browser or file manager.
+
+            This is a test build signed with the debug keystore. It runs entirely
+            offline and expects an optional local model server at
+            `http://127.0.0.1:8080/v1` (Clearport / llama.cpp in Termux).
+
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: microtrace-android-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: ${{ steps.apk.outputs.path }}
           retention-days: 14
 
       - name: Upload Web Build Artifact

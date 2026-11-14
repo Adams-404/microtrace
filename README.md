@@ -54,6 +54,7 @@ Designed specifically as a serious scientific instrument rather than a generic S
 - **Darkroom-First Palette:** Near-black surfaces (`#06080D`), true-black AMOLED mode (`#000000`), and a single bio-luminescent lime signal color (`#C8F751`). No decorative gradients — flat surfaces separated by hairline borders.
 - **Semantic Tokens:** Every screen reads surfaces, text and semantic channels through an `AppTokens` theme extension, so Darkroom, AMOLED and Daylight stay consistent.
 - **Typography:** Inter for interface text and JetBrains Mono for specimen codes, metrics, confidence scores, graticule scales and timestamps. Both fonts are bundled for offline use.
+- **Brand mark:** the white microscope glyph on pure black, used as the Android launcher icon, Android 12 splash, web/PWA icon and onboarding logo.
 - **Motion & Touch:** A floating glass navigation bar with stroke (outline) active tabs, and a shared `Haptics` vocabulary (tap, select, success, warning) wired across cards, chips, navigation and actions.
 - **Custom Optics Components:** `MicroscopeReticleOverlay`, `QualityGauge`, `ScientificCard`, `StatusBadge`, `FloatingNavBar` and `FilmstripView`.
 
@@ -131,6 +132,23 @@ lib/
 
 ---
 
-## 7. Scientific & Medical Disclaimer
+## 7. Releases & CI
+
+GitHub Actions (`.github/workflows/release.yml`) builds, tests and publishes the app. A run starts when:
+
+- you push to `main` with **`release` in the commit message**, e.g. `git commit -m "release: v1.2.0"`;
+- you push a version tag such as `v1.2.0`;
+- you trigger **Build & Release Microtrace** manually from the Actions tab.
+
+Each run formats and analyzes the code, runs the test suite, builds the Android APK and the web bundle, then publishes a GitHub Release with the APK attached:
+
+- Latest test build: https://github.com/Adams-404/microtrace/releases/latest
+- APK artifacts (14-day retention) are also available on the workflow run page.
+
+The APK is signed with the debug keystore so it installs directly for testing. For a Play Store build, add a release keystore and a signing config in `android/app/build.gradle.kts`.
+
+---
+
+## 8. Scientific & Medical Disclaimer
 
 MICROTRACE is an offline-first research and laboratory decision-support tool. It is not certified as an in-vitro diagnostic medical device and does not replace professional histological, mycological, or pathological examination. All automated computer-vision predictions must be reviewed, verified, or corrected by qualified laboratory personnel.
