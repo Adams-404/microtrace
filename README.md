@@ -126,7 +126,7 @@ lib/
 - **Flutter Analyze:** 0 errors, 0 warnings, 0 lints (`No issues found!`).
 - **Dart Format:** 100% compliant with standard Dart conventions.
 - **Widget Tests:** Passed (`MICROTRACE workstation app boots up and renders dashboard`).
-- **Streaming Tests:** OpenAI SSE parsing, server-side error payloads and plain-text fallback are covered by `test/stream_parser_test.dart`.
+- **Streaming Tests:** `test/stream_parser_test.dart` covers SSE framing, server error payloads and plain-text fallback; `test/local_ai_service_test.dart` exercises the real client against a loopback OpenAI-compatible server (status, streaming and offline handling).
 - **Visual Verification:** Dashboard, floating navigation, session screens and the Local AI copilot are checked against a `flutter run -d web-server` preview.
 
 ---
