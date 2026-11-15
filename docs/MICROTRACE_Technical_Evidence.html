@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MICROTRACE: Technical Evidence &amp; Product Development Dossier</title>
+<style>
+@page { size: A4; margin: 0; }
+:root {
+  --ink:#101216; --muted:#5e6672; --line:#dfe3e8; --soft:#f4f6f7;
+  --accent:#9ee617; --dark:#080a0d; --dark2:#11151a; --green:#19b987;
+}
+* { box-sizing:border-box; }
+html,body { margin:0; padding:0; background:#dfe3e8; color:var(--ink); font-family:Arial, Helvetica, sans-serif; }
+body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.page { width:210mm; height:297mm; padding:18mm 18mm 17mm; margin:0 auto 8mm; background:#fff; position:relative; overflow:hidden; page-break-after:always; }
+.page.dark { background:var(--dark); color:#f7f9fb; }
+.page:last-child { page-break-after:auto; }
+.kicker { font:700 8.5pt Arial,sans-serif; text-transform:uppercase; letter-spacing:2.1px; color:#72808e; }
+.dark .kicker { color:#b5c3d2; }
+h1 { font-size:32pt; line-height:1.04; letter-spacing:-1.6px; margin:9mm 0 5mm; }
+h2 { font-size:22pt; line-height:1.1; letter-spacing:-.7px; margin:0 0 6mm; }
+h3 { font-size:12pt; letter-spacing:.3px; margin:5mm 0 2mm; }
+p { font-size:10.4pt; line-height:1.52; margin:0 0 4mm; }
+.small { font-size:8.7pt; line-height:1.45; color:var(--muted); }
+.dark .small, .dark p { color:#c8d0d8; }
+.lead { font-size:15pt; line-height:1.38; max-width:155mm; }
+.accent { color:#5f8c00; }
+.dark .accent { color:var(--accent); }
+.rule { border-top:1px solid var(--line); margin:5mm 0; }
+.dark .rule { border-color:#303943; }
+.footer { position:absolute; left:18mm; right:18mm; bottom:8mm; border-top:1px solid var(--line); padding-top:3mm; display:flex; justify-content:space-between; color:#7a838d; font-size:7.7pt; letter-spacing:.7px; text-transform:uppercase; }
+.dark .footer { border-color:#303943; color:#7f8a95; }
+.cover-mark { width:27mm; height:27mm; object-fit:contain; background:#06080b; padding:5mm; border-radius:7mm; margin-bottom:13mm; }
+.cover-grid { display:grid; grid-template-columns:1fr 54mm; gap:9mm; align-items:end; margin-top:17mm; }
+.cover-panel { background:#f3f6f7; border-left:4px solid var(--accent); padding:6mm; }
+.cover-panel p { margin:0; font-size:9pt; }
+.pill { display:inline-block; padding:2mm 3.2mm; border-radius:99px; border:1px solid #b8c2ca; font-size:8pt; letter-spacing:1px; text-transform:uppercase; font-weight:700; margin:0 2mm 2mm 0; }
+.pill.green { border-color:#0f9f73; color:#087a58; background:#e9fbf4; }
+.dark .pill { border-color:#3a4651; color:#d5dde5; }
+.dark .pill.green { color:#8bf0cb; background:#0b3026; border-color:#168e68; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:7mm; }
+.three { display:grid; grid-template-columns:repeat(3,1fr); gap:5mm; }
+.card { border:1px solid var(--line); border-radius:4mm; padding:5mm; background:#fff; }
+.soft { background:var(--soft); }
+.dark .card { background:var(--dark2); border-color:#303943; }
+.metric { font-size:22pt; font-weight:800; letter-spacing:-1px; margin:2mm 0; }
+.metric-label { font-size:8pt; text-transform:uppercase; letter-spacing:1.4px; color:#77828d; }
+.dark .metric-label { color:#aab6c1; }
+.quote { border-left:3px solid var(--accent); padding-left:5mm; font-size:12pt; line-height:1.45; }
+.diagram { border:1px solid var(--line); background:#fbfcfc; border-radius:4mm; padding:5mm; margin:5mm 0; }
+.diagram svg { width:100%; height:auto; display:block; }
+.dark .diagram { border-color:#303943; background:#0d1115; }
+ul { margin:2mm 0 4mm 5mm; padding-left:5mm; }
+li { font-size:10pt; line-height:1.45; margin:1.8mm 0; }
+.evidence { display:grid; grid-template-columns:1fr 1fr; gap:6mm; }
+.shot { border:1px solid var(--line); border-radius:3mm; padding:3mm; background:#fafafa; }
+.shot img { width:100%; height:104mm; object-fit:contain; display:block; background:#000; border-radius:2mm; }
+.shot.tall img { height:157mm; }
+.shot.wide img { height:70mm; }
+.caption { font-size:8.5pt; line-height:1.35; margin-top:2.5mm; color:#4e5964; }
+.dark .caption { color:#bdc7d0; }
+.code { background:#11161b; color:#d9e3eb; padding:4mm; border-radius:3mm; font-family:"Courier New",monospace; font-size:7.4pt; line-height:1.45; white-space:pre-wrap; }
+.refs { font-size:8.4pt; line-height:1.42; }
+.refs p { font-size:8.4pt; margin-bottom:3mm; }
+.label { font-size:8pt; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; color:#73808d; }
+.callout { padding:5mm; border-radius:4mm; background:#eef8d9; border:1px solid #cce69a; }
+.callout p { margin:0; }
+.roadmap td,.roadmap th { border-bottom:1px solid var(--line); padding:3mm 2mm; text-align:left; vertical-align:top; font-size:8.8pt; line-height:1.35; }
+.roadmap { width:100%; border-collapse:collapse; }
+.roadmap th { font-size:7.8pt; text-transform:uppercase; letter-spacing:1px; color:#687580; }
+.nowrap { white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<section class="page dark">
+  <img class="cover-mark" src="../assets/brand/microtrace_logo_white.png" alt="MICROTRACE mark">
+  <div class="kicker">Technical evidence &amp; product development dossier</div>
+  <h1>MICROTRACE</h1>
+  <p class="lead">An offline-first Android microscopy workstation that extends conventional optical microscopes with smartphone-assisted capture, structured laboratory sessions and decision-support workflows.</p>
+  <div class="cover-grid">
+    <div>
+      <span class="pill green">Flutter prototype</span>
+      <span class="pill">Android workstation</span>
+      <span class="pill">Local AI pathway</span>
+      <p class="small" style="margin-top:5mm">Prepared as supporting evidence for the <b>USPF Changemaker Challenge 2026</b>.</p>
+    </div>
+    <div class="cover-panel"><p><b>Primary focus</b><br>Mycology and microscopy workflow support, with a modular path toward parasitology, malaria microscopy and cell analysis.</p></div>
+  </div>
+  <div style="position:absolute;left:18mm;right:18mm;bottom:27mm;color:#aab5bf;font-size:8.5pt">Repository evidence reviewed: Adams-404/microtrace · 15 November 2026</div>
+  <div class="footer"><span>MICROTRACE</span><span>01</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">01 · Executive overview</div>
+  <h2>From optical microscope to digital laboratory workflow</h2>
+  <p class="lead">MICROTRACE is a working Flutter application prototype for smartphone-assisted microscopy. It organizes specimen metadata, microscopy sessions, captured fields, quality review, analysis stages, scientific review, model metadata and reporting in one instrument-like interface.</p>
+  <div class="rule"></div>
+  <div class="two">
+    <div>
+      <h3>The problem it addresses</h3>
+      <p>Many laboratories already have conventional optical microscopes but lack the budget, connectivity or infrastructure required for dedicated digital microscopy systems. A phone mounted over an eyepiece is a practical bridge: it preserves existing optics while adding a screen, image record and software layer.</p>
+      <h3>What is already built</h3>
+      <ul><li>Declarative Flutter navigation across dashboard, capture, sessions, review, analysis, results, reports, modules, models, settings and assistant workflows.</li><li>Typed microscopy domain models for sessions, images, quality metrics, predictions, annotations and reviewer status.</li><li>Local AI client with model health checks, streaming responses and offline error states.</li><li>Automated tests covering app boot, settings, stream parsing, local client behavior and key UI states.</li></ul>
+    </div>
+    <div class="card soft">
+      <div class="label">Evidence boundary</div>
+      <p style="margin-top:3mm">This dossier distinguishes implemented interface and software pathways from clinical validation, field deployment and production model execution.</p>
+      <div class="callout"><p><b>Important:</b> the current image-analysis service is explicitly named <i>MockLiteRTInferenceService</i> in the repository. The UI models a LiteRT-style pipeline and stores simulated results; this is not presented as independently validated diagnostic inference.</p></div>
+      <h3>Product position</h3>
+      <p class="small">A serious, offline-capable laboratory workstation prototype with a clear path to hardware integration, specialist model validation and practical evaluation.</p>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <p class="quote">MICROTRACE does not replace qualified microscopy interpretation. It is designed to make existing microscope work more structured, reviewable and extensible.</p>
+  <div class="footer"><span>MICROTRACE · Technical dossier</span><span>02</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">02 · The problem</div>
+  <h2>Access is not only about the microscope</h2>
+  <p>Digital microscopy can be constrained by the cost of dedicated cameras, proprietary viewers, network dependencies and specialist maintenance. In smaller facilities, a conventional microscope may be the durable asset already available; the missing layer is often a practical way to capture, organize, review and communicate what the operator sees.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Problem and opportunity diagram">
+      <rect width="900" height="250" rx="18" fill="#fbfcfc"/>
+      <g font-family="Arial" text-anchor="middle">
+        <rect x="34" y="52" width="190" height="145" rx="16" fill="#fff" stroke="#cfd7dd" stroke-width="2"/>
+        <text x="129" y="91" font-size="17" font-weight="700" fill="#111">Conventional</text><text x="129" y="113" font-size="17" font-weight="700" fill="#111">optical microscope</text><text x="129" y="151" font-size="13" fill="#66727d">Existing optics</text><text x="129" y="173" font-size="13" fill="#66727d">Often under-digitized</text>
+        <path d="M238 125H310" stroke="#8dad16" stroke-width="4"/><path d="m298 112 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <rect x="326" y="52" width="190" height="145" rx="16" fill="#eef8d9" stroke="#b8d968" stroke-width="2"/>
+        <text x="421" y="91" font-size="17" font-weight="700" fill="#263300">Affordable</text><text x="421" y="113" font-size="17" font-weight="700" fill="#263300">eyepiece adapter</text><text x="421" y="151" font-size="13" fill="#53631d">Mechanical bridge</text><text x="421" y="173" font-size="13" fill="#53631d">Uses a phone already owned</text>
+        <path d="M530 125H602" stroke="#8dad16" stroke-width="4"/><path d="m590 112 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <rect x="618" y="52" width="248" height="145" rx="16" fill="#11161b" stroke="#39434d" stroke-width="2"/>
+        <text x="742" y="91" font-size="17" font-weight="700" fill="#fff">MICROTRACE</text><text x="742" y="116" font-size="15" fill="#b9ef3e">Structured digital workflow</text><text x="742" y="151" font-size="13" fill="#c6d0d8">Sessions · review · reports</text><text x="742" y="173" font-size="13" fill="#c6d0d8">Local AI pathway · offline-first</text>
+      </g>
+    </svg>
+  </div>
+  <div class="two">
+    <div class="card"><div class="label">Why retrofit</div><p style="margin-top:3mm">The phone is a screen, camera, compute device and local record in one. The adapter is a relatively simple mechanical interface rather than a replacement for the microscope.</p></div>
+    <div class="card"><div class="label">Why software matters</div><p style="margin-top:3mm">The application turns isolated images into traceable sessions with specimen codes, capture profiles, quality metrics, review states and report-ready summaries.</p></div>
+  </div>
+  <div class="rule"></div>
+  <p class="small"><b>Context:</b> peer-reviewed reports describe low-cost smartphone adapters and smartphone-connected microscopes as viable ways to capture microscope images in resource-limited settings, while also emphasizing operator technique and image quality.</p>
+  <div class="footer"><span>MICROTRACE · The problem</span><span>03</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">03 · The MICROTRACE approach</div>
+  <h2>A complete workflow, not a camera accessory</h2>
+  <p>The product concept is a chain in which each layer adds operational value. The repository implements the software workflow around this chain; physical adapter design, camera acquisition and field evaluation remain areas for refinement.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg">
+      <rect width="900" height="470" rx="18" fill="#fbfcfc"/>
+      <g font-family="Arial">
+        <g transform="translate(48,58)"><rect width="150" height="128" rx="18" fill="#fff" stroke="#cbd4da" stroke-width="2"/><circle cx="75" cy="48" r="26" fill="#e9eef1" stroke="#7b8791" stroke-width="3"/><path d="M54 57h42M62 42h26M75 26v43" stroke="#59656f" stroke-width="4"/><text x="75" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#172027">Optical</text><text x="75" y="120" text-anchor="middle" font-size="15" font-weight="700" fill="#172027">microscope</text></g>
+        <path d="M218 122h58" stroke="#8dad16" stroke-width="4"/><path d="m266 109 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <g transform="translate(296,58)"><rect width="150" height="128" rx="18" fill="#eef8d9" stroke="#b8d968" stroke-width="2"/><rect x="52" y="30" width="46" height="66" rx="8" fill="#fff" stroke="#577000" stroke-width="3"/><circle cx="75" cy="64" r="12" fill="#9ee617"/><text x="75" y="100" text-anchor="middle" font-size="14" font-weight="700" fill="#263300">Eyepiece</text><text x="75" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#263300">adapter</text></g>
+        <path d="M466 122h58" stroke="#8dad16" stroke-width="4"/><path d="m514 109 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <g transform="translate(544,58)"><rect width="150" height="128" rx="18" fill="#11161b" stroke="#39434d" stroke-width="2"/><rect x="56" y="24" width="38" height="75" rx="7" fill="#1c252c" stroke="#c8d1d9" stroke-width="2"/><circle cx="75" cy="49" r="8" fill="#9ee617"/><text x="75" y="121" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Android</text></g>
+        <path d="M714 122h58" stroke="#8dad16" stroke-width="4"/><path d="m762 109 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <g transform="translate(48,260)"><rect width="240" height="128" rx="18" fill="#11161b" stroke="#39434d" stroke-width="2"/><text x="120" y="50" text-anchor="middle" font-size="18" font-weight="700" fill="#fff">MICROTRACE app</text><text x="120" y="78" text-anchor="middle" font-size="13" fill="#c8d1d9">Sessions · fields · quality</text><text x="120" y="100" text-anchor="middle" font-size="13" fill="#c8d1d9">review · reports · modules</text></g>
+        <path d="M619 198v49H168v13" stroke="#8dad16" stroke-width="4" fill="none"/><path d="m155 249 13 18 13-18" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <g transform="translate(330,260)"><rect width="240" height="128" rx="18" fill="#eef8d9" stroke="#b8d968" stroke-width="2"/><text x="120" y="50" text-anchor="middle" font-size="18" font-weight="700" fill="#263300">Local processing</text><text x="120" y="78" text-anchor="middle" font-size="13" fill="#53631d">Quality gates · LiteRT path</text><text x="120" y="100" text-anchor="middle" font-size="13" fill="#53631d">Loopback AI copilot</text></g>
+        <g transform="translate(612,260)"><rect width="240" height="128" rx="18" fill="#fff" stroke="#cbd4da" stroke-width="2"/><text x="120" y="50" text-anchor="middle" font-size="18" font-weight="700" fill="#172027">Human review</text><text x="120" y="78" text-anchor="middle" font-size="13" fill="#66727d">Confirm · correct · reject</text><text x="120" y="100" text-anchor="middle" font-size="13" fill="#66727d">Needs expert review</text></g>
+        <path d="M578 324h28" stroke="#8dad16" stroke-width="4"/><path d="m594 311 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+      </g>
+    </svg>
+  </div>
+  <div class="three">
+    <div class="card"><div class="label">Acquire</div><p style="margin-top:2mm">Capture fields through the phone-mounted microscope workflow and retain capture profile metadata.</p></div>
+    <div class="card"><div class="label">Inspect</div><p style="margin-top:2mm">Review field quality, notes, usability and recapture status before analysis.</p></div>
+    <div class="card"><div class="label">Account</div><p style="margin-top:2mm">Keep model outputs separate from scientific review and exportable observation reports.</p></div>
+  </div>
+  <div class="footer"><span>MICROTRACE · Product approach</span><span>04</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">04 · System architecture &amp; technology</div>
+  <h2>Feature-oriented Flutter architecture</h2>
+  <p>The repository is organized as a Flutter application with a declarative GoRouter shell, Riverpod state notifiers, typed domain models, shared scientific UI components and service classes. The structure supports adding specialized microscopy modules without duplicating the workstation shell.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+      <rect width="900" height="420" rx="18" fill="#fbfcfc"/>
+      <g font-family="Arial">
+        <rect x="30" y="25" width="840" height="65" rx="14" fill="#11161b"/><text x="450" y="53" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">Flutter application shell</text><text x="450" y="75" text-anchor="middle" font-size="13" fill="#c8d1d9">Material UI · theme tokens · GoRouter ShellRoute · floating navigation</text>
+        <rect x="30" y="120" width="255" height="245" rx="14" fill="#eef8d9" stroke="#b8d968" stroke-width="2"/><text x="157" y="150" text-anchor="middle" font-size="17" font-weight="700" fill="#263300">Feature screens</text><text x="52" y="184" font-size="13" fill="#53631d">dashboard</text><text x="52" y="207" font-size="13" fill="#53631d">sessions / capture</text><text x="52" y="230" font-size="13" fill="#53631d">image review / analysis</text><text x="52" y="253" font-size="13" fill="#53631d">results / reports</text><text x="52" y="276" font-size="13" fill="#53631d">modules / model library</text><text x="52" y="299" font-size="13" fill="#53631d">assistant / settings</text>
+        <rect x="322" y="120" width="255" height="245" rx="14" fill="#fff" stroke="#cbd4da" stroke-width="2"/><text x="449" y="150" text-anchor="middle" font-size="17" font-weight="700" fill="#172027">State &amp; domain</text><text x="344" y="184" font-size="13" fill="#66727d">Riverpod Notifiers</text><text x="344" y="207" font-size="13" fill="#66727d">MicroscopySession</text><text x="344" y="230" font-size="13" fill="#66727d">MicroscopyImage</text><text x="344" y="253" font-size="13" fill="#66727d">QualityMetrics</text><text x="344" y="276" font-size="13" fill="#66727d">AnalysisRun / Annotation</text><text x="344" y="299" font-size="13" fill="#66727d">ModuleInfo / ModelInstallation</text>
+        <rect x="614" y="120" width="256" height="245" rx="14" fill="#11161b" stroke="#39434d" stroke-width="2"/><text x="742" y="150" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">Services</text><text x="636" y="184" font-size="13" fill="#c8d1d9">LocalAiService</text><text x="636" y="207" font-size="13" fill="#c8d1d9">StreamParser</text><text x="636" y="230" font-size="13" fill="#c8d1d9">MockLiteRTInferenceService</text><text x="636" y="253" font-size="13" fill="#c8d1d9">SessionRepository</text><text x="636" y="276" font-size="13" fill="#c8d1d9">StorageService</text><text x="636" y="299" font-size="13" fill="#c8d1d9">ModelRepository</text>
+        <path d="M285 242h30M577 242h30" stroke="#8dad16" stroke-width="4"/><path d="m301 229 18 13-18 13M593 229l18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+      </g>
+    </svg>
+  </div>
+  <div class="two">
+    <div class="card"><div class="label">Dependencies verified in pubspec.yaml</div><p style="margin-top:3mm"><b>Flutter</b>; <b>flutter_riverpod</b> for state; <b>go_router</b> for navigation; <b>http</b> for local AI transport; <b>shared_preferences</b> for persisted preferences; <b>intl</b> and <b>uuid</b> for formatting and identifiers.</p></div>
+    <div class="card"><div class="label">Offline posture</div><p style="margin-top:3mm">Bundled fonts and microscopy assets are declared locally. The UI can run without a network; the optional assistant connects to loopback only. The current repository does not yet include a production database or camera plugin.</p></div>
+  </div>
+  <div class="footer"><span>MICROTRACE · Architecture</span><span>05</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">05 · Application &amp; feature evidence</div>
+  <h2>The workstation is visible in the product</h2>
+  <p>These supplied Android screenshots show the implemented product language and the breadth of the current workflow. Images are reproduced in full, without cropping, so the complete screen context remains visible.</p>
+  <div class="evidence">
+    <div class="shot tall"><img src="../screenshots_for_evidence_pdf/Screenshot_20261115-215052.jpg" alt="MICROTRACE dashboard screenshot"><div class="caption"><b>Dashboard.</b> New-session entry point, workstation telemetry, local AI entry point and bottom navigation.</div></div>
+    <div class="shot tall"><img src="../screenshots_for_evidence_pdf/Screenshot_20261115-215058.jpg" alt="MICROTRACE local AI assistant screenshot"><div class="caption"><b>Local AI copilot.</b> Guided prompts, loopback status feedback and explicit on-device privacy language.</div></div>
+  </div>
+  <div class="footer"><span>MICROTRACE · Feature evidence</span><span>06</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">05 · Application &amp; feature evidence</div>
+  <h2>Sessions and modular analysis</h2>
+  <div class="evidence">
+    <div class="shot tall"><img src="../screenshots_for_evidence_pdf/Screenshot_20261115-215106.jpg" alt="MICROTRACE session history screenshot"><div class="caption"><b>Session history.</b> Searchable local archive with specimen codes, status badges, preparation details and field counts.</div></div>
+    <div class="shot tall"><img src="../screenshots_for_evidence_pdf/Screenshot_20261115-215108.jpg" alt="MICROTRACE module library screenshot"><div class="caption"><b>Module library.</b> Mycology is marked ready; parasitology and later modules are visibly separated as roadmap work.</div></div>
+  </div>
+  <div class="rule"></div>
+  <p class="small">The session repository currently seeds representative sessions in code, including mycology culture review, a Gram-stained oral cavity smear and a dermatological scraping. The evidence demonstrates the workflow and UI state; it is not evidence of clinical deployment.</p>
+  <div class="footer"><span>MICROTRACE · Feature evidence</span><span>07</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">05 · Application &amp; feature evidence</div>
+  <h2>Model metadata and scientific review</h2>
+  <div class="evidence">
+    <div class="shot tall"><img src="../screenshots_for_evidence_pdf/Screenshot_20261115-215119.jpg" alt="MICROTRACE model library screenshot"><div class="caption"><b>Model library.</b> Runtime labels, tensor shapes, installation state, checksums and displayed evaluation metadata.</div></div>
+    <div class="shot tall"><img src="../screenshots_for_evidence_pdf/Screenshot_20261115-215128.jpg" alt="MICROTRACE session detail screenshot"><div class="caption"><b>Session detail.</b> Specimen metadata, operator information, report action and a reviewed microscopic field.</div></div>
+  </div>
+  <div class="callout" style="margin-top:5mm"><p><b>Interpretation:</b> model performance values shown in the prototype are repository-seeded display metadata. This dossier does not treat them as independently reproduced benchmarks or clinical accuracy evidence.</p></div>
+  <div class="footer"><span>MICROTRACE · Feature evidence</span><span>08</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">06 · AI-assisted microscopy</div>
+  <h2>Two different AI pathways, kept separate</h2>
+  <div class="two">
+    <div class="card soft">
+      <div class="label">Specialized image pathway</div>
+      <h3>Microscopy model integration target</h3>
+      <p>The code defines model and module metadata for a mycology patch classifier and a circular-field detector, with LiteRT runtime labels, input dimensions and checksums. The current analysis screen executes <b>MockLiteRTInferenceService</b>, which simulates preprocessing, quality gating, inference and posterior decoding before returning a flagged <i>isSimulated</i> result.</p>
+      <p class="small">This is the right seam for future validated computer-vision models, but it is not yet a claim that production inference is running in this repository.</p>
+    </div>
+    <div class="card">
+      <div class="label">Local language-model pathway</div>
+      <h3>Grounded copilot for workflow assistance</h3>
+      <p><b>LocalAiService</b> is an implemented HTTP client for an OpenAI-compatible server at loopback by default. It checks <span class="nowrap">/models</span>, streams chat completions, parses SSE/Ollama/plain-text formats, supports cancellation and surfaces connection errors.</p>
+      <p>The session context builder sends compact factual fields such as specimen metadata, quality metrics, top prediction, candidates and reviewer notes. It is assistance and explanation—not a microscopy classifier.</p>
+    </div>
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 900 235" xmlns="http://www.w3.org/2000/svg">
+      <rect width="900" height="235" rx="18" fill="#fbfcfc"/>
+      <g font-family="Arial">
+        <rect x="35" y="62" width="190" height="112" rx="16" fill="#fff" stroke="#cbd4da" stroke-width="2"/><text x="130" y="98" text-anchor="middle" font-size="16" font-weight="700" fill="#172027">Microscopy image</text><text x="130" y="123" text-anchor="middle" font-size="13" fill="#66727d">field + quality metrics</text><text x="130" y="147" text-anchor="middle" font-size="13" fill="#66727d">specialized model seam</text>
+        <path d="M244 118h82" stroke="#8dad16" stroke-width="4"/><path d="m312 105 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <rect x="346" y="62" width="208" height="112" rx="16" fill="#eef8d9" stroke="#b8d968" stroke-width="2"/><text x="450" y="98" text-anchor="middle" font-size="16" font-weight="700" fill="#263300">Review boundary</text><text x="450" y="123" text-anchor="middle" font-size="13" fill="#53631d">model output ≠ finding</text><text x="450" y="147" text-anchor="middle" font-size="13" fill="#53631d">qualified human sign-off</text>
+        <path d="M574 118h82" stroke="#8dad16" stroke-width="4"/><path d="m642 105 18 13-18 13" fill="none" stroke="#8dad16" stroke-width="4"/>
+        <rect x="676" y="62" width="190" height="112" rx="16" fill="#11161b" stroke="#39434d" stroke-width="2"/><text x="771" y="98" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">Local copilot</text><text x="771" y="123" text-anchor="middle" font-size="13" fill="#c8d1d9">explain · summarize</text><text x="771" y="147" text-anchor="middle" font-size="13" fill="#c8d1d9">no diagnostic authority</text>
+      </g>
+    </svg>
+  </div>
+  <div class="footer"><span>MICROTRACE · AI boundaries</span><span>09</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">07 · Offline-first design</div>
+  <h2>Useful when connectivity is absent</h2>
+  <p>MICROTRACE’s offline-first posture is visible in both its interface and code. Screens expose offline status; the repository bundles fonts and sample microscopy assets; session, module and model state are represented locally; and the assistant’s network boundary is an explicitly configurable loopback endpoint.</p>
+  <div class="two">
+    <div class="card">
+      <div class="label">Implemented now</div>
+      <ul><li>Local Flutter state for sessions, images, analyses, modules and model metadata.</li><li><b>SharedPreferences</b> for onboarding, theme and assistant settings.</li><li>Optional local AI server at <span class="nowrap">127.0.0.1:8080/v1</span>.</li><li>Stream parser handles fragmented SSE, server errors and plain-text fallback.</li><li>Explicit offline and local-model error messages in the UI.</li></ul>
+    </div>
+    <div class="card soft">
+      <div class="label">Still to harden</div>
+      <ul><li>Replace seeded/in-memory repositories with durable specimen and image storage.</li><li>Add real camera acquisition and adapter calibration on Android devices.</li><li>Package and execute validated LiteRT models rather than simulation.</li><li>Define backup, export, synchronization and device migration policies.</li></ul>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <p class="quote">The design principle is local-first: the core observation workflow should not wait for a server. Optional connectivity can later support updates, controlled transfer or shared review without becoming a prerequisite for basic operation.</p>
+  <div class="footer"><span>MICROTRACE · Offline-first</span><span>10</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">08 · Development progress</div>
+  <h2>Substantial prototype evidence, clearly staged next work</h2>
+  <div class="three">
+    <div class="card soft"><div class="metric">14+</div><div class="metric-label">routed product surfaces</div><p class="small" style="margin-top:3mm">Onboarding, dashboard, capture, sessions, review, analysis, results, reports, assistant, modules, models and settings are represented in the router and feature tree.</p></div>
+    <div class="card soft"><div class="metric">0</div><div class="metric-label">analyzer issues</div><p class="small" style="margin-top:3mm">Verified in this working tree with <b>flutter analyze</b>; the command returned “No issues found!”.</p></div>
+    <div class="card soft"><div class="metric">12</div><div class="metric-label">tests passing</div><p class="small" style="margin-top:3mm">Verified with <b>flutter test</b>; the suite completed with all tests passing.</p></div>
+  </div>
+  <h3>Repository evidence</h3>
+  <div class="code">lib/
+  app/                 # router, theme, application shell
+  core/                # constants, formatters, shared widgets
+  features/            # dashboard, capture, sessions, review, reports...
+  shared/models/       # typed microscopy and analysis records
+  shared/services/     # local AI, stream parser, repositories
+test/
+  local_ai_service_test.dart
+  stream_parser_test.dart
+  ui_polish_test.dart
+  widget_test.dart</div>
+  <h3>Release pathway</h3>
+  <p>The repository includes a GitHub Actions workflow that installs Flutter, formats and analyzes the code, runs tests, builds an Android APK and web bundle, and stages release artifacts. The workflow is evidence of an intended repeatable build process; it is not a substitute for device validation or a signed production release.</p>
+  <div class="callout"><p><b>Current maturity:</b> a coherent, test-backed product prototype with strong workflow definition and a credible integration seam for the next engineering phase.</p></div>
+  <div class="footer"><span>MICROTRACE · Development progress</span><span>11</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">09 · Practical applications &amp; intended users</div>
+  <h2>Designed around real microscopy work</h2>
+  <div class="two">
+    <div>
+      <h3>Intended users</h3>
+      <ul><li>Medical laboratory scientists and laboratory technologists.</li><li>Primary healthcare and community laboratories that rely on optical microscopy.</li><li>Research and teaching laboratories needing a structured image record.</li><li>Qualified microscopists who want reviewable decision support rather than an opaque answer.</li></ul>
+      <h3>Initial focus: mycology</h3>
+      <p>The installed module is “Mycology: Fungal Patch Classifier”. The code and screenshots reference culture mounts, KOH mounts, lactophenol cotton blue, Gram-stained mucosal smears and morphology such as Aspergillus, Candida, Trichophyton and Penicillium.</p>
+    </div>
+    <div class="card soft">
+      <div class="label">Expansion path</div>
+      <h3>One workstation, specialized modules</h3>
+      <p>Module metadata defines a modular route toward:</p>
+      <ul><li>Parasitology and tropical medicine.</li><li>Malaria smear screening.</li><li>Cell analysis and hemocytometer counting.</li></ul>
+      <p class="small">These are roadmap modules in the current repository. Their inclusion demonstrates platform extensibility, not completed diagnostic capability.</p>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <p class="quote">The practical value is not limited to classification: it is the combination of capture context, quality review, structured records, local assistance and human accountability.</p>
+  <div class="footer"><span>MICROTRACE · Users and applications</span><span>12</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">10 · Product refinement &amp; roadmap</div>
+  <h2>From prototype evidence to practical evaluation</h2>
+  <table class="roadmap">
+    <tr><th>Workstream</th><th>Next phase</th><th>Evidence needed</th></tr>
+    <tr><td><b>Hardware integration</b></td><td>Adapter fit, camera acquisition, focus guidance, field calibration and image capture on representative Android phones.</td><td>Device compatibility matrix, repeatable capture procedure and image-quality checks.</td></tr>
+    <tr><td><b>Computer vision</b></td><td>Replace simulated inference with packaged, versioned LiteRT models and a reproducible preprocessing pipeline.</td><td>Dataset governance, held-out evaluation, error analysis and model provenance.</td></tr>
+    <tr><td><b>Local records</b></td><td>Move from seeded in-memory repositories to durable local image and specimen storage with export/backup controls.</td><td>Retention, recovery, audit and privacy review.</td></tr>
+    <tr><td><b>Laboratory evaluation</b></td><td>Observe workflow use with qualified personnel in controlled, non-diagnostic evaluation settings.</td><td>Usability findings, protocol adherence, review time and failure modes.</td></tr>
+    <tr><td><b>Model management</b></td><td>Define signed model packages, compatibility checks, update policy and rollback behavior.</td><td>Checksums, release notes, device testing and safe update procedure.</td></tr>
+    <tr><td><b>Governance</b></td><td>Clarify intended use, limitations, training materials and quality-management alignment for each module.</td><td>Module-specific SOPs, review responsibilities and regulatory assessment.</td></tr>
+  </table>
+  <div class="callout" style="margin-top:7mm"><p><b>Strategic direction:</b> enhance and validate an existing platform rather than restart from an idea. The next milestone is practical evidence: real images, real devices, real operators and clearly bounded claims.</p></div>
+  <div class="footer"><span>MICROTRACE · Roadmap</span><span>13</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">11 · References</div>
+  <h2>Technical and scientific context</h2>
+  <div class="refs">
+    <p><b>[1]</b> Android Developers. “Build an offline-first app.” Official architecture guidance on local data sources, queued writes, synchronization and exposing local state. <a href="https://developer.android.com/topic/architecture/data-layer/offline-first">developer.android.com/topic/architecture/data-layer/offline-first</a>.</p>
+    <p><b>[2]</b> Google AI Edge. “LiteRT for Android” and “Getting started with LiteRT.” Official documentation for on-device inference, CompiledModel/Interpreter APIs and CPU/GPU/NPU deployment. <a href="https://developers.google.com/edge/litert/android">developers.google.com/edge/litert/android</a>; <a href="https://developers.google.com/edge/litert/overview">developers.google.com/edge/litert/overview</a>.</p>
+    <p><b>[3]</b> P. S. et al. “Open-source Smartphone Adapter in Digital Photomicrography.” <i>Journal of Clinical Imaging Science</i>, 2022. Reports a low-cost adapter reducing focusing time compared with free-hand capture while producing comparable image quality. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9012408/">PMC9012408</a>.</p>
+    <p><b>[4]</b> S. et al. “Development of a Low-cost Smartphone-connected Digital Microscope.” <i>Journal of Microscopy and Ultrastructure</i>, 2020. Describes a low-cost smartphone-connected microscope capable of capturing and storing microscopic images and video. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7365514/">PMC7365514</a>.</p>
+    <p><b>[5]</b> World Health Organization. <i>Malaria Microscopy Quality Assurance Manual</i>, Version 2. Guidance on slide quality, internal quality control, staff review and laboratory quality systems. <a href="https://www.who.int/publications/b/31365">who.int/publications/b/31365</a>; <a href="https://iris.who.int/server/api/core/bitstreams/33cf5e31-acf3-4b80-ae8b-4967e751df2c/content">Version 2 PDF</a>.</p>
+    <p><b>[6]</b> MICROTRACE repository. <i>Adams-404/microtrace</i>. Source of truth for the implementation claims in this dossier: <a href="https://github.com/Adams-404/microtrace">github.com/Adams-404/microtrace</a>.</p>
+  </div>
+  <div class="rule"></div>
+  <h3>Reading these references</h3>
+  <p class="small">The external sources establish why smartphone-assisted microscopy, offline-first data design, on-device inference and human review are relevant engineering and laboratory considerations. They do not establish MICROTRACE’s clinical performance, deployment or diagnostic accuracy.</p>
+  <div class="footer"><span>MICROTRACE · References</span><span>14</span></div>
+</section>
+
+<section class="page dark">
+  <div class="kicker">12 · Project links</div>
+  <h2>MICROTRACE is an active, inspectable build</h2>
+  <p class="lead">The project is available as an open repository with source, tests, assets and a release workflow that can be inspected and extended.</p>
+  <div class="card" style="margin-top:10mm">
+    <div class="label">Primary repository</div>
+    <p style="font-size:15pt;margin-top:3mm"><a style="color:var(--accent)" href="https://github.com/Adams-404/microtrace">https://github.com/Adams-404/microtrace</a></p>
+  </div>
+  <div class="two" style="margin-top:7mm">
+    <div class="card"><div class="label">Included evidence</div><p style="margin-top:3mm">Flutter source tree · tests · GitHub Actions release workflow · bundled fonts and microscopy assets · supplied Android screenshots.</p></div>
+    <div class="card"><div class="label">Positioning</div><p style="margin-top:3mm">Research and laboratory decision-support prototype. Not a certified in-vitro diagnostic device and not a replacement for professional examination.</p></div>
+  </div>
+  <div style="position:absolute;left:18mm;right:18mm;bottom:31mm;border-top:1px solid #303943;padding-top:5mm"><p class="small">Prepared for USPF Changemaker Challenge 2026 · Technical evidence dossier · Version 1.0</p></div>
+  <div class="footer"><span>MICROTRACE · Project links</span><span>15</span></div>
+</section>
+</body>
+</html>
