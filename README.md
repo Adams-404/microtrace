@@ -1,154 +1,275 @@
 # MICROTRACE
 
-**Smartphone-Assisted Microscopy Workstation with On-Device Computer Vision**
+**Smartphone-Assisted Digital Microscopy Workstation with On-Device Computer Vision**
 
 > *Make every microscope more intelligent.*
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Adams-404/microtrace)
+[![GitHub Release](https://img.shields.io/github/v/release/Adams-404/microtrace?logo=github&color=blue)](https://github.com/Adams-404/microtrace/releases/latest)
+[![Build & Release](https://github.com/Adams-404/microtrace/actions/workflows/release.yml/badge.svg)](https://github.com/Adams-404/microtrace/actions/workflows/release.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.47.9-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.13.7-0175C2?logo=dart)](https://dart.dev)
-[![Architecture](https://img.shields.io/badge/Architecture-Offline--First-10B981)](#architecture)
-[![Local AI](https://img.shields.io/badge/Local_AI-On--Device-C8F751)](#local-ai-copilot)
+[![Persistence](https://img.shields.io/badge/Database-Drift_SQLite_Offline-10B981)](https://drift.simonbinder.eu/)
+[![Optics](https://img.shields.io/badge/Optics-CameraX_&_Laplacian-C8F751)](#optical-pipeline)
 [![License](https://img.shields.io/badge/License-Research_Use_Only-orange)](#scientific-integrity)
+
+---
+
+## 🚀 Quick Download & Phone Installation
+
+You can download and install the latest compiled Android APK directly onto your smartphone:
+
+👉 **[Download Latest Android APK (GitHub Releases)](https://github.com/Adams-404/microtrace/releases/latest)**
+
+1. Download the `.apk` on your Android device (or transfer via USB).
+2. Tap the file to install (allow *"Install unknown apps"* for your browser or file manager if prompted).
+3. Mount the smartphone onto your microscope eyepiece using a universal mechanical adapter and launch **MICROTRACE**.
 
 ---
 
 ## 1. Executive Summary
 
-**MICROTRACE** is an offline-first mobile microscopy workstation that turns a conventional optical microscope and an Android smartphone into a digital laboratory decision-support system using smartphone eyepiece adapters.
+**MICROTRACE** is an offline-first digital laboratory workstation designed to transform standard optical light microscopes into intelligent diagnostic decision-support instruments. By pairing commodity smartphones with standard microscope eyepieces, MICROTRACE delivers:
 
-### Core Principles
-- **Offline-First Operation:** Local-first records, local neural runtime, zero mandatory cloud connectivity.
-- **Privacy-First Data Handling:** All specimen fields and records remain strictly within app-private local storage.
-- **Modular Scientific Analysis:** Platform architecture supporting interchangeable modules (Mycology, Parasitology, Malaria, Cell Counting).
-- **Human-in-the-Loop Verification:** Explicit separation between automated model predictions and microscopist-verified observations.
-- **Traceable Scientific Sessions:** Every observation is tied to specimen metadata, capture profiles, model checksums, and reviewer sign-offs.
-- **On-Device AI Copilot:** A locally hosted language model answers questions about sessions, fields, quality metrics and predictions — no cloud, no uploads.
-
----
-
-## 2. Implemented Screens & Workflows
-
-MICROTRACE features a complete, production-quality Flutter frontend across 14 signature workstation screens:
-
-1. **Onboarding (`/onboarding`):** Guided first-launch experience detailing optical microscope alignment, on-device LiteRT architecture, and human review responsibilities.
-2. **Main Dashboard (`/`):** Workspace telemetry, quick session initialization, recent slide records, module readiness, and instant theme switching.
-3. **New Microscopy Session (`/new-session`):** Specimen registration form capturing slide IDs, preparation types, optical objectives, and microscopist initials with instant validation.
-4. **Capture Workspace (`/capture/:sessionId`):** Central interactive optical viewport with pinch/zoom, reticle graticule overlay (25 µm scale), real-time Laplacian focus meter, simulated optical feeds (Aspergillus, Candida, Trichophyton, Penicillium), shutter animation, and capture filmstrip.
-5. **Image Review (`/session/:id/image/:imgId`):** High-resolution pinch/pan field inspection, heuristic quality gates (Sharpness, Luminance, Eyepiece Alignment), usability flags, and operator notes.
-6. **Analysis Workspace (`/session/:id/image/:imgId/analysis`):** Multi-stage on-device LiteRT neural execution pipeline simulation (aperture crop, quality thresholding, neural inference, posterior decoding).
-7. **Results & Scientific Review (`/session/:id/image/:imgId/results`):** Decision-support interface with ROI bounding box overlays, confidence distributions, and human sign-off actions (**Confirm**, **Correct**, **Reject**, **Needs Expert Review**).
-8. **Session History (`/sessions`):** Searchable laboratory archive with status filters (In Progress, Completed, Reviewed) and rich specimen cards.
-9. **Session Details (`/session/:id`):** Microscopic field gallery, specimen metadata table, and session-level observation summaries.
-10. **Report Preview (`/session/:id/report`):** Formal scientific observation report ready for PDF export, model provenance disclosure, and verification sign-off blocks.
-11. **Modules Library (`/modules`):** Module catalog highlighting Mycology (Installed & Ready) alongside future roadmap modules (Parasitology, Malaria Smear, Hemocytometry).
-12. **Model Library (`/models`):** On-device LiteRT neural model manager showing model sizes, checksums, tensor input formats, and offline update workflows.
-13. **Workstation Settings (`/settings`):** Real-time theme switcher (**Darkroom**, **AMOLED**, **Daylight**), Local AI server configuration, local storage management, and scientific disclaimers.
-14. **Local AI Copilot (`/assistant`):** Streaming chat with the phone's on-device model, optionally grounded on a single session (`/assistant?session=<id>`) with a factual summary of captures, quality gates and model predictions.
+- **100% Offline Relational Persistence**: Zero mandatory internet connectivity. All sessions, images, model runs, annotations, and reviewer sign-offs are committed to an ACID-compliant local **Drift SQLite** database.
+- **Hardware-Accelerated CameraX Streaming**: Native camera bridge featuring hardware-stepped optical sensor zoom (`1.0x`, `2.0x`, `4.0x`), exposure and focus lock, auxiliary torch illumination, and exposure compensation.
+- **Real-Time Quality Assessment (<15 ms SLA)**: Instant feedback evaluating Variance of Laplacian defocus blur, ITU-R BT.601 luminance gates, optical adapter concentricity, and circular aperture auto-cropping.
+- **Vector PDF & Structured Audit Export**: Multi-page vector laboratory reports (A4 format) with embedded quality histograms, model checksums, and microscopist verification signature blocks.
+- **Human-in-the-Loop Safeguards**: Strict cryptographic and semantic separation between automated AI proposals and human-verified diagnostic decisions.
+- **Air-Gapped Local AI Assistant**: On-device language model integration grounded on session facts via local loopback (`http://127.0.0.1:8080/v1`).
 
 ---
 
-## 3. Design System
+## 2. End-to-End System Architecture
 
-Designed specifically as a serious scientific instrument rather than a generic SaaS template:
-- **Darkroom-First Palette:** Near-black surfaces (`#06080D`), true-black AMOLED mode (`#000000`), and a single bio-luminescent lime signal color (`#C8F751`). No decorative gradients — flat surfaces separated by hairline borders.
-- **Semantic Tokens:** Every screen reads surfaces, text and semantic channels through an `AppTokens` theme extension, so Darkroom, AMOLED and Daylight stay consistent.
-- **Typography:** Inter for interface text and JetBrains Mono for specimen codes, metrics, confidence scores, graticule scales and timestamps. Both fonts are bundled for offline use.
-- **Brand mark:** the white microscope glyph on pure black, used as the Android launcher icon, Android 12 splash, web/PWA icon and onboarding logo.
-- **Motion & Touch:** A floating glass navigation bar with stroke (outline) active tabs, and a shared `Haptics` vocabulary (tap, select, success, warning) wired across cards, chips, navigation and actions.
-- **Custom Optics Components:** `MicroscopeReticleOverlay`, `QualityGauge`, `ScientificCard`, `StatusBadge`, `FloatingNavBar` and `FilmstripView`.
+```mermaid
+flowchart TD
+    subgraph Physical Optics
+        A["Microscope Eyepiece (10x-100x Oil)"] --> B["Mechanical Smartphone Adapter"]
+        B --> C["Smartphone Camera Sensor"]
+    end
+
+    subgraph Native Optical Ingestion
+        C --> D["CameraX Live Stream Engine"]
+        D --> E["Optical Reticle & Graticule Overlay"]
+        D --> F["Floating Controls: Zoom, Torch, Focus/Exposure Lock"]
+    end
+
+    subgraph Real-Time Quality Heuristics Engine
+        D --> G["Shutter Trigger"]
+        G --> H["Variance of Laplacian Sharpness (var_L)"]
+        G --> I["ITU-R BT.601 Luminance & Contrast Gates"]
+        G --> J["Eyepiece Concentricity & Optical Alignment"]
+        G --> K["Circular Field Aperture Auto-Cropper (<15ms)"]
+    end
+
+    subgraph Local Storage & Relational Database
+        H & I & J & K --> L["FileStorageService (App-Private Raw & Derived Storage)"]
+        L --> M["Drift SQLite Database (Indexed Relational Tables)"]
+    end
+
+    subgraph Scientific Evaluation & Decision Support
+        M --> N["LiteRT Neural Model Runtime (Float16/INT8)"]
+        N --> O["Posterior Probabilities & Morphological Annotations"]
+        O --> P["Human-in-the-Loop Review (Confirm / Correct / Reject)"]
+    end
+
+    subgraph Clinical & Laboratory Deliverables
+        P --> Q["Scientific Vector PDF Report Export (A4 Multi-page)"]
+        P --> R["Structured Audit JSON Export"]
+        P --> S["Local AI Copilot Grounding (Clearport / llama.cpp)"]
+    end
+```
 
 ---
 
-## 4. Local AI Copilot
+## 3. Optical Pipeline & Quality Heuristics
 
-MICROTRACE reuses the phone's existing on-device model server — the same **Clearport / llama.cpp** stack that powers the Clearport chat app. No model is bundled and no request leaves the device.
+```mermaid
+flowchart LR
+    A["Raw Eyepiece Frame (12-48 MP)"] --> B["Fast Linear Downsampling (320x320 Patch)"]
+    B --> C["ITU-R BT.601 Grayscale Conversion"]
+    
+    C --> D["3x3 Discrete Laplace Convolution"]
+    D --> E["Variance of Laplacian Sharpness Score (0-100)"]
+    
+    C --> F["256-Bin Luminance Histogram"]
+    F --> G["Underexposure (<0.38) & Overexposure (>0.86) Gates"]
+    
+    C --> H["Center-of-Mass Concentricity Calculation"]
+    H --> I["Optical Axis Misalignment Warning (<0.75)"]
+    
+    A --> J["Circular Aperture Auto-Cropper"]
+    J --> K["Centered Square Derived Crop (No Black Vignette)"]
+```
 
-**How it works**
-- An OpenAI-compatible client (`LocalAiService`) talks to `http://127.0.0.1:8080/v1` by default, with optional model ID, API key, temperature and a live connection test in **Settings → Local AI Copilot**.
-- Responses stream token-by-token through a parser that understands SSE (`data:` frames), Ollama newline-delimited JSON and plain text.
-- The copilot can be opened standalone from the dashboard, or **grounded on a session** from the session detail screen. Grounding serialises only verified app facts: specimen metadata, capture profile, per-field quality metrics, top prediction, candidate classes, confidence values and reviewer notes.
-- The system prompt keeps the model concise, tells it to refuse to invent missing data, and requires a human-verification reminder on every clinical answer.
+### Mathematical Formulations
 
-**Set up the model on Android (Termux)**
+1. **Variance of Laplacian (Focus Heuristic)**:
+   Convolution with discrete 3x3 Laplace operator $\mathbf{K} = \begin{bmatrix} 0 & 1 & 0 \\ 1 & -4 & 1 \\ 0 & 1 & 0 \end{bmatrix}$ computes spatial edge response $L(x, y)$. The calibrated score is:
+   $$\text{Score}_{sharpness} = 100 \cdot \left( 1 - \exp\left( -\frac{\sqrt{\text{Var}(L)}}{22.0} \right) \right)$$
+   Fields scoring $< 70.0$ trigger an actionable refocus warning.
+
+2. **Luminance & Dynamic Range**:
+   Luminance computed per ITU-R BT.601:
+   $$Y = 0.299R + 0.587G + 0.114B$$
+   Mean normalized luminance gates enforce $0.38 \le \bar{Y} \le 0.86$, preventing burned-out or unilluminated frames.
+
+3. **Adapter Concentricity**:
+   Center of illuminated mass $(\bar{x}, \bar{y})$ deviation from sensor center determines alignment score:
+   $$\text{Concentricity} = 1.0 - 0.8 \cdot \sqrt{\left(\frac{\bar{x} - w/2}{w/2}\right)^2 + \left(\frac{\bar{y} - h/2}{h/2}\right)^2}$$
+
+---
+
+## 4. Offline Relational Database Schema (Drift SQLite)
+
+MICROTRACE replaces volatile mock states with an indexed relational schema managed by **Drift** (`drift_flutter`):
+
+```mermaid
+erDiagram
+    SESSIONS ||--o{ IMAGES : "contains (CASCADE)"
+    IMAGES ||--o{ ANALYSIS_RUNS : "evaluates (CASCADE)"
+    ANALYSIS_RUNS ||--o{ ANNOTATIONS : "detects (CASCADE)"
+    MODEL_INSTALLATIONS ||--o{ ANALYSIS_RUNS : "executes"
+
+    SESSIONS {
+        text id PK
+        text title
+        text specimen_code UK
+        text specimen_type
+        text module_id
+        text capture_profile
+        text status
+        datetime created_at
+    }
+
+    IMAGES {
+        text id PK
+        text session_id FK
+        integer field_index
+        text asset_path
+        real laplacian_sharpness
+        real mean_luminance
+        real contrast_ratio
+        real fov_circular_coverage
+        boolean is_passed
+        datetime captured_at
+    }
+
+    ANALYSIS_RUNS {
+        text id PK
+        text image_id FK
+        text model_id
+        text model_version
+        text model_checksum
+        text top_prediction_json
+        text all_predictions_json
+        text review_status
+        text reviewer_notes
+        text corrected_class
+        datetime executed_at
+    }
+
+    ANNOTATIONS {
+        text id PK
+        text analysis_run_id FK
+        text label
+        real confidence
+        real bounding_box_x
+        real bounding_box_y
+        real bounding_box_w
+        real bounding_box_h
+    }
+
+    MODEL_INSTALLATIONS {
+        text model_id PK
+        text module_id
+        text name
+        text version
+        text file_checksum
+        integer size_bytes
+        boolean is_installed
+    }
+```
+
+---
+
+## 5. Workstation Screen Inventory
+
+MICROTRACE provides 14 specialized workstation screens designed in the **Darkroom-First** palette (`#06080D` surface, `#C8F751` bioluminescent lime signal):
+
+1. **Dashboard (`/`):** Workspace telemetry, quick session initialization, recent slide records, module readiness, and instant theme switching.
+2. **New Microscopy Session (`/new-session`):** Specimen registration capturing slide IDs, preparation mounts, optical objectives, and microscopist initials.
+3. **Capture Workspace (`/capture/:sessionId`):** Native CameraX streaming viewport, interactive pinch/zoom, reticle graticule overlay (25 µm scale), real-time focus meter, optical controls (zoom, torch, locks, EV), and filmstrip.
+4. **Image Review (`/session/:id/image/:imgId`):** High-resolution pinch/pan inspection, objective quality gates (Sharpness, Luminance, Eyepiece Alignment), usability flags, and operator notes.
+5. **Analysis Workspace (`/session/:id/image/:imgId/analysis`):** Multi-stage on-device LiteRT neural inference execution.
+6. **Results & Scientific Review (`/session/:id/image/:imgId/results`):** Decision-support interface with ROI bounding box overlays, confidence distributions, and human sign-off actions (**Confirm**, **Correct**, **Reject**, **Needs Expert Review**).
+7. **Session History (`/sessions`):** Searchable laboratory archive with status filters and specimen cards.
+8. **Session Details (`/session/:id`):** Microscopic field gallery, specimen metadata table, and session-level observation summaries.
+9. **Report Preview (`/session/:id/report`):** Multi-page vector PDF report generation with embedded quality histograms, model checksums, and signature blocks.
+10. **Modules Library (`/modules`):** Module catalog highlighting Mycology (Installed & Ready) alongside roadmap modules (Parasitology, Malaria Smear, Hemocytometry).
+11. **Model Library (`/models`):** On-device LiteRT neural model manager showing model sizes, SHA-256 checksums, and offline update workflows.
+12. **Workstation Settings (`/settings`):** Real-time theme switcher (**Darkroom**, **AMOLED**, **Daylight**), Local AI server configuration, local storage management, and scientific disclaimers.
+13. **Local AI Copilot (`/assistant`):** Streaming chat with the phone's on-device model grounded on verified session records via local loopback.
+14. **Onboarding (`/onboarding`):** Guided first-launch experience detailing optical microscope alignment, on-device LiteRT architecture, and human review responsibilities.
+
+---
+
+## 6. Local Development & Web Preview
+
+To run and preview MICROTRACE in your browser (Brave / Chrome) without running release builds locally:
+
 ```bash
-# One-time install of the Clearport CLI
-pkg install -y curl && curl -fsSL https://raw.githubusercontent.com/Adams-404/clearport-cli/main/install.sh | bash
+# Clone the repository
+git clone https://github.com/Adams-404/microtrace.git
+cd microtrace
 
-# Place a GGUF model in ~/models, then start the local server
-clearport local-models
-clearport use ~/models/your-model.gguf
-clearport start
+# Fetch dependencies
+flutter pub get
+
+# Launch web server preview on port 3000
+flutter run -d web-server --web-port 3000
 ```
 
-The app and CLI share the same endpoint, so a model already serving Clearport works with MICROTRACE immediately. On the Flutter web preview, `127.0.0.1:8080` resolves to the development machine, which makes UI testing easy.
-
-**Safety**
-- The assistant is decision support only. It never returns a definitive diagnosis and always defers to a qualified microscopist.
-- Session context is truncated (first 8 fields, top 3 candidate classes) to keep small 1B-class models coherent.
-- No telemetry, no analytics, no remote inference.
+Open **`http://localhost:3000`** in your browser.
 
 ---
 
-## 5. Architecture
+## 7. Testing & Verification
 
-```
-lib/
-├── app/
-│   ├── app.dart              # Root application widget with theme switching
-│   ├── router/app_router.dart # Declarative GoRouter with ShellRoute navigation
-│   └── theme/                # Scientific color tokens, typography, and themes
-├── core/
-│   ├── constants/            # Scientific constants & disclaimers
-│   ├── utils/                # Number, date, byte formatters
-│   └── widgets/              # Reticles, gauges, badges, cards, app bars
-├── features/
-│   ├── onboarding/           # First-launch guidance
-│   ├── dashboard/            # Laboratory dashboard
-│   ├── assistant/            # Local AI chat, grounding and controller
-│   ├── sessions/             # Session creation, history, and details
-│   ├── capture/              # Optical capture viewport & filmstrip
-│   ├── image_review/         # Field inspection & quality metrics
-│   ├── analysis/             # LiteRT inference simulation pipeline
-│   ├── results/              # Scientific review & bounding box overlays
-│   ├── reports/              # Printable observation report
-│   ├── modules/              # Module library catalog
-│   ├── model_library/        # On-device model manager
-│   └── settings/             # Themes, storage, Local AI and disclosures
-└── shared/
-    ├── models/               # Strongly-typed domain models
-    └── services/             # Repositories, local AI client, stream parser
+MICROTRACE maintains rigorous static analysis and automated test coverage across database persistence, optical quality heuristics, PDF generation, and UI components:
+
+```bash
+# Verify formatting
+dart format --output=none --set-exit-if-changed .
+
+# Static analysis (0 errors, 0 warnings, 0 lints)
+flutter analyze
+
+# Execute test suite (24 passing unit & widget tests)
+flutter test
 ```
 
----
-
-## 6. Verification & Code Quality
-
-- **Flutter Analyze:** 0 errors, 0 warnings, 0 lints (`No issues found!`).
-- **Dart Format:** 100% compliant with standard Dart conventions.
-- **Widget Tests:** Passed (`MICROTRACE workstation app boots up and renders dashboard`).
-- **Streaming Tests:** `test/stream_parser_test.dart` covers SSE framing, server error payloads and plain-text fallback; `test/local_ai_service_test.dart` exercises the real client against a loopback OpenAI-compatible server (status, streaming and offline handling).
-- **Visual Verification:** Dashboard, floating navigation, session screens and the Local AI copilot are checked against a `flutter run -d web-server` preview.
+### Verified Test Suites
+- `test/database_persistence_test.dart`: Drift SQLite relational CRUD, cascade integrity, query speed (<15 ms).
+- `test/image_quality_service_test.dart`: Variance of Laplacian blur discrimination, luminance gates, circular auto-cropping, <300 ms SLA.
+- `test/pdf_report_service_test.dart`: Multi-page vector PDF generation, checksum embedding, signature blocks (<350 ms).
+- `test/capture_workspace_test.dart`: Hardware camera controls, reticle overlays, calibration fallback mode, shutter persistence.
+- `test/stream_parser_test.dart` & `test/local_ai_service_test.dart`: Local AI SSE delta streaming and error handling.
 
 ---
 
-## 7. Releases & CI
+## 8. Continuous Integration & Release Automation
 
-GitHub Actions (`.github/workflows/release.yml`) builds, tests and publishes the app. A run starts when:
+Automated builds and releases are managed via **GitHub Actions** (`.github/workflows/release.yml`). A build job triggers on:
+- Pushing to `main` with `release` in the commit message (e.g. `release: v0.2.0`).
+- Pushing a version tag (`v*`).
+- Manual trigger via `workflow_dispatch`.
 
-- you push to `main` with **`release` in the commit message**, e.g. `git commit -m "release: v1.2.0"`;
-- you push a version tag such as `v1.2.0`;
-- you trigger **Build & Release Microtrace** manually from the Actions tab.
-
-Each run formats and analyzes the code, runs the test suite, builds the Android APK and the web bundle, then publishes a GitHub Release with the APK attached:
-
-- Latest test build: https://github.com/Adams-404/microtrace/releases/latest
-- APK artifacts (14-day retention) are also available on the workflow run page.
-
-The APK is signed with the debug keystore so it installs directly for testing. For a Play Store build, add a release keystore and a signing config in `android/app/build.gradle.kts`.
+Each run executes `flutter analyze`, `flutter test`, builds the Android release APK and Web bundle, and automatically attaches the compiled APK to the GitHub Release.
 
 ---
 
-## 8. Scientific & Medical Disclaimer
+## 9. Scientific Integrity & Disclaimers
 
-MICROTRACE is an offline-first research and laboratory decision-support tool. It is not certified as an in-vitro diagnostic medical device and does not replace professional histological, mycological, or pathological examination. All automated computer-vision predictions must be reviewed, verified, or corrected by qualified laboratory personnel.
+> [!IMPORTANT]
+> **RESEARCH USE ONLY (RUO)**: MICROTRACE is an investigative scientific decision-support tool. It does NOT provide autonomous medical diagnoses. All machine learning predictions are assistive proposals that require explicit verification and sign-off by a qualified microscopist or pathologist before clinical action.
