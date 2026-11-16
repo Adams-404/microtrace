@@ -230,8 +230,12 @@ class LocalAiService {
         {'data': final List data} => data,
         {'models': final List models} => models,
         final List list => list,
-        {'id': final String id} => [{'id': id}],
-        {'model': final String model} => [{'id': model}],
+        {'id': final String id} => [
+          {'id': id},
+        ],
+        {'model': final String model} => [
+          {'id': model},
+        ],
         _ => const [],
       };
       final names = <String>[];

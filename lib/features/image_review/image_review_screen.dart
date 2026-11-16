@@ -308,8 +308,8 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                               color: _isUsable
                                   ? AppColors.passGreen
                                   : (isDark
-                                      ? AppColors.darkBorder
-                                      : AppColors.lightBorder),
+                                        ? AppColors.darkBorder
+                                        : AppColors.lightBorder),
                               width: _isUsable ? 1.5 : 1.0,
                             ),
                           ),
@@ -372,8 +372,8 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                               color: _recaptureNeeded
                                   ? AppColors.warningAmber
                                   : (isDark
-                                      ? AppColors.darkBorder
-                                      : AppColors.lightBorder),
+                                        ? AppColors.darkBorder
+                                        : AppColors.lightBorder),
                               width: _recaptureNeeded ? 1.5 : 1.0,
                             ),
                           ),

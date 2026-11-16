@@ -319,7 +319,8 @@ class _CaptureWorkspaceScreenState
 
           // Bottom Shutter Controls & Captured Fields Filmstrip
           Positioned(
-            bottom: (widget.sessionId == null ? 88.0 : 0.0) +
+            bottom:
+                (widget.sessionId == null ? 88.0 : 0.0) +
                 MediaQuery.viewPaddingOf(context).bottom,
             left: 0,
             right: 0,

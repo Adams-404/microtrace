@@ -103,7 +103,9 @@ void main() {
       'http://127.0.0.1:8080/v1',
     );
     expect(
-      AssistantSettings.normalizeBaseUrl('http://127.0.0.1:8080/v1/chat/completions'),
+      AssistantSettings.normalizeBaseUrl(
+        'http://127.0.0.1:8080/v1/chat/completions',
+      ),
       'http://127.0.0.1:8080/v1',
     );
   });

@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../database/app_database.dart';
+import '../database/database_provider.dart';
 import '../models/model_installation.dart';
 import '../models/module_info.dart';
 
@@ -26,9 +28,27 @@ class ModelRepositoryState {
 }
 
 class ModelRepositoryNotifier extends Notifier<ModelRepositoryState> {
+  AppDatabase get _db => ref.read(appDatabaseProvider);
+
   @override
   ModelRepositoryState build() {
+    _loadFromDb();
     return ModelRepositoryState(modules: _seedModules(), models: _seedModels());
+  }
+
+  Future<void> _loadFromDb() async {
+    try {
+      final dbModels = await _db.getAllModels();
+      if (dbModels.isNotEmpty) {
+        state = state.copyWith(models: dbModels);
+      } else {
+        for (final m in state.models) {
+          await _db.saveModel(m);
+        }
+      }
+    } catch (_) {
+      // Fallback in environments without persistent db
+    }
   }
 
   void toggleModelInstallation(String modelId) {
@@ -36,7 +56,11 @@ class ModelRepositoryNotifier extends Notifier<ModelRepositoryState> {
       models: [
         for (final m in state.models)
           if (m.modelId == modelId)
-            m.copyWith(isInstalled: !m.isInstalled)
+            () {
+              final updated = m.copyWith(isInstalled: !m.isInstalled);
+              _db.saveModel(updated).catchError((_) {});
+              return updated;
+            }()
           else
             m,
       ],
@@ -48,11 +72,15 @@ class ModelRepositoryNotifier extends Notifier<ModelRepositoryState> {
       models: [
         for (final m in state.models)
           if (m.modelId == modelId)
-            m.copyWith(
-              version: '0.2.0-rc1',
-              installedAt: DateTime.now(),
-              accuracyReport: 'Updated baseline with 94.2% top-1 accuracy on DeFungi test set.',
-            )
+            () {
+              final updated = m.copyWith(
+                version: '0.2.0-rc1',
+                installedAt: DateTime.now(),
+                accuracyReport: 'Updated baseline with 94.2% top-1 accuracy on DeFungi test set.',
+              );
+              _db.saveModel(updated).catchError((_) {});
+              return updated;
+            }()
           else
             m,
       ],

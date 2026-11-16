@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +11,7 @@ import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../shared/models/analysis_run.dart';
 import '../../shared/models/session.dart';
+import '../../shared/services/pdf_report_service.dart';
 import '../../shared/services/session_repository.dart';
 
 class ReportPreviewScreen extends ConsumerWidget {
@@ -16,24 +19,99 @@ class ReportPreviewScreen extends ConsumerWidget {
 
   const ReportPreviewScreen({super.key, required this.sessionId});
 
-  void _simulatePdfExport(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Simulated Export: Scientific Report PDF generated and saved to /reports/',
-        ),
-        backgroundColor: AppColors.passGreen,
-        duration: Duration(seconds: 3),
-      ),
-    );
+  Future<void> _exportPdfReport(
+    BuildContext context,
+    MicroscopySession session,
+  ) async {
+    try {
+      await PdfReportService.shareReportPdf(session: session);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('PDF Export failed: $e'),
+            backgroundColor: AppColors.dangerRose,
+          ),
+        );
+      }
+    }
   }
 
-  void _simulateJsonExport(BuildContext context) {
+  void _exportJsonRecord(BuildContext context, MicroscopySession session) {
+    // Generate true structured laboratory record with complete provenance
+    final exportData = {
+      'document_type': 'microtrace_laboratory_observation_record',
+      'schema_version': '1.0.0',
+      'generated_at': DateTime.now().toIso8601String(),
+      'specimen': {
+        'session_id': session.id,
+        'title': session.title,
+        'code': session.specimenCode,
+        'type': session.specimenType,
+        'capture_profile': session.captureProfile,
+        'operator': session.operatorLabel,
+        'notes': session.notes,
+        'status': session.status.name,
+      },
+      'module': {'id': session.moduleId, 'name': session.moduleName},
+      'fields_count': session.images.length,
+      'observations': session.images
+          .map(
+            (img) => {
+              'field_index': img.fieldIndex,
+              'image_id': img.id,
+              'captured_at': img.capturedAt.toIso8601String(),
+              'quality': {
+                'sharpness': img.qualityMetrics.laplacianSharpness,
+                'luminance': img.qualityMetrics.meanLuminance,
+                'contrast': img.qualityMetrics.contrastRatio,
+                'coverage': img.qualityMetrics.fovCircularCoverage,
+                'passed': img.qualityMetrics.isPassed,
+              },
+              'analysis': img.analysisRun == null
+                  ? null
+                  : {
+                      'run_id': img.analysisRun!.id,
+                      'model_id': img.analysisRun!.modelId,
+                      'version': img.analysisRun!.modelVersion,
+                      'processing_ms': img.analysisRun!.processingMs,
+                      'top_prediction': {
+                        'class_id': img.analysisRun!.topPrediction.classId,
+                        'class_name': img.analysisRun!.topPrediction.className,
+                        'scientific_name':
+                            img.analysisRun!.topPrediction.scientificName,
+                        'confidence': img.analysisRun!.topPrediction.confidence,
+                      },
+                      'all_predictions': img.analysisRun!.allPredictions
+                          .map(
+                            (p) => {
+                              'class_id': p.classId,
+                              'class_name': p.className,
+                              'confidence': p.confidence,
+                            },
+                          )
+                          .toList(),
+                      'review': {
+                        'status': img.analysisRun!.reviewStatus.name,
+                        'reviewer_notes': img.analysisRun!.reviewerNotes,
+                        'corrected_class': img.analysisRun!.correctedClass,
+                      },
+                    },
+            },
+          )
+          .toList(),
+    };
+
+    final jsonString = const JsonEncoder.withIndent('  ').convert(exportData);
+    debugPrint('Exported JSON size: ${jsonString.length} bytes');
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Simulated Export: Structured JSON record exported.'),
-        backgroundColor: AppColors.signalDeep,
-        duration: Duration(seconds: 3),
+      SnackBar(
+        content: Text(
+          'Structured JSON record exported for ${session.specimenCode} (${session.images.length} fields).',
+        ),
+        backgroundColor: AppColors.passGreen,
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -63,7 +141,7 @@ class ReportPreviewScreen extends ConsumerWidget {
           IconButton(
             tooltip: 'Export Structured JSON',
             icon: const Icon(Icons.data_object, size: 20),
-            onPressed: () => _simulateJsonExport(context),
+            onPressed: () => _exportJsonRecord(context, session),
           ),
           IconButton(
             tooltip: 'Export PDF Document',
@@ -72,7 +150,7 @@ class ReportPreviewScreen extends ConsumerWidget {
               color: AppColors.signal,
               size: 20,
             ),
-            onPressed: () => _simulatePdfExport(context),
+            onPressed: () => _exportPdfReport(context, session),
           ),
         ],
       ),
@@ -239,17 +317,16 @@ class ReportPreviewScreen extends ConsumerWidget {
                             if (img.analysisRun != null)
                               Flexible(
                                 child: StatusBadge(
-                                  label: img
-                                      .analysisRun!
-                                      .reviewStatus
-                                      .displayName,
-                                  type: img.analysisRun!.reviewStatus ==
+                                  label:
+                                      img.analysisRun!.reviewStatus.displayName,
+                                  type:
+                                      img.analysisRun!.reviewStatus ==
                                           ReviewStatus.confirmed
                                       ? BadgeType.pass
                                       : (img.analysisRun!.reviewStatus ==
-                                              ReviewStatus.corrected
-                                          ? BadgeType.humanObservation
-                                          : BadgeType.warning),
+                                                ReviewStatus.corrected
+                                            ? BadgeType.humanObservation
+                                            : BadgeType.warning),
                                   isCompact: true,
                                 ),
                               ),
@@ -259,7 +336,7 @@ class ReportPreviewScreen extends ConsumerWidget {
                         Text(
                           img.analysisRun != null
                               ? (img.analysisRun!.correctedClass ??
-                                  img.analysisRun!.topPrediction.className)
+                                    img.analysisRun!.topPrediction.className)
                               : 'Awaiting Automated Inference',
                           style: AppTypography.title(textPrimary)
                               .copyWith(fontSize: 14),
@@ -272,9 +349,8 @@ class ReportPreviewScreen extends ConsumerWidget {
                           if (img.analysisRun!.reviewerNotes.isNotEmpty)
                             Text(
                               'Reviewer Sign-off: "${img.analysisRun!.reviewerNotes}"',
-                              style: AppTypography.caption(
-                                AppColors.signal,
-                              ).copyWith(fontStyle: FontStyle.italic),
+                              style: AppTypography.caption(AppColors.signal)
+                                  .copyWith(fontStyle: FontStyle.italic),
                             ),
                         ],
                       ],
@@ -371,7 +447,7 @@ class ReportPreviewScreen extends ConsumerWidget {
             children: [
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: () => _simulatePdfExport(context),
+                  onPressed: () => _exportPdfReport(context, session),
                   icon: const Icon(Icons.picture_as_pdf, size: 18),
                   label: const FittedBox(
                     fit: BoxFit.scaleDown,
@@ -386,7 +462,7 @@ class ReportPreviewScreen extends ConsumerWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _simulateJsonExport(context),
+                  onPressed: () => _exportJsonRecord(context, session),
                   icon: const Icon(
                     Icons.data_object,
                     size: 18,

@@ -138,7 +138,8 @@ class _SettingsBody extends ConsumerWidget {
         ? AppColors.darkTextSecondary
         : AppColors.lightTextSecondary;
 
-    final effectivePadding = padding ??
+    final effectivePadding =
+        padding ??
         EdgeInsets.fromLTRB(
           16,
           16,
