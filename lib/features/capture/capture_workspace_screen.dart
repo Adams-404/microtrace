@@ -1,4 +1,6 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
@@ -10,8 +12,9 @@ import '../../core/utils/haptics.dart';
 import '../../core/widgets/microscope_reticle_overlay.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../shared/models/microscopy_image.dart';
-import '../../shared/models/quality_metrics.dart';
 import '../../shared/models/session.dart';
+import '../../shared/services/file_storage_service.dart';
+import '../../shared/services/image_quality_service.dart';
 import '../../shared/services/session_repository.dart';
 import 'widgets/filmstrip_view.dart';
 import 'widgets/optical_guidance_sheet.dart';
@@ -26,17 +29,35 @@ class CaptureWorkspaceScreen extends ConsumerStatefulWidget {
       _CaptureWorkspaceScreenState();
 }
 
-class _CaptureWorkspaceScreenState
-    extends ConsumerState<CaptureWorkspaceScreen> {
+class _CaptureWorkspaceScreenState extends ConsumerState<CaptureWorkspaceScreen>
+    with WidgetsBindingObserver {
   final _uuid = const Uuid();
 
-  // Optical Feed Controls
-  double _zoomLevel = 1.0;
-  double _sharpnessScore = 88.4;
-  final double _exposureAdjustment = 0.0;
-  bool _showReticle = true;
+  // Hardware Camera Controller & State
+  CameraController? _cameraController;
+  List<CameraDescription> _availableCameras = [];
+  bool _isCameraInitialized = false;
+  bool _isCameraInitializing = true;
+  String? _cameraErrorMessage;
 
-  // Selected simulated specimen slide
+  // Optical Hardware Boundaries
+  double _minAvailableZoom = 1.0;
+  double _maxAvailableZoom = 8.0;
+  double _currentZoomLevel = 1.0;
+  bool _isTorchOn = false;
+  bool _isExposureLocked = false;
+  bool _isFocusLocked = false;
+  double _exposureOffset = 0.0;
+  double _minExposureOffset = -2.0;
+  double _maxExposureOffset = 2.0;
+  double _exposureStep = 0.5;
+
+  // UI & Optical Feed Controls
+  double _sharpnessScore = 88.4;
+  bool _showReticle = true;
+  bool _isCapturing = false;
+
+  // Simulated Bench Slides (used only when no hardware camera is present)
   int _selectedSlideIndex = 0;
   final List<Map<String, String>> _availableSlides = [
     {
@@ -65,54 +86,289 @@ class _CaptureWorkspaceScreenState
     },
   ];
 
-  // Shutter Flash Animation
+  // Shutter Flash Animation & Feedback
   bool _isShutterFlashing = false;
   String? _recentFeedbackMessage;
+  bool _recentFeedbackPassed = true;
 
-  void _triggerCapture(MicroscopySession activeSession) {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initializeCamera();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) return;
+
+    if (state == AppLifecycleState.inactive) {
+      controller.dispose();
+      _cameraController = null;
+      if (mounted) setState(() => _isCameraInitialized = false);
+    } else if (state == AppLifecycleState.resumed) {
+      _initializeCamera();
+    }
+  }
+
+  Future<void> _initializeCamera() async {
+    setState(() {
+      _isCameraInitializing = true;
+      _cameraErrorMessage = null;
+    });
+
+    try {
+      final cameras = await availableCameras();
+      _availableCameras = cameras;
+
+      if (cameras.isEmpty) {
+        if (mounted) {
+          setState(() {
+            _isCameraInitializing = false;
+            _cameraErrorMessage = 'No optical camera hardware detected. Switched to Calibration Mode.';
+          });
+        }
+        return;
+      }
+
+      // Default to rear-facing camera for microscope eyepiece adapters
+      final camera = cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
+
+      final controller = CameraController(
+        camera,
+        ResolutionPreset.high,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+
+      _cameraController = controller;
+      await controller.initialize();
+      if (!mounted) return;
+
+      try {
+        _minAvailableZoom = await controller.getMinZoomLevel();
+        _maxAvailableZoom = await controller.getMaxZoomLevel();
+        _minExposureOffset = await controller.getMinExposureOffset();
+        _maxExposureOffset = await controller.getMaxExposureOffset();
+        final step = await controller.getExposureOffsetStepSize();
+        if (step > 0) _exposureStep = step;
+      } catch (_) {}
+
+      setState(() {
+        _isCameraInitialized = true;
+        _isCameraInitializing = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isCameraInitializing = false;
+          _cameraErrorMessage =
+              'Camera initialization: $e. Switched to Calibration Mode.';
+        });
+      }
+    }
+  }
+
+  Future<void> _switchCamera() async {
+    if (_availableCameras.length <= 1) return;
+    final currentIndex = _availableCameras.indexWhere(
+      (c) => c.name == _cameraController?.description.name,
+    );
+    final nextIndex = (currentIndex + 1) % _availableCameras.length;
+    final nextCamera = _availableCameras[nextIndex];
+
+    await _cameraController?.dispose();
+    final controller = CameraController(
+      nextCamera,
+      ResolutionPreset.high,
+      enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+    _cameraController = controller;
+    await controller.initialize();
+    if (!mounted) return;
+
+    try {
+      _minAvailableZoom = await controller.getMinZoomLevel();
+      _maxAvailableZoom = await controller.getMaxZoomLevel();
+    } catch (_) {}
+
+    setState(() {});
+  }
+
+  Future<void> _setZoom(double zoom) async {
+    final clamped = zoom.clamp(_minAvailableZoom, _maxAvailableZoom);
+    setState(() => _currentZoomLevel = clamped);
+
+    if (_cameraController != null && _cameraController!.value.isInitialized) {
+      try {
+        await _cameraController!.setZoomLevel(clamped);
+      } catch (_) {}
+    }
+  }
+
+  Future<void> _toggleTorch() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+    try {
+      final next = !_isTorchOn;
+      await _cameraController!.setFlashMode(
+        next ? FlashMode.torch : FlashMode.off,
+      );
+      setState(() => _isTorchOn = next);
+    } catch (_) {}
+  }
+
+  Future<void> _toggleExposureLock() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+    try {
+      final nextLocked = !_isExposureLocked;
+      await _cameraController!.setExposureMode(
+        nextLocked ? ExposureMode.locked : ExposureMode.auto,
+      );
+      setState(() => _isExposureLocked = nextLocked);
+    } catch (_) {}
+  }
+
+  Future<void> _toggleFocusLock() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+    try {
+      final nextLocked = !_isFocusLocked;
+      await _cameraController!.setFocusMode(
+        nextLocked ? FocusMode.locked : FocusMode.auto,
+      );
+      setState(() => _isFocusLocked = nextLocked);
+    } catch (_) {}
+  }
+
+  Future<void> _adjustExposure(double delta) async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+    try {
+      final nextOffset = (_exposureOffset + delta).clamp(
+        _minExposureOffset,
+        _maxExposureOffset,
+      );
+      await _cameraController!.setExposureOffset(nextOffset);
+      setState(() => _exposureOffset = nextOffset);
+    } catch (_) {}
+  }
+
+  Future<void> _triggerCapture(MicroscopySession activeSession) async {
+    if (_isCapturing) return;
+
     Haptics.success();
     setState(() {
+      _isCapturing = true;
       _isShutterFlashing = true;
     });
 
-    final currentSlide = _availableSlides[_selectedSlideIndex];
-    final fieldIdx = activeSession.images.length + 1;
-    final sharpness = double.tryParse(currentSlide['sharpness']!) ?? 85.0;
+    try {
+      Uint8List imageBytes;
+      String captureSource;
 
-    final newImage = MicroscopyImage(
-      id: _uuid.v4(),
-      sessionId: activeSession.id,
-      fieldIndex: fieldIdx,
-      assetPath: currentSlide['asset']!,
-      capturedAt: DateTime.now(),
-      captureProfile: currentSlide['magnification']!,
-      qualityMetrics: QualityMetrics(
-        laplacianSharpness: sharpness,
-        meanLuminance: (0.65 + _exposureAdjustment * 0.1).clamp(0.1, 0.99),
-        contrastRatio: 0.81,
-        fovCircularCoverage: 0.94,
-        isPassed: sharpness >= 70.0,
-      ),
-      notes:
-          'Captured field #$fieldIdx under ${currentSlide['magnification']}.',
-    );
+      if (_isCameraInitialized && _cameraController != null) {
+        final xfile = await _cameraController!.takePicture();
+        imageBytes = await xfile.readAsBytes();
+        captureSource =
+            'CameraX Live Stream (${_cameraController!.description.name})';
+      } else {
+        // Fallback: Read sample calibration slide from bundle
+        final currentSlide = _availableSlides[_selectedSlideIndex];
+        final byteData = await rootBundle.load(currentSlide['asset']!);
+        imageBytes = byteData.buffer.asUint8List();
+        captureSource = '${currentSlide['magnification']} (Calibration Mount)';
+      }
 
-    ref
-        .read(sessionRepositoryProvider.notifier)
-        .addImageToSession(activeSession.id, newImage);
+      // 1. Run real-time heuristic assessment on the acquired frame
+      final qualityMetrics = ImageQualityService.assessQualityFromBytes(
+        imageBytes,
+      );
 
-    Future.delayed(const Duration(milliseconds: 140), () {
+      final imageId = _uuid.v4();
+      final storage = ref.read(fileStorageServiceProvider);
+
+      // 2. Persist raw capture file to disk
+      final rawFilePath = await storage.saveRawCapture(
+        imageId: imageId,
+        bytes: imageBytes,
+      );
+
+      // 3. Automatically crop the active circular eyepiece FOV
+      final croppedBytes = ImageQualityService.cropActiveEyepieceField(
+        imageBytes,
+      );
+      await storage.saveDerivedCrop(imageId: imageId, bytes: croppedBytes);
+
+      // 4. Construct immutable MicroscopyImage record
+      final fieldIdx = activeSession.images.length + 1;
+      final newImage = MicroscopyImage(
+        id: imageId,
+        sessionId: activeSession.id,
+        fieldIndex: fieldIdx,
+        assetPath: rawFilePath,
+        capturedAt: DateTime.now(),
+        captureProfile: captureSource,
+        qualityMetrics: qualityMetrics,
+        notes:
+            'Field #$fieldIdx acquired. Zoom: ${_currentZoomLevel.toStringAsFixed(1)}x, '
+            'Sharpness: ${qualityMetrics.laplacianSharpness.toStringAsFixed(1)} '
+            '(${qualityMetrics.isPassed ? "PASS" : "WARN"}).',
+      );
+
+      // 5. Commit to Drift SQLite database
+      ref
+          .read(sessionRepositoryProvider.notifier)
+          .addImageToSession(activeSession.id, newImage);
+
+      final statusLabel = qualityMetrics.isPassed ? 'PASS' : 'WARN';
+      final warningNote = qualityMetrics.warnings.isNotEmpty
+          ? ' • ${qualityMetrics.warnings.first}'
+          : '';
+
+      if (mounted) {
+        setState(() {
+          _sharpnessScore = qualityMetrics.laplacianSharpness;
+          _recentFeedbackPassed = qualityMetrics.isPassed;
+          _recentFeedbackMessage =
+              'Field #$fieldIdx Acquired • Sharpness: ${qualityMetrics.laplacianSharpness.toStringAsFixed(1)} ($statusLabel)$warningNote';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _recentFeedbackPassed = false;
+          _recentFeedbackMessage = 'Capture error: $e';
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() {
           _isShutterFlashing = false;
-          _recentFeedbackMessage =
-              'Field #$fieldIdx Acquired • Focus: ${sharpness.toStringAsFixed(1)} (PASS)';
+          _isCapturing = false;
         });
       }
-    });
+    }
 
-    // Auto dismiss feedback banner after 3.5s
-    Future.delayed(const Duration(milliseconds: 3500), () {
+    // Auto dismiss feedback banner after 4.0s
+    Future.delayed(const Duration(milliseconds: 4000), () {
       if (mounted && _recentFeedbackMessage != null) {
         setState(() => _recentFeedbackMessage = null);
       }
@@ -128,16 +384,38 @@ class _CaptureWorkspaceScreenState
     );
   }
 
+  MicroscopySession _resolveOrCreateActiveSession(
+    List<MicroscopySession> sessions,
+  ) {
+    if (widget.sessionId != null) {
+      final found = sessions.where((s) => s.id == widget.sessionId).firstOrNull;
+      if (found != null) return found;
+    }
+
+    if (sessions.isNotEmpty) {
+      return sessions.first;
+    }
+
+    // No sessions exist in database: create a real initial session in SQLite
+    return ref
+        .read(sessionRepositoryProvider.notifier)
+        .createSession(
+          title: 'Direct Optical Acquisition',
+          specimenCode:
+              'SPEC-LIVE-${DateTime.now().millisecondsSinceEpoch % 10000}',
+          specimenType: 'KOH Wet Mount',
+          moduleId: AppConstants.moduleMycologyId,
+          moduleName: 'Fungal Patch Classification',
+          captureProfile: '40x Achromat • Brightfield',
+          operatorLabel: 'Bench Operator',
+          notes: 'Session created directly from capture workspace.',
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final sessions = ref.watch(sessionRepositoryProvider);
-
-    // Resolve active session
-    final activeSession = sessions.firstWhere(
-      (s) => s.id == widget.sessionId,
-      orElse: () => sessions.isNotEmpty ? sessions.first : _dummySession(),
-    );
-
+    final activeSession = _resolveOrCreateActiveSession(sessions);
     final currentSlide = _availableSlides[_selectedSlideIndex];
 
     return Scaffold(
@@ -180,7 +458,7 @@ class _CaptureWorkspaceScreenState
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Central Optical Viewport with Pinch & Zoom
+          // Central Optical Viewport with Hardware Preview or Calibration Slide
           InteractiveViewer(
             minScale: 1.0,
             maxScale: 5.0,
@@ -188,35 +466,128 @@ class _CaptureWorkspaceScreenState
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Active Microscope Field Image
-                  Transform.scale(
-                    scale: _zoomLevel,
-                    child: Container(
-                      decoration: const BoxDecoration(color: Colors.black),
-                      child: Image.asset(
-                        currentSlide['asset']!,
-                        fit: BoxFit.contain,
-                        width: double.infinity,
+                  // Hardware Camera Preview or Calibration Mount
+                  if (_isCameraInitialized && _cameraController != null)
+                    AspectRatio(
+                      aspectRatio: 1.0 / _cameraController!.value.aspectRatio,
+                      child: CameraPreview(_cameraController!),
+                    )
+                  else
+                    Transform.scale(
+                      scale: _currentZoomLevel,
+                      child: Container(
+                        decoration: const BoxDecoration(color: Colors.black),
+                        child: Image.asset(
+                          currentSlide['asset']!,
+                          fit: BoxFit.contain,
+                          width: double.infinity,
+                        ),
                       ),
                     ),
-                  ),
 
                   // Optical Reticle & Graticule Overlay
                   MicroscopeReticleOverlay(
                     showApertureRing: _showReticle,
                     showGraticule: _showReticle,
                     sharpnessScore: _sharpnessScore,
-                    opticalProfile: currentSlide['magnification']!,
-                    isSimulated: true,
+                    opticalProfile: _isCameraInitialized
+                        ? 'CameraX • ${_currentZoomLevel.toStringAsFixed(1)}x'
+                        : currentSlide['magnification']!,
+                    isSimulated: !_isCameraInitialized,
                   ),
                 ],
               ),
             ),
           ),
 
-          // Shutter Flash Effect
+          // Shutter Flash Animation Effect
           if (_isShutterFlashing)
             Container(color: Colors.white.withOpacity(0.85)),
+
+          // Camera Initialization Spinner
+          if (_isCameraInitializing)
+            Positioned(
+              top: 16,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A).withOpacity(0.92),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.signal.withOpacity(0.5)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.signal,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'INITIALIZING CAMERAX SENSOR STREAM...',
+                      style: AppTypography.technicalMono(
+                        AppColors.signal,
+                        fontSize: 10,
+                        weight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Calibration Mode Notice (when running in web/emulator/no-camera environment)
+          if (!_isCameraInitialized &&
+              !_isCameraInitializing &&
+              _recentFeedbackMessage == null)
+            Positioned(
+              top: 16,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F172A).withOpacity(0.92),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.signal.withOpacity(0.35)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.science,
+                      color: AppColors.signal,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _cameraErrorMessage ??
+                            'BENCH CALIBRATION / TEST SLIDE MODE',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.technicalMono(
+                          Colors.white70,
+                          fontSize: 10,
+                          weight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
           // Immediate Quality Feedback Toast
           if (_recentFeedbackMessage != null)
@@ -235,13 +606,21 @@ class _CaptureWorkspaceScreenState
                   decoration: BoxDecoration(
                     color: const Color(0xFF0F172A).withOpacity(0.95),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.passGreen),
+                    border: Border.all(
+                      color: _recentFeedbackPassed
+                          ? AppColors.passGreen
+                          : AppColors.warningAmber,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: AppColors.passGreen,
+                      Icon(
+                        _recentFeedbackPassed
+                            ? Icons.check_circle
+                            : Icons.warning_amber_rounded,
+                        color: _recentFeedbackPassed
+                            ? AppColors.passGreen
+                            : AppColors.warningAmber,
                         size: 18,
                       ),
                       const SizedBox(width: 10),
@@ -261,7 +640,7 @@ class _CaptureWorkspaceScreenState
               ),
             ),
 
-          // Right Vertical Optical Floating Controls (Zoom & Stage Slide selector)
+          // Right Vertical Optical Floating Controls (Zoom, Torch, Locks, Exposure)
           Positioned(
             right: 14,
             top: 70,
@@ -277,42 +656,125 @@ class _CaptureWorkspaceScreenState
                     _zoomButton('4.0x', 4.0),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
-                // Slide Stage Selector (switch field)
+                // Optical Hardware Controls (Torch, Focus Lock, Exposure Lock)
                 _buildFloatingControlGroup(
                   children: [
+                    // Torch
                     IconButton(
-                      tooltip: 'Next Specimen Field',
+                      tooltip: 'Toggle Illumination Torch',
+                      icon: Icon(
+                        _isTorchOn ? Icons.flash_on : Icons.flash_off,
+                        color: _isTorchOn ? AppColors.signal : Colors.white60,
+                        size: 18,
+                      ),
+                      onPressed: _toggleTorch,
+                    ),
+                    const Divider(color: Colors.white24, height: 1),
+
+                    // Focus Lock
+                    IconButton(
+                      tooltip: _isFocusLocked ? 'Unlock Focus' : 'Lock Focus',
+                      icon: Icon(
+                        _isFocusLocked
+                            ? Icons.center_focus_strong
+                            : Icons.center_focus_weak,
+                        color: _isFocusLocked
+                            ? AppColors.passGreen
+                            : Colors.white60,
+                        size: 18,
+                      ),
+                      onPressed: _toggleFocusLock,
+                    ),
+                    const Divider(color: Colors.white24, height: 1),
+
+                    // Exposure Lock
+                    IconButton(
+                      tooltip: _isExposureLocked
+                          ? 'Unlock Exposure'
+                          : 'Lock Exposure',
+                      icon: Icon(
+                        _isExposureLocked ? Icons.lock : Icons.lock_open,
+                        color: _isExposureLocked
+                            ? AppColors.passGreen
+                            : Colors.white60,
+                        size: 18,
+                      ),
+                      onPressed: _toggleExposureLock,
+                    ),
+                    const Divider(color: Colors.white24, height: 1),
+
+                    // Exposure offset step
+                    IconButton(
+                      tooltip: 'Exposure +0.5 EV',
                       icon: const Icon(
-                        Icons.swap_horiz,
-                        color: AppColors.signal,
-                        size: 20,
+                        Icons.exposure_plus_1,
+                        color: Colors.white70,
+                        size: 16,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedSlideIndex =
-                              (_selectedSlideIndex + 1) %
-                              _availableSlides.length;
-                          _sharpnessScore =
-                              double.tryParse(
-                                _availableSlides[_selectedSlideIndex]['sharpness']!,
-                              ) ??
-                              85.0;
-                        });
-                      },
+                      onPressed: () => _adjustExposure(_exposureStep),
                     ),
-                    Text(
-                      'STAGE',
-                      style: AppTypography.technicalMono(
-                        Colors.white70,
-                        fontSize: 9,
-                        weight: FontWeight.w700,
+                    IconButton(
+                      tooltip: 'Exposure -0.5 EV',
+                      icon: const Icon(
+                        Icons.exposure_neg_1,
+                        color: Colors.white70,
+                        size: 16,
                       ),
+                      onPressed: () => _adjustExposure(-_exposureStep),
                     ),
-                    const SizedBox(height: 4),
+                    if (_availableCameras.length > 1) ...[
+                      const Divider(color: Colors.white24, height: 1),
+                      IconButton(
+                        tooltip: 'Switch Camera Sensor',
+                        icon: const Icon(
+                          Icons.cameraswitch,
+                          color: Colors.white70,
+                          size: 16,
+                        ),
+                        onPressed: _switchCamera,
+                      ),
+                    ],
                   ],
                 ),
+                const SizedBox(height: 12),
+
+                // Slide Stage Selector (active in calibration mode)
+                if (!_isCameraInitialized)
+                  _buildFloatingControlGroup(
+                    children: [
+                      IconButton(
+                        tooltip: 'Next Calibration Specimen',
+                        icon: const Icon(
+                          Icons.swap_horiz,
+                          color: AppColors.signal,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _selectedSlideIndex =
+                                (_selectedSlideIndex + 1) %
+                                _availableSlides.length;
+                            _sharpnessScore =
+                                double.tryParse(
+                                  _availableSlides[_selectedSlideIndex]['sharpness']!,
+                                ) ??
+                                85.0;
+                          });
+                        },
+                      ),
+                      Text(
+                        'STAGE',
+                        style: AppTypography.technicalMono(
+                          Colors.white70,
+                          fontSize: 9,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -355,18 +817,22 @@ class _CaptureWorkspaceScreenState
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Active slide label
+                      // Active feed label
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'SLIDE TARGET',
+                              _isCameraInitialized
+                                  ? 'OPTICAL CAMERAX FEED'
+                                  : 'CALIBRATION TARGET',
                               style: AppTypography.label(Colors.white60),
                             ),
                             Text(
-                              currentSlide['name']!,
+                              _isCameraInitialized
+                                  ? '${_currentZoomLevel.toStringAsFixed(1)}x • ${_cameraController?.description.name ?? "Camera"}'
+                                  : currentSlide['name']!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTypography.body(Colors.white).copyWith(
@@ -382,7 +848,10 @@ class _CaptureWorkspaceScreenState
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: GestureDetector(
-                          onTap: () => _triggerCapture(activeSession),
+                          behavior: HitTestBehavior.opaque,
+                          onTap: _isCapturing
+                              ? null
+                              : () => _triggerCapture(activeSession),
                           child: Container(
                             width: 68,
                             height: 68,
@@ -395,15 +864,25 @@ class _CaptureWorkspaceScreenState
                               child: Container(
                                 width: 54,
                                 height: 54,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppColors.signal,
+                                  color: _isCapturing
+                                      ? Colors.grey
+                                      : AppColors.signal,
                                 ),
-                                child: const Icon(
-                                  Icons.camera,
-                                  color: Colors.black,
-                                  size: 28,
-                                ),
+                                child: _isCapturing
+                                    ? const Padding(
+                                        padding: EdgeInsets.all(14),
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.black,
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.camera,
+                                        color: Colors.black,
+                                        size: 28,
+                                      ),
                               ),
                             ),
                           ),
@@ -473,9 +952,9 @@ class _CaptureWorkspaceScreenState
   }
 
   Widget _zoomButton(String label, double zoom) {
-    final isSelected = _zoomLevel == zoom;
+    final isSelected = _currentZoomLevel == zoom;
     return InkWell(
-      onTap: () => setState(() => _zoomLevel = zoom),
+      onTap: () => _setZoom(zoom),
       child: Container(
         height: 36,
         alignment: Alignment.center,
@@ -491,18 +970,6 @@ class _CaptureWorkspaceScreenState
           ),
         ),
       ),
-    );
-  }
-
-  MicroscopySession _dummySession() {
-    return MicroscopySession(
-      id: 'default_session',
-      title: 'Ad-hoc Microscopy Acquisition',
-      specimenCode: 'SPEC-ADHOC',
-      specimenType: 'General Mount',
-      moduleId: AppConstants.moduleMycologyId,
-      moduleName: 'Fungal Patch Classification',
-      createdAt: DateTime.now(),
     );
   }
 }

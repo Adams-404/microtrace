@@ -79,7 +79,7 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
       orElse: () => modelState.modules.first,
     );
 
-    ref
+    final createdSession = ref
         .read(sessionRepositoryProvider.notifier)
         .createSession(
           title: _titleController.text.trim(),
@@ -91,9 +91,6 @@ class _NewSessionScreenState extends ConsumerState<NewSessionScreen> {
           operatorLabel: _operatorController.text.trim(),
           notes: _notesController.text.trim(),
         );
-
-    // Retrieve the newly created session
-    final createdSession = ref.read(sessionRepositoryProvider).first;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

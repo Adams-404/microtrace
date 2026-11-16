@@ -34,7 +34,7 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
     }
   }
 
-  void createSession({
+  MicroscopySession createSession({
     required String title,
     required String specimenCode,
     required String specimenType,
@@ -61,6 +61,7 @@ class SessionRepositoryNotifier extends Notifier<List<MicroscopySession>> {
 
     state = [newSession, ...state];
     _db.saveSession(newSession).catchError((_) {});
+    return newSession;
   }
 
   void updateSession(MicroscopySession updated) {

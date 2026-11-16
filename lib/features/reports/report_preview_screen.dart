@@ -7,6 +7,7 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/widgets/microscopy_image_view.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/status_badge.dart';
 import '../../shared/models/analysis_run.dart';
@@ -290,8 +291,8 @@ class ReportPreviewScreen extends ConsumerWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(6),
-                    child: Image.asset(
-                      img.assetPath,
+                    child: MicroscopyImageView(
+                      path: img.assetPath,
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,

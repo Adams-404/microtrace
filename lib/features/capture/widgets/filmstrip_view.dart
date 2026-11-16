@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_typography.dart';
+import '../../../core/widgets/microscopy_image_view.dart';
 import '../../../shared/models/microscopy_image.dart';
 
 class FilmstripView extends StatelessWidget {
@@ -83,7 +84,10 @@ class FilmstripView extends StatelessWidget {
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.asset(image.assetPath, fit: BoxFit.cover),
+                          MicroscopyImageView(
+                            path: image.assetPath,
+                            fit: BoxFit.cover,
+                          ),
                           // Field number label
                           Positioned(
                             bottom: 2,

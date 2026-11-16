@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
+import '../../core/widgets/microscopy_image_view.dart';
 import '../../core/widgets/quality_gauge.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
@@ -166,7 +167,10 @@ class _ImageReviewScreenState extends ConsumerState<ImageReviewScreen> {
                     minScale: 1.0,
                     maxScale: 6.0,
                     child: Center(
-                      child: Image.asset(image.assetPath, fit: BoxFit.contain),
+                      child: MicroscopyImageView(
+                        path: image.assetPath,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   Positioned(

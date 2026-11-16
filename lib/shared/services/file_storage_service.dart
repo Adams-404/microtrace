@@ -2,15 +2,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/utils/platform_file.dart';
+
 final fileStorageServiceProvider = Provider<FileStorageService>((ref) {
   return FileStorageService();
 });
 
 class FileStorageService {
+  final String? baseDirectoryPath;
+
+  FileStorageService({this.baseDirectoryPath});
+
   Future<String?> get _appDirectoryPath async {
+    if (baseDirectoryPath != null) return baseDirectoryPath;
     if (kIsWeb) return null;
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = await getApplicationDocumentsDirectory().timeout(
+        const Duration(milliseconds: 500),
+      );
       return dir.path;
     } catch (_) {
       return null;
@@ -26,16 +35,14 @@ class FileStorageService {
   }) async {
     final basePath = await _appDirectoryPath;
     if (basePath == null) {
-      // In web or fallback environments, store as data URL or virtual path
+      // In web or fallback environments, store as virtual path
       return 'virtual://captures/raw/$imageId.$extension';
     }
 
     try {
-      // Use dynamic or platform file handling
       final rawDir = '$basePath/microtrace/captures/raw';
       final filePath = '$rawDir/$imageId.$extension';
-      // In native environments, write to disk
-      // We will perform disk write via dart:io if available
+      PlatformFileOps.writeBytes(filePath, bytes);
       return filePath;
     } catch (e) {
       return 'virtual://captures/raw/$imageId.$extension';
@@ -53,15 +60,20 @@ class FileStorageService {
       return 'virtual://captures/derived/${imageId}_crop.$extension';
     }
 
-    final derivedDir = '$basePath/microtrace/captures/derived';
-    return '$derivedDir/${imageId}_crop.$extension';
+    try {
+      final derivedDir = '$basePath/microtrace/captures/derived';
+      final filePath = '$derivedDir/${imageId}_crop.$extension';
+      PlatformFileOps.writeBytes(filePath, bytes);
+      return filePath;
+    } catch (_) {
+      return 'virtual://captures/derived/${imageId}_crop.$extension';
+    }
   }
 
   /// Calculate real storage metrics across database, raw images, models, and reports
   Future<Map<String, int>> calculateStorageMetrics({
     required int databaseBytesEstimate,
   }) async {
-    // Returns byte sizes for: database, rawImages, models, reports
     return {
       'database': databaseBytesEstimate,
       'rawImages': 18454912,

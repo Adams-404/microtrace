@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../core/utils/formatters.dart';
+import '../../core/widgets/microscopy_image_view.dart';
 import '../../core/widgets/scientific_app_bar.dart';
 import '../../core/widgets/scientific_card.dart';
 import '../../core/widgets/status_badge.dart';
@@ -132,8 +133,8 @@ class _AnalysisWorkspaceScreenState
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
-                  child: Image.asset(
-                    image.assetPath,
+                  child: MicroscopyImageView(
+                    path: image.assetPath,
                     width: 72,
                     height: 72,
                     fit: BoxFit.cover,
