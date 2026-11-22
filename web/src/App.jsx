@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, Aperture, ScanLine, Microscope, ShieldCheck, Database, FileText, WifiOff, ChevronDown, Menu, X, CircleHelp, Github } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Aperture, ScanLine, Microscope, ShieldCheck, Database, FileText, WifiOff, ChevronDown, Menu, X, CircleHelp, Github, BookOpen } from 'lucide-react';
 
 const RELEASE = 'https://github.com/Adams-404/microtrace/releases/latest';
 const REPO = 'https://github.com/Adams-404/microtrace';
@@ -73,8 +73,8 @@ function App() {
     <header className="nav wrap">
       <a className="brand" href="#top" aria-label="Microtrace home"><span className="brand-mark"><Aperture size={21}/></span><span>MICROTRACE</span></a>
       <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
-        <a href="#workstation" onClick={()=>setMenuOpen(false)}>The workstation</a>
-        <a href="#principles" onClick={()=>setMenuOpen(false)}>Built differently</a>
+        <a href="#companion" onClick={()=>setMenuOpen(false)}>The workspace</a>
+        <a href="#principles" onClick={()=>setMenuOpen(false)}>Principles</a>
         <a href="#questions" onClick={()=>setMenuOpen(false)}>Questions</a>
       </nav>
       <div className="nav-actions">
@@ -86,9 +86,9 @@ function App() {
 
     <section className="hero wrap" id="top">
       <div className="hero-copy">
-        <div className="eyebrow"><span className="eyebrow-line"></span> A DIGITAL MICROSCOPY WORKSTATION</div>
+        <div className="eyebrow"><span className="eyebrow-line"></span> A DIGITAL WORKSPACE FOR SCIENTIFIC WORK</div>
         <h1>See the<br/><em>smaller</em><br/>picture.</h1>
-        <p className="hero-lede">A more considered way to work with the microscope you already own. MICROTRACE brings image capture, quality assessment and on-device analysis into one offline-first workstation.</p>
+        <p className="hero-lede">A considered workspace for the work around discovery. Capture observations, organise experiments, keep laboratory records and bring your scientific work into one offline-first companion.</p>
         <div className="hero-buttons">
           <a className="button button-dark" href={RELEASE} target="_blank" rel="noreferrer">Get MICROTRACE <ArrowUpRight size={17}/></a>
           <a className="text-link" href="#workstation">Explore the workstation <ArrowDown size={15}/></a>
@@ -100,7 +100,7 @@ function App() {
     </section>
 
     <section className="statement">
-      <div className="wrap statement-inner"><span className="section-index">01 — THE IDEA</span><div><h2>The microscope is already powerful. <em>The workflow around it can be better.</em></h2><p>MICROTRACE connects the familiar optics of a light microscope with the capabilities of a modern smartphone. The result is a practical digital workflow for capturing, assessing, reviewing and documenting microscopic fields.</p></div></div>
+      <div className="wrap statement-inner"><span className="section-index">01 — THE IDEA</span><div><h2>A scientist's work doesn't end at the eyepiece. <em>Neither should the tools.</em></h2><p>MICROTRACE is being shaped as a practical companion for the whole research process: a place to plan work, document methods, track samples, record observations, review results and preserve the context behind every finding. Microscopy is one instrument in that wider workflow, not the whole story.</p></div></div>
     </section>
 
     <section className="workstation wrap section-pad" id="workstation">
@@ -155,7 +155,7 @@ function App() {
     </section>
 
     <footer className="footer">
-      <div className="wrap footer-top"><div className="footer-brand"><a className="brand" href="#top"><span className="brand-mark"><Aperture size={21}/></span><span>MICROTRACE</span></a><p>A smartphone-assisted digital microscopy workstation.</p></div><div className="footer-links"><a href="#workstation">Workstation</a><a href="#principles">Principles</a><a href={REPO} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={13}/></a><a href={RELEASE} target="_blank" rel="noreferrer">Downloads <ArrowUpRight size={13}/></a></div><div className="footer-parent"><span>A PRODUCT OF</span><a href="https://bias.science" target="_blank" rel="noreferrer"><img src={biasLogo} alt="BIAS — Basira Institute for Advanced Science"/></a><small>Basira Institute for Advanced Science</small></div></div>
+      <div className="wrap footer-top"><div className="footer-brand"><a className="brand" href="#top"><span className="brand-mark"><Aperture size={21}/></span><span>MICROTRACE</span></a><p>A digital workspace for scientific work.</p></div><div className="footer-links"><a href="#companion">Workspace</a><a href="#principles">Principles</a><a href={REPO} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={13}/></a><a href={RELEASE} target="_blank" rel="noreferrer">Downloads <ArrowUpRight size={13}/></a></div><div className="footer-parent"><span>A PRODUCT OF</span><a href="https://bias.science" target="_blank" rel="noreferrer"><img src={biasLogo} alt="BIAS — Basira Institute for Advanced Science"/></a><small>Basira Institute for Advanced Science</small></div></div>
       <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} MICROTRACE · BIAS</span><span>BUILT FOR CLOSER OBSERVATION.</span><span>RESEARCH USE ONLY</span></div>
     </footer>
   </main>;
