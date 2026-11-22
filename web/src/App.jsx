@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight, Aperture, ScanLine, Microscope, ShieldCheck, Database, FileText, WifiOff, ChevronDown, Menu, X, CircleHelp, Github } from 'lucide-react';
 
 const RELEASE = 'https://github.com/Adams-404/microtrace/releases/latest';
