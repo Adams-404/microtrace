@@ -59,3 +59,23 @@
 @media(max-width:850px){.principles{margin-block:40px 20px}.principles>.wrap{padding-block:100px 115px}}
 @media(max-width:620px){.hero-rotator{margin-top:20px}.principles{margin-block:24px 10px}.principles::before{inset:0 -10vw;border-radius:35% 65% 2% 3% / 2% 2% 1% 1%}.principles::after{left:-10vw;right:-10vw}.principles>.wrap{padding-block:90px 110px}.spec-section{padding-top:90px}}
 @media(prefers-reduced-motion:reduce){.rotator-track,.hero h1 em,.field-svg{animation:none!important}.rotator-track span:not(:first-child){display:none}}
+
+
+/* Scientific record illustration */
+.record-section{display:grid;grid-template-columns:.9fr 1.1fr;align-items:center;gap:90px;padding-top:115px;padding-bottom:125px}
+.record-copy h2{font:500 clamp(46px,5.6vw,68px)/1.02 var(--display);letter-spacing:-.075em;margin:22px 0}
+.record-copy>p{font-size:14px;line-height:1.85;color:#686d62;max-width:430px}
+.record-caption{display:flex;align-items:center;margin-top:34px;color:#777d70;font:700 9px var(--pixel);line-height:1.6}
+.record-illustration{position:relative;padding:26px 30px 30px 20px}
+.record-sheet{background:#e9e8df;border:1.5px solid var(--ink);padding:15px;box-shadow:9px 9px 0 var(--ink);transform:rotate(1.2deg)}
+.record-sheet-head,.record-sheet-foot{display:flex;justify-content:space-between;color:#6d7865;font:700 9px var(--pixel)}
+.record-sheet-head{padding:3px 2px 12px;border-bottom:1px solid #c7cabc}
+.record-sheet-head span:last-child{color:#9b755d}
+.record-sheet svg{display:block;width:100%;margin:12px 0}
+.record-sheet-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 15px;padding:13px 2px;border-top:1px solid #c7cabc}
+.record-sheet-meta span{font:700 8px var(--pixel);color:#75816a}
+.record-sheet-meta strong{grid-column:1/-1;font:600 17px var(--display);letter-spacing:-.03em}
+.record-sheet-foot{padding:12px 2px 2px;border-top:1px solid #c7cabc}
+.record-stamp{position:absolute;right:0;top:0;width:78px;height:78px;display:grid;place-content:center;text-align:center;background:#d7e2c4;border:1.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font:700 10px/1.2 var(--pixel);transform:rotate(7deg)}
+@media(max-width:850px){.record-section{gap:45px;grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.record-section{grid-template-columns:1fr;gap:25px;padding-block:75px}.record-copy h2{font-size:54px}.record-illustration{padding:20px 12px 24px 4px}.record-stamp{right:-3px;width:66px;height:66px}}
