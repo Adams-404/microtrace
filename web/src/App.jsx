@@ -93,7 +93,7 @@ function App() {
           <a className="button button-dark" href={RELEASE} target="_blank" rel="noreferrer">Get MICROTRACE <ArrowUpRight size={17}/></a>
           <a className="text-link" href="#workstation">Explore the workstation <ArrowDown size={15}/></a>
         </div>
-        <div className="hero-meta"><span>ANDROID</span><i></i><span>WORKS OFFLINE</span><i></i><span>RESEARCH USE</span></div><div className="hero-rotator" aria-label="A workspace for observations, experiments and records"><span className="rotator-label">FOR THE WORK OF</span><span className="rotator-window"><span>observation</span><span>experiments</span><span>discovery</span><span>documentation</span><span>observation</span></span></div>
+        <div className="hero-meta"><span>ANDROID</span><i></i><span>WORKS OFFLINE</span><i></i><span>RESEARCH USE</span></div><div className="hero-rotator" aria-label="A workspace for observations, experiments and records"><span className="rotator-label">FOR THE WORK OF</span><span className="rotator-window"><span className="rotator-track"><span>observation</span><span>experiments</span><span>discovery</span><span>documentation</span><span>observation</span></span></span></div>
       </div>
       <div className="hero-visual"><FieldArtwork/><div className="visual-caption"><span>01 / THE OPTICAL FIELD</span><span>Illustrative visualization</span></div></div>
       <div className="hero-index"><span>MT—001</span><span>AN INSTRUMENT FOR CLOSER LOOKS</span></div>
