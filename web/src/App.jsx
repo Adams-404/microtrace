@@ -148,20 +148,36 @@ function App() {
       </div>
     </section>
 
-    <section className="spec-section wrap section-pad">
-      <div className="section-heading"><div><span className="section-index">05 — UNDER THE SURFACE</span><h2>The details<br/>matter.</h2></div><p>A look at the tools and decisions behind the current Android workstation.</p></div>
-      <div className="spec-table">
-        <div><span>OPTICAL INGESTION</span><strong>CameraX native streaming</strong><small>Zoom · focus lock · exposure · torch</small></div>
-        <div><span>IMAGE QUALITY</span><strong>Classical computer vision</strong><small>Laplacian sharpness · luminance · alignment</small></div>
-        <div><span>MODEL RUNTIME</span><strong>On-device LiteRT</strong><small>Local inference · model metadata · checksums</small></div>
-        <div><span>DATA LAYER</span><strong>Drift + SQLite</strong><small>Offline relational records · indexed queries</small></div>
-        <div><span>EXPORT</span><strong>Scientific PDF + JSON</strong><small>Quality summaries · audit records · sign-off</small></div>
+    <section className="record-section wrap section-pad">
+      <div className="record-copy">
+        <span className="section-index">05 — KEEP THE CONTEXT</span>
+        <h2>A result is more<br/>than an image.</h2>
+        <p>Where it came from matters. So do the conditions, the method and the notes made along the way. MICROTRACE is being built to keep that context close to the observation.</p>
+        <span className="record-caption"><span className="live-dot"></span> A CONNECTED RECORD, FROM FIRST LOOK TO REVIEW</span>
       </div>
-      <div className="integrity-note"><ShieldCheck size={19}/><p><strong>Research use only.</strong> MICROTRACE is a scientific decision-support tool, not an autonomous diagnostic system. All model outputs require independent review by a qualified professional before clinical action.</p></div>
+      <div className="record-illustration" aria-label="Illustration of a scientific field record">
+        <div className="record-sheet">
+          <div className="record-sheet-head"><span>FIELD RECORD / 014</span><span>CONCEPT</span></div>
+          <svg viewBox="0 0 440 210" role="img" aria-label="Abstract microscope field drawing">
+            <defs><clipPath id="recordClip"><rect x="8" y="8" width="424" height="194"/></clipPath></defs>
+            <rect x="8" y="8" width="424" height="194" fill="#dce0ca"/>
+            <g clipPath="url(#recordClip)" fill="none" stroke="#52664e" strokeWidth="5" strokeLinecap="round">
+              <path d="M-10 170 C55 120 88 144 142 90 S232 102 278 52 S368 35 455 -5"/>
+              <path d="M142 90 C130 45 95 28 68 -10 M278 52 C300 94 344 116 400 120"/>
+              <path d="M216 108 C200 142 215 170 248 220"/>
+            </g>
+            <g fill="#7c8b67" stroke="#f3f1e7" strokeWidth="2"><ellipse cx="104" cy="129" rx="9" ry="14" transform="rotate(42 104 129)"/><ellipse cx="236" cy="89" rx="10" ry="14" transform="rotate(32 236 89)"/><ellipse cx="355" cy="75" rx="10" ry="14" transform="rotate(42 355 75)"/></g>
+            <path d="M220 8v194M8 105h424" stroke="#f7f5eb" strokeWidth="1" opacity=".6" strokeDasharray="4 5"/>
+          </svg>
+          <div className="record-sheet-meta"><span>OBSERVATION</span><strong>Hyphal structure</strong><span>NOTES / SAMPLE / METHOD</span></div>
+          <div className="record-sheet-foot"><span>IMAGE + NOTES + CONDITIONS</span><span>014 ↗</span></div>
+        </div>
+        <span className="record-stamp">FIELD<br/>NOTES</span>
+      </div>
     </section>
 
     <section className="download-band">
-      <div className="wrap download-inner"><div><span className="section-index">06 — TAKE IT TO THE MICROSCOPE</span><h2>Make more of<br/><em>what you can see.</em></h2><p>Download the latest Android release and pair your phone with a compatible optical microscope.</p><a className="button button-cream" href={RELEASE} target="_blank" rel="noreferrer">Download for Android <ArrowUpRight size={17}/></a></div><div className="download-aside"><span className="download-mark"><Aperture size={48}/></span><span>MICROTRACE / ANDROID</span><span>Latest release on GitHub</span><a href={RELEASE} target="_blank" rel="noreferrer">View release notes <ArrowUpRight size={14}/></a></div></div>
+      <div className="wrap download-inner"><div><span className="section-index">06 — GET THE APP</span><h2>Make more of<br/><em>what you can see.</em></h2><p>Download the latest Android release and pair your phone with a compatible optical microscope.</p><a className="button button-cream" href={RELEASE} target="_blank" rel="noreferrer">Download for Android <ArrowUpRight size={17}/></a></div><div className="download-aside"><span className="download-mark"><Aperture size={48}/></span><span>MICROTRACE / ANDROID</span><span>Latest release on GitHub</span><a href={RELEASE} target="_blank" rel="noreferrer">View release notes <ArrowUpRight size={14}/></a></div></div>
     </section>
 
     <section className="faq wrap section-pad" id="questions">
