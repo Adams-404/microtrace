@@ -103,8 +103,23 @@ function App() {
       <div className="wrap statement-inner"><span className="section-index">01 — THE IDEA</span><div><h2>A scientist's work doesn't end at the eyepiece. <em>Neither should the tools.</em></h2><p>MICROTRACE is being shaped as a practical companion for the whole research process: a place to plan work, document methods, track samples, record observations, review results and preserve the context behind every finding. Microscopy is one instrument in that wider workflow, not the whole story.</p></div></div>
     </section>
 
+
+    <section className="companion wrap section-pad" id="companion">
+      <div className="section-heading"><div><span className="section-index">02 — THE SCIENTIST'S WORKSPACE</span><h2>More than a view<br/>through the lens.</h2></div><p>Scientific work is made of many small, connected actions. MICROTRACE is designed to give those actions a shared home.</p></div>
+      <div className="companion-intro"><span className="dot-label">A BROADER DIRECTION</span><p>Think of it as a field notebook, lab organiser and research companion in one. These are the areas we're exploring as MICROTRACE grows.</p></div>
+      <div className="companion-grid">
+        <article className="companion-card"><span className="companion-icon"><FileText size={21}/></span><span className="companion-no">01 / RECORD</span><h3>Research notebook</h3><p>Write dated entries, capture observations, attach images and keep the reasoning behind a result close to the result itself.</p><span className="companion-tag">NOTES · OBSERVATIONS · ATTACHMENTS</span></article>
+        <article className="companion-card"><span className="companion-icon"><Database size={21}/></span><span className="companion-no">02 / ORGANISE</span><h3>Experiments & projects</h3><p>Group work into projects, experiment runs and repeatable studies. Keep objectives, conditions, outcomes and follow-up work connected.</p><span className="companion-tag">PROJECTS · RUNS · OUTCOMES</span></article>
+        <article className="companion-card"><span className="companion-icon"><ScanLine size={21}/></span><span className="companion-no">03 / TRACE</span><h3>Samples & specimens</h3><p>Give samples their own records. Track identifiers, collection details, preparation notes, storage location and the experiments they appear in.</p><span className="companion-tag">SAMPLE IDs · METADATA · HISTORY</span></article>
+        <article className="companion-card"><span className="companion-icon"><BookOpen size={21}/></span><span className="companion-no">04 / STANDARDISE</span><h3>Protocols & methods</h3><p>Keep procedures close to the work. Build reusable method templates, record deviations and note exactly how an experiment was performed.</p><span className="companion-tag">SOPs · CHECKLISTS · VERSIONS</span></article>
+        <article className="companion-card"><span className="companion-icon"><Microscope size={21}/></span><span className="companion-no">05 / MAINTAIN</span><h3>Equipment & lab activity</h3><p>Keep practical details from getting lost: equipment records, maintenance notes, calibration dates, consumables and reminders.</p><span className="companion-tag">EQUIPMENT · STOCK · REMINDERS</span></article>
+        <article className="companion-card"><span className="companion-icon"><ShieldCheck size={21}/></span><span className="companion-no">06 / COMMUNICATE</span><h3>Reports & traceability</h3><p>Bring notes, images, measurements and decisions together in clear reports, with a record of what changed and who reviewed it.</p><span className="companion-tag">EXPORTS · REVIEW · ACTIVITY HISTORY</span></article>
+      </div>
+      <p className="companion-footnote"><span className="live-dot"></span> PRODUCT DIRECTION — THESE CAPABILITIES ARE PLANNED AREAS OF DEVELOPMENT, NOT A CLAIM THAT THEY ARE ALL AVAILABLE TODAY.</p>
+    </section>
+
     <section className="workstation wrap section-pad" id="workstation">
-      <div className="section-heading"><div><span className="section-index">02 — THE WORKFLOW</span><h2>From eyepiece<br/>to evidence.</h2></div><p>Four connected stages. One local record. A scientist in control at every step.</p></div>
+      <div className="section-heading"><div><span className="section-index">03 — THE WORKFLOW</span><h2>From eyepiece<br/>to evidence.</h2></div><p>Four connected stages. One local record. A scientist in control at every step.</p></div>
       <div className="workflow-layout">
         <div className="workflow-list" role="tablist" aria-label="Workstation stages">
           {steps.map(s=><button key={s.id} role="tab" aria-selected={active===s.id} className={active===s.id?'workflow-tab selected':'workflow-tab'} onClick={()=>setActive(s.id)}>
@@ -123,7 +138,7 @@ function App() {
 
     <section className="principles" id="principles">
       <div className="wrap section-pad">
-        <div className="section-heading light-heading"><div><span className="section-index">03 — THE DESIGN PRINCIPLES</span><h2>Designed for the<br/><em>real laboratory.</em></h2></div><p>Not another cloud dashboard. A focused instrument that respects the realities of scientific work.</p></div>
+        <div className="section-heading light-heading"><div><span className="section-index">04 — THE DESIGN PRINCIPLES</span><h2>Designed for the<br/><em>real laboratory.</em></h2></div><p>Not another cloud dashboard. A focused instrument that respects the realities of scientific work.</p></div>
         <div className="principle-grid">
           <article><WifiOff/><span className="principle-num">01</span><h3>Works without the cloud</h3><p>Core workflows run on the device. Your sessions and records stay local, with no account or connection required for everyday use.</p></article>
           <article><ScanLine/><span className="principle-num">02</span><h3>Quality before inference</h3><p>Image-quality heuristics help identify blur, exposure issues and optical misalignment before analysis begins.</p></article>
@@ -134,7 +149,7 @@ function App() {
     </section>
 
     <section className="spec-section wrap section-pad">
-      <div className="section-heading"><div><span className="section-index">04 — UNDER THE SURFACE</span><h2>Thoughtful by<br/>construction.</h2></div><p>The engineering is intentionally practical: native camera access, local persistence and transparent review.</p></div>
+      <div className="section-heading"><div><span className="section-index">05 — UNDER THE SURFACE</span><h2>Thoughtful by<br/>construction.</h2></div><p>The engineering is intentionally practical: native camera access, local persistence and transparent review.</p></div>
       <div className="spec-table">
         <div><span>OPTICAL INGESTION</span><strong>CameraX native streaming</strong><small>Zoom · focus lock · exposure · torch</small></div>
         <div><span>IMAGE QUALITY</span><strong>Classical computer vision</strong><small>Laplacian sharpness · luminance · alignment</small></div>
@@ -146,11 +161,11 @@ function App() {
     </section>
 
     <section className="download-band">
-      <div className="wrap download-inner"><div><span className="section-index">05 — TAKE IT TO THE MICROSCOPE</span><h2>Make more of<br/><em>what you can see.</em></h2><p>Download the latest Android release and pair your phone with a compatible optical microscope.</p><a className="button button-cream" href={RELEASE} target="_blank" rel="noreferrer">Download for Android <ArrowUpRight size={17}/></a></div><div className="download-aside"><span className="download-mark"><Aperture size={48}/></span><span>MICROTRACE / ANDROID</span><span>Latest release on GitHub</span><a href={RELEASE} target="_blank" rel="noreferrer">View release notes <ArrowUpRight size={14}/></a></div></div>
+      <div className="wrap download-inner"><div><span className="section-index">06 — TAKE IT TO THE MICROSCOPE</span><h2>Make more of<br/><em>what you can see.</em></h2><p>Download the latest Android release and pair your phone with a compatible optical microscope.</p><a className="button button-cream" href={RELEASE} target="_blank" rel="noreferrer">Download for Android <ArrowUpRight size={17}/></a></div><div className="download-aside"><span className="download-mark"><Aperture size={48}/></span><span>MICROTRACE / ANDROID</span><span>Latest release on GitHub</span><a href={RELEASE} target="_blank" rel="noreferrer">View release notes <ArrowUpRight size={14}/></a></div></div>
     </section>
 
     <section className="faq wrap section-pad" id="questions">
-      <div className="section-heading"><div><span className="section-index">06 — GOOD TO KNOW</span><h2>Before you<br/>look closer.</h2></div><p>A few practical details about the workstation, its use and its limits.</p></div>
+      <div className="section-heading"><div><span className="section-index">07 — GOOD TO KNOW</span><h2>Before you<br/>look closer.</h2></div><p>A few practical details about the workstation, its use and its limits.</p></div>
       <div className="faq-list">{faqs.map(([q,a],i)=><div className={openFaq===i?'faq-item active':'faq-item'} key={q}><button onClick={()=>setOpenFaq(openFaq===i?-1:i)} aria-expanded={openFaq===i}><span>{q}</span><ChevronDown size={18}/></button>{openFaq===i&&<p>{a}</p>}</div>)}</div>
     </section>
 
