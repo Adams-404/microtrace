@@ -88,25 +88,25 @@ function App() {
       <div className="hero-copy">
         <div className="eyebrow"><span className="eyebrow-line"></span> A DIGITAL WORKSPACE FOR SCIENTIFIC WORK</div>
         <h1>See the<br/><em>smaller</em><br/>picture.</h1>
-        <p className="hero-lede">A considered workspace for the work around discovery. Capture observations, organise experiments, keep laboratory records and bring your scientific work into one offline-first companion.</p>
+        <p className="hero-lede">A place to keep the work together: microscope images, observations, experiments and the notes that make them useful. Built to work offline.</p>
         <div className="hero-buttons">
           <a className="button button-dark" href={RELEASE} target="_blank" rel="noreferrer">Get MICROTRACE <ArrowUpRight size={17}/></a>
           <a className="text-link" href="#workstation">Explore the workstation <ArrowDown size={15}/></a>
         </div>
-        <div className="hero-meta"><span>ANDROID APPLICATION</span><i></i><span>OFFLINE-FIRST BY DESIGN</span><i></i><span>RESEARCH USE ONLY</span></div>
+        <div className="hero-meta"><span>ANDROID</span><i></i><span>WORKS OFFLINE</span><i></i><span>RESEARCH USE</span></div><div className="hero-rotator" aria-label="A workspace for observations, experiments and records"><span className="rotator-label">FOR THE WORK OF</span><span className="rotator-window"><span>observation</span><span>experiments</span><span>discovery</span><span>documentation</span><span>observation</span></span></div>
       </div>
       <div className="hero-visual"><FieldArtwork/><div className="visual-caption"><span>01 / THE OPTICAL FIELD</span><span>Illustrative visualization</span></div></div>
       <div className="hero-index"><span>MT—001</span><span>AN INSTRUMENT FOR CLOSER LOOKS</span></div>
     </section>
 
     <section className="statement">
-      <div className="wrap statement-inner"><span className="section-index">01 — THE IDEA</span><div><h2>A scientist's work doesn't end at the eyepiece. <em>Neither should the tools.</em></h2><p>MICROTRACE is being shaped as a practical companion for the whole research process: a place to plan work, document methods, track samples, record observations, review results and preserve the context behind every finding. Microscopy is one instrument in that wider workflow, not the whole story.</p></div></div>
+      <div className="wrap statement-inner"><span className="section-index">01 — THE IDEA</span><div><h2>The microscope is one part of the work. <em>Keep the rest close.</em></h2><p>An image rarely tells the whole story. There are samples to label, methods to remember, conditions to record and results to revisit. MICROTRACE is growing around those everyday parts of research, with microscopy at its centre.</p></div></div>
     </section>
 
 
     <section className="companion wrap section-pad" id="companion">
-      <div className="section-heading"><div><span className="section-index">02 — THE SCIENTIST'S WORKSPACE</span><h2>More than a view<br/>through the lens.</h2></div><p>Scientific work is made of many small, connected actions. MICROTRACE is designed to give those actions a shared home.</p></div>
-      <div className="companion-intro"><span className="dot-label">A BROADER DIRECTION</span><p>Think of it as a field notebook, lab organiser and research companion in one. These are the areas we're exploring as MICROTRACE grows.</p></div>
+      <div className="section-heading"><div><span className="section-index">02 — THE SCIENTIST'S WORKSPACE</span><h2>More than a view<br/>through the lens.</h2></div><p>Notes, samples, methods and results belong together. The aim is to keep them that way.</p></div>
+      <div className="companion-intro"><span className="dot-label">A BROADER DIRECTION</span><p>A few of the things we want it to help with as the project develops.</p></div>
       <div className="companion-grid">
         <article className="companion-card"><span className="companion-icon"><FileText size={21}/></span><span className="companion-no">01 / RECORD</span><h3>Research notebook</h3><p>Write dated entries, capture observations, attach images and keep the reasoning behind a result close to the result itself.</p><span className="companion-tag">NOTES · OBSERVATIONS · ATTACHMENTS</span></article>
         <article className="companion-card"><span className="companion-icon"><Database size={21}/></span><span className="companion-no">02 / ORGANISE</span><h3>Experiments & projects</h3><p>Group work into projects, experiment runs and repeatable studies. Keep objectives, conditions, outcomes and follow-up work connected.</p><span className="companion-tag">PROJECTS · RUNS · OUTCOMES</span></article>
@@ -119,7 +119,7 @@ function App() {
     </section>
 
     <section className="workstation wrap section-pad" id="workstation">
-      <div className="section-heading"><div><span className="section-index">03 — THE WORKFLOW</span><h2>From eyepiece<br/>to evidence.</h2></div><p>Four connected stages. One local record. A scientist in control at every step.</p></div>
+      <div className="section-heading"><div><span className="section-index">03 — THE WORKFLOW</span><h2>From eyepiece<br/>to evidence.</h2></div><p>Capture a field, check the image, review the result and keep the record.</p></div>
       <div className="workflow-layout">
         <div className="workflow-list" role="tablist" aria-label="Workstation stages">
           {steps.map(s=><button key={s.id} role="tab" aria-selected={active===s.id} className={active===s.id?'workflow-tab selected':'workflow-tab'} onClick={()=>setActive(s.id)}>
@@ -138,7 +138,7 @@ function App() {
 
     <section className="principles" id="principles">
       <div className="wrap section-pad">
-        <div className="section-heading light-heading"><div><span className="section-index">04 — THE DESIGN PRINCIPLES</span><h2>Designed for the<br/><em>real laboratory.</em></h2></div><p>Not another cloud dashboard. A focused instrument that respects the realities of scientific work.</p></div>
+        <div className="section-heading light-heading"><div><span className="section-index">04 — IN PRACTICE</span><h2>Designed for the<br/><em>real laboratory.</em></h2></div><p>Made for real benches, real samples and days when the internet isn't available.</p></div>
         <div className="principle-grid">
           <article><WifiOff/><span className="principle-num">01</span><h3>Works without the cloud</h3><p>Core workflows run on the device. Your sessions and records stay local, with no account or connection required for everyday use.</p></article>
           <article><ScanLine/><span className="principle-num">02</span><h3>Quality before inference</h3><p>Image-quality heuristics help identify blur, exposure issues and optical misalignment before analysis begins.</p></article>
@@ -149,7 +149,7 @@ function App() {
     </section>
 
     <section className="spec-section wrap section-pad">
-      <div className="section-heading"><div><span className="section-index">05 — UNDER THE SURFACE</span><h2>Thoughtful by<br/>construction.</h2></div><p>The engineering is intentionally practical: native camera access, local persistence and transparent review.</p></div>
+      <div className="section-heading"><div><span className="section-index">05 — UNDER THE SURFACE</span><h2>The details<br/>matter.</h2></div><p>A look at the tools and decisions behind the current Android workstation.</p></div>
       <div className="spec-table">
         <div><span>OPTICAL INGESTION</span><strong>CameraX native streaming</strong><small>Zoom · focus lock · exposure · torch</small></div>
         <div><span>IMAGE QUALITY</span><strong>Classical computer vision</strong><small>Laplacian sharpness · luminance · alignment</small></div>
@@ -171,7 +171,7 @@ function App() {
 
     <footer className="footer">
       <div className="wrap footer-top"><div className="footer-brand"><a className="brand" href="#top"><span className="brand-mark"><Aperture size={21}/></span><span>MICROTRACE</span></a><p>A digital workspace for scientific work.</p></div><div className="footer-links"><a href="#companion">Workspace</a><a href="#principles">Principles</a><a href={REPO} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={13}/></a><a href={RELEASE} target="_blank" rel="noreferrer">Downloads <ArrowUpRight size={13}/></a></div><div className="footer-parent"><span>A PRODUCT OF</span><a href="https://bias.science" target="_blank" rel="noreferrer"><img src={biasLogo} alt="BIAS — Basira Institute for Advanced Science"/></a><small>Basira Institute for Advanced Science</small></div></div>
-      <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} MICROTRACE · BIAS</span><span>BUILT FOR CLOSER OBSERVATION.</span><span>RESEARCH USE ONLY</span></div>
+      <div className="wrap footer-bottom"><span>© {new Date().getFullYear()} MICROTRACE · BIAS</span><span>MADE FOR THE WORK.</span><span>RESEARCH USE ONLY</span></div>
     </footer>
   </main>;
 }
