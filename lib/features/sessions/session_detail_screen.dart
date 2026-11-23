@@ -76,29 +76,27 @@ class SessionDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          session.specimenCode,
-                          style: AppTypography.technicalMono(
-                            AppColors.signal,
-                            fontSize: 14,
-                            weight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        StatusBadge(
-                          label: session.status.displayName,
-                          type: session.status == SessionStatus.reviewed
-                              ? BadgeType.pass
-                              : (session.status == SessionStatus.completed
-                                    ? BadgeType.humanObservation
-                                    : BadgeType.warning),
-                        ),
-                      ],
+                    Text(
+                      session.specimenCode,
+                      style: AppTypography.technicalMono(
+                        AppColors.signal,
+                        fontSize: 14,
+                        weight: FontWeight.w700,
+                      ),
+                    ),
+                    StatusBadge(
+                      label: session.status.displayName,
+                      type: session.status == SessionStatus.reviewed
+                          ? BadgeType.pass
+                          : (session.status == SessionStatus.completed
+                                ? BadgeType.humanObservation
+                                : BadgeType.warning),
                     ),
                     Text(
                       Formatters.formatDateTime(session.createdAt),
@@ -188,8 +186,11 @@ class SessionDetailScreen extends ConsumerWidget {
           const SizedBox(height: 24),
 
           // Captured Fields Grid
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
             children: [
               Text(
                 'MICROSCOPIC FIELDS (${session.images.length})',

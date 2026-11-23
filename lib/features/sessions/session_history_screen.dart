@@ -94,59 +94,55 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                 ),
                 const SizedBox(height: 10),
                 // Filter Chips
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      FilterChip(
-                        selected: _selectedStatusFilter == null,
-                        label: const Text('ALL SESSIONS'),
-                        onSelected: (_) {
-                          Haptics.select();
-                          setState(() => _selectedStatusFilter = null);
-                        },
-                      ),
-                      const SizedBox(width: 6),
-                      FilterChip(
-                        selected:
-                            _selectedStatusFilter == SessionStatus.inProgress,
-                        label: const Text('IN PROGRESS'),
-                        onSelected: (_) {
-                          Haptics.select();
-                          setState(
-                            () => _selectedStatusFilter =
-                                SessionStatus.inProgress,
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 6),
-                      FilterChip(
-                        selected:
-                            _selectedStatusFilter == SessionStatus.completed,
-                        label: const Text('COMPLETED'),
-                        onSelected: (_) {
-                          Haptics.select();
-                          setState(
-                            () =>
-                                _selectedStatusFilter = SessionStatus.completed,
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 6),
-                      FilterChip(
-                        selected:
-                            _selectedStatusFilter == SessionStatus.reviewed,
-                        label: const Text('REVIEWED'),
-                        onSelected: (_) {
-                          Haptics.select();
-                          setState(
-                            () =>
-                                _selectedStatusFilter = SessionStatus.reviewed,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    FilterChip(
+                      selected: _selectedStatusFilter == null,
+                      label: const Text('ALL SESSIONS'),
+                      onSelected: (_) {
+                        Haptics.select();
+                        setState(() => _selectedStatusFilter = null);
+                      },
+                    ),
+                    FilterChip(
+                      selected:
+                          _selectedStatusFilter == SessionStatus.inProgress,
+                      label: const Text('IN PROGRESS'),
+                      onSelected: (_) {
+                        Haptics.select();
+                        setState(
+                          () => _selectedStatusFilter =
+                              SessionStatus.inProgress,
+                        );
+                      },
+                    ),
+                    FilterChip(
+                      selected:
+                          _selectedStatusFilter == SessionStatus.completed,
+                      label: const Text('COMPLETED'),
+                      onSelected: (_) {
+                        Haptics.select();
+                        setState(
+                          () =>
+                              _selectedStatusFilter = SessionStatus.completed,
+                        );
+                      },
+                    ),
+                    FilterChip(
+                      selected:
+                          _selectedStatusFilter == SessionStatus.reviewed,
+                      label: const Text('REVIEWED'),
+                      onSelected: (_) {
+                        Haptics.select();
+                        setState(
+                          () =>
+                              _selectedStatusFilter = SessionStatus.reviewed,
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -204,34 +200,31 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              Wrap(
+                                alignment: WrapAlignment.spaceBetween,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 8,
+                                runSpacing: 4,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        session.specimenCode,
-                                        style: AppTypography.technicalMono(
-                                          AppColors.signal,
-                                          fontSize: 13,
-                                          weight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      StatusBadge(
-                                        label: session.status.displayName,
-                                        type:
-                                            session.status ==
-                                                SessionStatus.reviewed
-                                            ? BadgeType.pass
-                                            : (session.status ==
-                                                      SessionStatus.completed
-                                                  ? BadgeType.humanObservation
-                                                  : BadgeType.warning),
-                                        isCompact: true,
-                                      ),
-                                    ],
+                                  Text(
+                                    session.specimenCode,
+                                    style: AppTypography.technicalMono(
+                                      AppColors.signal,
+                                      fontSize: 13,
+                                      weight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  StatusBadge(
+                                    label: session.status.displayName,
+                                    type:
+                                        session.status ==
+                                            SessionStatus.reviewed
+                                        ? BadgeType.pass
+                                        : (session.status ==
+                                                  SessionStatus.completed
+                                              ? BadgeType.humanObservation
+                                              : BadgeType.warning),
+                                    isCompact: true,
                                   ),
                                   Text(
                                     Formatters.formatDateTime(
@@ -244,62 +237,77 @@ class _SessionHistoryScreenState extends ConsumerState<SessionHistoryScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 session.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: AppTypography.title(textPrimary),
                               ),
                               const SizedBox(height: 6),
-                              Row(
+                              Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 14,
+                                runSpacing: 4,
                                 children: [
-                                  Icon(
-                                    Icons.biotech,
-                                    size: 14,
-                                    color: textSecondary,
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.biotech,
+                                        size: 14,
+                                        color: textSecondary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 200,
+                                        ),
+                                        child: Text(
+                                          session.specimenType,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTypography.caption(
+                                            textSecondary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    session.specimenType,
-                                    style: AppTypography.caption(textSecondary),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Icon(
-                                    Icons.photo_library_outlined,
-                                    size: 14,
-                                    color: textSecondary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${session.images.length} fields',
-                                    style: AppTypography.caption(textSecondary),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.photo_library_outlined,
+                                        size: 14,
+                                        color: textSecondary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${session.images.length} fields',
+                                        style: AppTypography.caption(
+                                          textSecondary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                               if (session.images.isNotEmpty) ...[
                                 const SizedBox(height: 12),
                                 // Micro thumbnails strip
-                                SizedBox(
-                                  height: 44,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: session.images.length,
-                                    itemBuilder: (context, imgIdx) {
-                                      final img = session.images[imgIdx];
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          right: 6,
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: [
+                                    for (final img in session.images)
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Image.asset(
+                                          img.assetPath,
+                                          width: 44,
+                                          height: 44,
+                                          fit: BoxFit.cover,
                                         ),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                          child: Image.asset(
-                                            img.assetPath,
-                                            width: 44,
-                                            height: 44,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                      ),
+                                  ],
                                 ),
                               ],
                             ],

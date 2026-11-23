@@ -34,26 +34,30 @@ class MicrotraceApp extends ConsumerWidget {
                 )
               : t.bg,
           child: Center(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 240),
-              constraints: const BoxConstraints(maxWidth: 680),
-              decoration: isWide
-                  ? BoxDecoration(
-                      border: Border.symmetric(
-                        vertical: BorderSide(color: t.border),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(
-                            alpha: t.isDark ? 0.5 : 0.08,
-                          ),
-                          blurRadius: 60,
-                          spreadRadius: -10,
+            child: ClipRect(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 240),
+                constraints: const BoxConstraints(maxWidth: 680),
+                width: isWide ? 680 : double.infinity,
+                height: double.infinity,
+                decoration: isWide
+                    ? BoxDecoration(
+                        border: Border.symmetric(
+                          vertical: BorderSide(color: t.border),
                         ),
-                      ],
-                    )
-                  : null,
-              child: child,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(
+                              alpha: t.isDark ? 0.5 : 0.08,
+                            ),
+                            blurRadius: 60,
+                            spreadRadius: -10,
+                          ),
+                        ],
+                      )
+                    : null,
+                child: child,
+              ),
             ),
           ),
         );

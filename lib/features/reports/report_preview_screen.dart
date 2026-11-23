@@ -164,33 +164,32 @@ class ReportPreviewScreen extends ConsumerWidget {
         ),
         children: [
           // Report Header
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            spacing: 12,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppConstants.appName,
-                      style: AppTypography.headline(textPrimary)
-                          .copyWith(letterSpacing: 2.0),
-                    ),
-                    Text(
-                      'MICROBIOLOGY OBSERVATION REPORT',
-                      style: AppTypography.technicalMono(
-                        AppColors.signal,
-                        fontSize: 10,
-                        weight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppConstants.appName,
+                    style: AppTypography.headline(textPrimary)
+                        .copyWith(letterSpacing: 2.0),
+                  ),
+                  Text(
+                    'MICROBIOLOGY OBSERVATION REPORT',
+                    style: AppTypography.technicalMono(
+                      AppColors.signal,
+                      fontSize: 10,
+                      weight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'REPORT ID: REP-${session.specimenCode}',

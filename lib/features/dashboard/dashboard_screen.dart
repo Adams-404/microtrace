@@ -355,14 +355,16 @@ class _CopilotCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 7,
+                  runSpacing: 4,
                   children: [
                     Text(
                       'Local AI copilot',
                       style: AppTypography.title(t.textPrimary)
                           .copyWith(fontSize: 15),
                     ),
-                    const SizedBox(width: 7),
                     const StatusBadge(
                       label: 'On-device',
                       type: BadgeType.humanObservation,
@@ -424,7 +426,10 @@ class _SessionRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 4,
                   children: [
                     Text(
                       session.specimenCode,
@@ -434,7 +439,6 @@ class _SessionRow extends StatelessWidget {
                         weight: FontWeight.w700,
                       ).copyWith(letterSpacing: 0.6),
                     ),
-                    const SizedBox(width: 8),
                     StatusBadge(
                       label: session.status.displayName,
                       type: session.status == SessionStatus.reviewed
